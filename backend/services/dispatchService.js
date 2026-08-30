@@ -35,7 +35,11 @@ async function getTransporter() {
   } else {
     try {
       console.log('[DispatchService] Creating Nodemailer Ethereal test account for verifiable local delivery...');
-      etherealAccount = await nodemailer.createTestAccount();
+      // Use Promise.race to timeout after 5 seconds in case Ethereal hangs
+      etherealAccount = await Promise.race([
+        nodemailer.createTestAccount(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Ethereal account creation timed out')), 5000))
+      ]);
       console.log(`[DispatchService] Ethereal account ready: ${etherealAccount.user}`);
 
       transporter = nodemailer.createTransport({

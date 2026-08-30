@@ -94,7 +94,7 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
 
       const aiResponse = await axios.post(`${AI_SERVICE_URL}/detect`, formData, {
         headers: formData.getHeaders(),
-        timeout: 15000
+        timeout: 2000 // Reduced from 15000 to fail fast if no AI service is deployed
       });
 
       detectedIssues = aiResponse.data.detections || [];
