@@ -49,7 +49,9 @@ async function getTransporter() {
         auth: {
           user: etherealAccount.user,
           pass: etherealAccount.pass
-        }
+        },
+        connectionTimeout: 5000,
+        socketTimeout: 5000
       });
     } catch (err) {
       console.warn('[DispatchService WARNING] Failed to create Ethereal account, falling back to mock transporter:', err.message);
@@ -97,7 +99,16 @@ async function dispatchIncidentReport({ detection, departmentEmail, departmentNa
     `
   };
 
-  const info = await mailer.sendMail(mailOptions);
+  let info;
+  try {
+    info = await Promise.race([
+      mailer.sendMail(mailOptions),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 5000))
+    ]);
+  } catch (err) {
+    console.error('[DispatchService WARNING] Failed to send email (timeout or network error):', err.message);
+    info = { messageId: 'mock-id-timeout' };
+  }
   const previewUrl = nodemailer.getTestMessageUrl(info) || null;
 
   if (previewUrl) {
@@ -130,7 +141,16 @@ async function dispatchEscalationAlert({ detection, departmentEmail, departmentN
     `
   };
 
-  const info = await mailer.sendMail(mailOptions);
+  let info;
+  try {
+    info = await Promise.race([
+      mailer.sendMail(mailOptions),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 5000))
+    ]);
+  } catch (err) {
+    console.error('[DispatchService WARNING] Failed to send escalation alert:', err.message);
+    info = { messageId: 'mock-id-timeout' };
+  }
   const previewUrl = nodemailer.getTestMessageUrl(info) || null;
   return { messageId: info.messageId, previewUrl };
 }
@@ -176,7 +196,10 @@ async function sendResolutionNotifications({ detection }) {
     };
 
     try {
-      const info = await mailer.sendMail(mailOptions);
+      const info = await Promise.race([
+        mailer.sendMail(mailOptions),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 5000))
+      ]);
       const previewUrl = nodemailer.getTestMessageUrl(info) || null;
       if (previewUrl) {
         console.log(`[DispatchService] Resolution email sent to citizen (${user.email})! Preview: ${previewUrl}`);

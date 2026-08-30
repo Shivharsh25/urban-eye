@@ -154,7 +154,8 @@ async function formatAddress(lat, lng, userAddress = '') {
         params: {
           latlng: `${lat},${lng}`,
           key: apiKey
-        }
+        },
+        timeout: 3000
       });
       if (response.data.results && response.data.results.length > 0) {
         return response.data.results[0].formatted_address;
