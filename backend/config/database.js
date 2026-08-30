@@ -13,10 +13,7 @@ const connectDB = async () => {
       console.warn('[MongoDB] MONGODB_URI is not defined in environment variables. Application will fail to connect if required.');
       return;
     }
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(mongoUri);
     console.log('[MongoDB] Connected successfully to cloud database.');
   } catch (err) {
     console.error('[MongoDB] Connection failed:', err.message);
