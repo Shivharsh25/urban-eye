@@ -34,11 +34,10 @@ const UserSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Ensure we have an id that matches _id if needed, or just use string id for backwards compatibility
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function() {
   if (!this.id) {
     this.id = uuidv4();
   }
-  next();
 });
 
 // Backwards compatibility methods
