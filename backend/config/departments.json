@@ -1,0 +1,18 @@
+{
+  "pothole": {
+    "department": "Roads & Public Works",
+    "email": "roads@cityapp.local"
+  },
+  "garbage": {
+    "department": "Sanitation Dept",
+    "email": "sanitation@cityapp.local"
+  },
+  "water_leak": {
+    "department": "Water Dept",
+    "email": "water@cityapp.local"
+  },
+  "streetlight": {
+    "department": "Electrical Dept",
+    "email": "electrical@cityapp.local"
+  }
+}

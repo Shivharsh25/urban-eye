@@ -1,0 +1,13 @@
+{
+  "name": "urban-eye-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Urban EYE - Automated Smart City Infrastructure Issue Detection & Municipal Dispatch",
+  "scripts": {
+    "seed": "npm --prefix backend run seed",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:ai": "ai_service\\.venv\\Scripts\\uvicorn main:app --app-dir ai_service --reload --port 8000",
+    "build:frontend": "npm --prefix frontend run build"
+  }
+}

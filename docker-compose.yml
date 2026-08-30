@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # MongoDB with persistent named volume
+  mongodb:
+    image: mongo:7.0
+    container_name: urban_eye_db
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: urban_eye
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - urban_eye_network
+
+  # Python FastAPI AI Detection Service
+  ai_service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: urban_eye_ai
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - USE_STUB_DETECTOR=true
+      - MODEL_PATH=models/urban_eye_yolov8.pt
+      - CLASS_NAMES_PATH=class_names.json
+    volumes:
+      - ./ai_service/models:/app/models
+    networks:
+      - urban_eye_network
+
+  # Node.js Express & Socket.io Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: urban_eye_api
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - CLIENT_URL=http://localhost:5173
+      - AI_SERVICE_URL=http://ai_service:8000
+      - MONGODB_URI=mongodb://mongodb:27017/urban_eye
+      - JWT_SECRET=urban_eye_jwt_secret_key_2026_secure
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/data:/app/data
+    depends_on:
+      - mongodb
+      - ai_service
+    networks:
+      - urban_eye_network
+
+  # React Frontend (Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: urban_eye_ui
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - urban_eye_network
+
+volumes:
+  mongodb_data:
+    name: urban_eye_mongodb_data
+
+networks:
+  urban_eye_network:
+    name: urban_eye_network
+    driver: bridge
