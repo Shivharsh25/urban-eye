@@ -5,7 +5,7 @@ let socket = null;
 
 export function getSocket() {
   if (!socket) {
-    socket = io('/', {
+    socket = io('https://urban-eye-wi2j.onrender.com', {
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnectionAttempts: 10,

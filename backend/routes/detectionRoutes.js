@@ -364,7 +364,7 @@ router.get('/detections', requireAuth, async (req, res) => {
       query.submittedBy = user.id;
     }
 
-    const detections = await Detection.find(query, { createdAt: -1 });
+    const detections = await Detection.find(query).sort({ createdAt: -1 });
 
     // Optional text search filter
     const searchTerm = (req.query.search || '').toLowerCase().trim();

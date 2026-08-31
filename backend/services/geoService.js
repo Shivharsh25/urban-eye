@@ -161,11 +161,31 @@ async function formatAddress(lat, lng, userAddress = '') {
         return response.data.results[0].formatted_address;
       }
     } catch (err) {
-      console.error('[geoService] Reverse geocoding failed, falling back to mock.', err.message);
+      console.error('[geoService] Google reverse geocoding failed:', err.message);
     }
   }
 
-  // Generate realistic smart city address lookup based on quadrant
+  // Fallback to OpenStreetMap Nominatim
+  try {
+    const response = await axios.get('https://nominatim.openstreetmap.org/reverse', {
+      params: {
+        lat: lat,
+        lon: lng,
+        format: 'json'
+      },
+      headers: {
+        'User-Agent': 'UrbanEye/1.0'
+      },
+      timeout: 3000
+    });
+    if (response.data && response.data.display_name) {
+      return response.data.display_name;
+    }
+  } catch (err) {
+    console.error('[geoService] Nominatim reverse geocoding failed:', err.message);
+  }
+
+  // Ultimate fallback to mock address
   const streets = [
     'Civic Center Blvd', 'Market Street', 'Grand Avenue', 'Riverside Expressway',
     'Oakland Way', 'Metro Parkway', 'Highland Ave', 'Pine Street', 'Industrial Rd'
