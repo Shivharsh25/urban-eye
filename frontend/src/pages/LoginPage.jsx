@@ -118,13 +118,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#05080f] selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen flex bg-slate-950 selection:bg-sky-500 selection:text-white">
       
       {/* LEFT SIDE: Hero / Stats Split Screen */}
       <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-slate-900 border-r border-slate-800">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-30 mix-blend-luminosity"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/80 via-slate-900/90 to-black/90"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-sky-900/80 via-slate-900/90 to-black/90"></div>
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.05]"></div>
         </div>
 
@@ -136,7 +136,7 @@ export default function LoginPage() {
           <div className="space-y-6">
             <h2 className="text-5xl font-bold text-white leading-tight">
               Empowering citizens.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">
                 Improving cities.
               </span>
             </h2>
@@ -146,7 +146,7 @@ export default function LoginPage() {
 
             <div className="grid grid-cols-2 gap-4 mt-8">
               <div className="glass-panel p-4 rounded-2xl bg-black/20 border border-white/5 backdrop-blur-sm">
-                <Users className="w-6 h-6 text-cyan-400 mb-2" />
+                <Users className="w-6 h-6 text-sky-400 mb-2" />
                 <div className="text-2xl font-bold text-white">{stats.activeCitizens}</div>
                 <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Active Citizens</div>
               </div>

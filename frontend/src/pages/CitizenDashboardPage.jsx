@@ -91,8 +91,8 @@ export default function CitizenDashboardPage() {
 
       {/* Quick Actions Panel */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <button onClick={() => navigate('/report')} className="glass-button bg-cyan-600/10 hover:bg-cyan-500/20 border border-cyan-500/20 flex flex-col items-center justify-center p-4 rounded-2xl group transition-all">
-          <Plus className="w-6 h-6 text-cyan-400 mb-2 group-hover:scale-110 transition-transform" />
+        <button onClick={() => navigate('/report')} className="glass-button bg-sky-600/10 hover:bg-sky-500/20 border border-sky-500/20 flex flex-col items-center justify-center p-4 rounded-2xl group transition-all">
+          <Plus className="w-6 h-6 text-sky-400 mb-2 group-hover:scale-110 transition-transform" />
           <span className="text-sm font-semibold text-slate-200">New Report</span>
         </button>
         <button onClick={() => navigate('/my-reports')} className="glass-button bg-indigo-600/10 hover:bg-indigo-500/20 border border-indigo-500/20 flex flex-col items-center justify-center p-4 rounded-2xl group transition-all">
@@ -118,10 +118,10 @@ export default function CitizenDashboardPage() {
           <div className="glass-card rounded-3xl overflow-hidden border-t border-t-white/5 flex flex-col h-[400px]">
             <div className="p-4 border-b border-slate-800/50 flex items-center justify-between bg-slate-900/40">
               <h2 className="text-lg font-bold text-slate-200 flex items-center">
-                <MapPin className="w-5 h-5 text-cyan-400 mr-2" />
+                <MapPin className="w-5 h-5 text-sky-400 mr-2" />
                 Community Impact Map
               </h2>
-              <span className="text-xs font-semibold text-cyan-400/80 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">
+              <span className="text-xs font-semibold text-sky-400/80 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20">
                 Live Data
               </span>
             </div>

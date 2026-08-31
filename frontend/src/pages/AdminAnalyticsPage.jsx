@@ -6,7 +6,7 @@ import {
 import { Activity, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import api from '../api/client';
 
-const COLORS = ['#06b6d4', '#8b5cf6', '#3b82f6', '#f43f5e'];
+const COLORS = ['#0ea5e9', '#8b5cf6', '#3b82f6', '#f43f5e'];
 
 export default function AdminAnalyticsPage() {
   const [loading, setLoading] = useState(true);
@@ -68,7 +68,7 @@ export default function AdminAnalyticsPage() {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[500px]">
-        <div className="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-sky-500/20 border-t-sky-400 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -150,8 +150,8 @@ export default function AdminAnalyticsPage() {
               <AreaChart data={trendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorReports" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
@@ -165,7 +165,7 @@ export default function AdminAnalyticsPage() {
                   contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
                   itemStyle={{ color: '#e2e8f0' }}
                 />
-                <Area type="monotone" dataKey="reports" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill="url(#colorReports)" />
+                <Area type="monotone" dataKey="reports" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorReports)" />
                 <Area type="monotone" dataKey="resolved" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorResolved)" />
               </AreaChart>
             </ResponsiveContainer>

@@ -19,6 +19,7 @@ import WebcamCapture from '../components/WebcamCapture';
 import UploadStepper from '../components/UploadStepper';
 import MapView from '../components/MapView';
 import DetectionModal from '../components/DetectionModal';
+import exifr from 'exifr';
 
 export default function CitizenReportPage() {
   const navigate = useNavigate();
@@ -72,13 +73,45 @@ export default function CitizenReportPage() {
     fetchAddress();
   }, [pinLocation]);
 
-  const handleFileSelect = (file) => {
+  const handleFileSelect = async (file) => {
     if (!file || !file.type.startsWith('image/')) return;
     setSelectedFile(file);
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
     setResultDetection(null);
     setPipelineError(null);
+
+    try {
+      const gps = await exifr.gps(file);
+      if (gps && gps.latitude && gps.longitude) {
+        setPinLocation({ lat: gps.latitude, lng: gps.longitude });
+      } else {
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              setPinLocation({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              });
+            },
+            () => {} // Ignore errors, keep default location
+          );
+        }
+      }
+    } catch (err) {
+      console.warn("Could not extract EXIF data:", err);
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setPinLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            });
+          },
+          () => {} // Ignore errors
+        );
+      }
+    }
   };
 
   const handleDrop = (e) => {
