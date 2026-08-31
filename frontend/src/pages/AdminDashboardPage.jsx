@@ -381,14 +381,44 @@ export default function AdminDashboardPage() {
 
                       {/* Action Button */}
                       <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedDetection(d)}
-                          className="px-4 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:text-slate-950 hover:bg-cyan-400 border border-cyan-500/40 transition-all inline-flex items-center space-x-2 shadow-lg shadow-cyan-500/10"
-                        >
-                          <Eye className="w-4 h-4" />
-                          <span>Inspect</span>
-                        </button>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDetection(d)}
+                            className="px-4 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:text-slate-950 hover:bg-cyan-400 border border-cyan-500/40 transition-all inline-flex items-center space-x-2 shadow-lg shadow-cyan-500/10"
+                          >
+                            <Eye className="w-4 h-4" />
+                            <span>Inspect</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (window.confirm('Are you sure you want to permanently delete this report?')) {
+                                try {
+                                  const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/detections/${d.id || d._id}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                      'Authorization': `Bearer ${localStorage.getItem('urban_eye_token')}`
+                                    }
+                                  });
+                                  if (response.ok) {
+                                    setDetections((prev) => prev.filter((item) => item.id !== d.id && item._id !== d._id));
+                                  } else {
+                                    alert('Failed to delete report');
+                                  }
+                                } catch (err) {
+                                  console.error(err);
+                                  alert('Error deleting report');
+                                }
+                              }
+                            }}
+                            className="px-4 py-2 rounded-xl text-xs font-bold text-red-400 hover:text-slate-950 hover:bg-red-400 border border-red-500/40 transition-all inline-flex items-center space-x-2 shadow-lg shadow-red-500/10"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            <span>Delete</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

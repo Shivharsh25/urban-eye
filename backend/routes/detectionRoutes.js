@@ -361,7 +361,10 @@ router.get('/detections', requireAuth, async (req, res) => {
       if (req.query.department) query.assignedDepartment = req.query.department;
     } else {
       // Citizen only sees reports they participated in
-      query.submittedBy = user.id;
+      query.$or = [
+        { submittedBy: user.id },
+        { reporterIds: user.id }
+      ];
     }
 
     const detections = await Detection.find(query).sort({ createdAt: -1 });

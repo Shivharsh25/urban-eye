@@ -113,7 +113,7 @@ async function dispatchIncidentReport({ detection, departmentEmail, departmentNa
   try {
     info = await Promise.race([
       mailer.sendMail(mailOptions),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 5000))
+      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
     ]);
   } catch (err) {
     console.error('[DispatchService WARNING] Failed to send email (timeout or network error):', err.message);
@@ -155,7 +155,7 @@ async function dispatchEscalationAlert({ detection, departmentEmail, departmentN
   try {
     info = await Promise.race([
       mailer.sendMail(mailOptions),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 5000))
+      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
     ]);
   } catch (err) {
     console.error('[DispatchService WARNING] Failed to send escalation alert:', err.message);
@@ -208,7 +208,7 @@ async function sendResolutionNotifications({ detection }) {
     try {
       const info = await Promise.race([
         mailer.sendMail(mailOptions),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 5000))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
       ]);
       const previewUrl = nodemailer.getTestMessageUrl(info) || null;
       if (previewUrl) {
