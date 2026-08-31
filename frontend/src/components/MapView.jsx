@@ -68,7 +68,7 @@ const IncidentMarker = ({ detection, onSelect }) => {
               <img src={detection.imageUrl} alt="Issue" style={{ width: '100%', height: '110px', objectFit: 'cover', borderRadius: '6px', marginBottom: '8px' }} />
             )}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#0284c7' }}>{detection.type.replace('_', ' ')}</span>
+              <span style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#0284c7' }}>{detection.type?.replace('_', ' ') || 'UNKNOWN'}</span>
               <span style={{ fontSize: '10px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: detection.severity === 'high' ? '#fee2e2' : detection.severity === 'medium' ? '#fef3c7' : '#d1fae5', color: detection.severity === 'high' ? '#991b1b' : detection.severity === 'medium' ? '#92400e' : '#065f46', textTransform: 'uppercase' }}>
                 {detection.severity}
               </span>

@@ -37,10 +37,11 @@ export default function AdminAnalyticsPage() {
       });
       
       if (data.byType) {
-        setTypeData(Object.entries(data.byType).map(([key, val]) => ({
-          name: key.replace('_', ' ').toUpperCase(),
-          value: val
-        })).filter(item => item.value > 0));
+        const formattedData = Object.entries(data.byType || {}).map(([key, value]) => ({
+          name: key?.replace('_', ' ').toUpperCase() || 'UNKNOWN',
+          value
+        })).filter(item => item.value > 0);
+        setTypeData(formattedData);
       } else {
         setTypeData([]);
       }

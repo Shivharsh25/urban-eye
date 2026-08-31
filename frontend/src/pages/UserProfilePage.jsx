@@ -402,7 +402,7 @@ export default function UserProfilePage() {
                           <MapPin className="w-4 h-4 text-slate-400" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-200 capitalize">{item.type.replace('_', ' ')}</p>
+                          <p className="text-sm font-bold text-slate-200 capitalize">{item.type?.replace('_', ' ') || 'UNKNOWN'}</p>
                           <p className="text-xs text-slate-500 mt-0.5 truncate max-w-[150px] sm:max-w-[200px]">{item.address || 'Unknown Location'}</p>
                         </div>
                       </div>

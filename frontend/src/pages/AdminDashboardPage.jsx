@@ -345,7 +345,7 @@ export default function AdminDashboardPage() {
 
                       {/* Category */}
                       <td className="px-6 py-4 uppercase font-black tracking-wider text-cyan-400 text-xs">
-                        {d.type.replace('_', ' ')}
+                        {d.type?.replace('_', ' ') || 'UNKNOWN'}
                       </td>
 
                       {/* Severity */}
