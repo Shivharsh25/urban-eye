@@ -82,35 +82,92 @@ export default function CitizenReportPage() {
     setPipelineError(null);
 
     try {
+      let lat = 40.7128;
+      let lng = -74.0060;
+      let locationFound = false;
       const gps = await exifr.gps(file);
       if (gps && gps.latitude && gps.longitude) {
         setPinLocation({ lat: gps.latitude, lng: gps.longitude });
+        lat = gps.latitude;
+        lng = gps.longitude;
+        locationFound = true;
       } else {
         if ("geolocation" in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              setPinLocation({
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-              });
-            },
-            () => {} // Ignore errors, keep default location
-          );
-        }
-      }
-    } catch (err) {
-      console.warn("Could not extract EXIF data:", err);
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
+          try {
+            const position = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject);
+            });
             setPinLocation({
               lat: position.coords.latitude,
               lng: position.coords.longitude
             });
-          },
-          () => {} // Ignore errors
-        );
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+            locationFound = true;
+          } catch(e) {
+            console.warn("Geolocation fallback failed", e);
+          }
+        }
       }
+      
+      // Auto Submit Pipeline Trigger removed so user can review/edit location
+    } catch (err) {
+      console.warn("Could not extract EXIF data:", err);
+      let lat = 40.7128;
+      let lng = -74.0060;
+      if ("geolocation" in navigator) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+          });
+          setPinLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          lat = position.coords.latitude;
+          lng = position.coords.longitude;
+        } catch(e) {
+          console.warn("Geolocation fallback failed in catch block", e);
+        }
+      }
+      }
+      // Auto Submit Pipeline Trigger removed
+    }
+  };
+
+  const triggerAutoSubmit = async (file, lat, lng) => {
+    setIsSubmitting(true);
+    setPipelineError(null);
+    setResultDetection(null);
+
+    const jobId = `job_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    setCurrentJobId(jobId);
+    setCurrentStage('received');
+    setProgressData({ stage: 'received', step: 1, message: 'Compressing image payload in browser...' });
+
+    try {
+      const compressedImage = await compressImageClientSide(file);
+      const formData = new FormData();
+      formData.append('image', compressedImage);
+      formData.append('jobId', jobId);
+      formData.append('lat', lat);
+      formData.append('lng', lng);
+      formData.append('address', address.trim()); 
+      formData.append('typeHint', typeHint);
+
+      const res = await client.post('/api/detect', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      setResultDetection(res.data.detection);
+      setCurrentStage('completed');
+    } catch (err) {
+      console.error('[Upload Error]:', err);
+      const errMsg = err.response?.data?.error || err.message || 'Detection failed.';
+      setPipelineError(errMsg);
+      setCurrentStage('error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -185,30 +242,47 @@ export default function CitizenReportPage() {
   return (
     <div className="max-w-[1200px] mx-auto px-6 lg:px-8 py-10">
       
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-6 border-b border-slate-800/80 relative z-10">
-        <div>
-          <h1 className="text-3xl font-black text-white tracking-tight drop-shadow-md">
-            Help Improve Our City
-          </h1>
-          <p className="text-sm text-stone-400 mt-2 font-medium max-w-2xl">
-            Spotted a problem in your neighborhood? Snap a photo and let's get it fixed together.
-          </p>
-        </div>
+      {/* Hero / Page Header (Cooler Design) */}
+      <div className="relative mb-12 overflow-hidden rounded-3xl glass-card border border-stone-800 shadow-2xl z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 via-stone-900/80 to-stone-950"></div>
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+        
+        <div className="relative p-8 md:p-12 flex flex-col md:flex-row md:items-center justify-between z-10">
+          <div className="max-w-2xl">
+            <div className="flex items-center space-x-3 mb-4">
+              <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest flex items-center shadow-inner">
+                <Sparkles className="w-3 h-3 mr-2" />
+                Auto-Triage Enabled
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-stone-200 to-stone-400 tracking-tight drop-shadow-sm mb-4">
+              Intelligent Incident Reporting
+            </h1>
+            <p className="text-base md:text-lg text-stone-400 font-medium">
+              Simply snap a photo. Our system will automatically geotag your location, run AI detection, and instantly dispatch a report to the municipal authorities via Gmail.
+            </p>
+          </div>
 
-        {/* Demo Quick Sample Buttons */}
-        <div className="mt-4 md:mt-0 flex items-center space-x-3">
-          <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">DEMO TYPE:</span>
-          <select
-            value={typeHint}
-            onChange={(e) => setTypeHint(e.target.value)}
-            className="px-4 py-2.5 rounded-xl bg-stone-900/80 border border-stone-700/50 text-sm font-semibold text-amber-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none shadow-inner transition-all cursor-pointer"
-          >
-            <option value="pothole">Pothole (Roads & Works)</option>
-            <option value="garbage">Garbage / Dumping (Sanitation)</option>
-            <option value="water_leak">Water Leak (Water Dept)</option>
-            <option value="streetlight">Streetlight (Electrical)</option>
-          </select>
+          {/* Demo Quick Sample Buttons */}
+          <div className="mt-8 md:mt-0 flex flex-col items-start md:items-end space-y-2">
+            <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest pl-1">Override AI Fallback Type</span>
+            <div className="relative">
+              <select
+                value={typeHint}
+                onChange={(e) => setTypeHint(e.target.value)}
+                className="appearance-none pl-5 pr-10 py-3 rounded-xl bg-stone-950/80 border border-stone-700 text-sm font-bold text-amber-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none shadow-xl transition-all cursor-pointer backdrop-blur-md"
+              >
+                <option value="pothole">Pothole (Roads & Works)</option>
+                <option value="garbage">Garbage / Dumping (Sanitation)</option>
+                <option value="water_leak">Water Leak (Water Dept)</option>
+                <option value="streetlight">Streetlight (Electrical)</option>
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-stone-500">
+                ▼
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -235,20 +309,29 @@ export default function CitizenReportPage() {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover/preview:scale-105"
                   />
                   <div className="absolute inset-0 bg-stone-950/60 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center space-x-4 backdrop-blur-sm">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="px-6 py-3 rounded-xl text-sm font-bold bg-stone-800/80 text-white hover:bg-stone-700 border border-stone-600 transition-colors shadow-lg"
-                    >
-                      Change Photo
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowWebcam(true)}
-                      className="px-6 py-3 rounded-xl text-sm font-bold bg-amber-500/90 text-white hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/25"
-                    >
-                      Use Camera
-                    </button>
+                    {isSubmitting ? (
+                      <div className="text-amber-400 font-bold flex items-center bg-stone-900/80 px-4 py-2 rounded-xl">
+                        <div className="w-4 h-4 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin mr-2"></div>
+                        Auto-analyzing...
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-6 py-3 rounded-xl text-sm font-bold bg-stone-800/80 text-white hover:bg-stone-700 border border-stone-600 transition-colors shadow-lg"
+                        >
+                          Change Photo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowWebcam(true)}
+                          className="px-6 py-3 rounded-xl text-sm font-bold bg-amber-500/90 text-white hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/25"
+                        >
+                          Use Camera
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -356,29 +439,29 @@ export default function CitizenReportPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !selectedFile}
-                className="w-full sm:flex-1 py-4 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 shadow-xl shadow-amber-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+                className="w-full sm:flex-1 py-4 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 shadow-xl shadow-cyan-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2">
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     <span>Processing Report...</span>
                   </div>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-5 h-5" />
                     <span>Send Report</span>
                   </>
                 )}
               </button>
-
+              
               {resultDetection && (
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="w-full sm:w-auto px-6 py-4 rounded-2xl text-sm font-bold text-stone-300 bg-stone-800 hover:bg-stone-700 border border-stone-700 flex items-center justify-center space-x-2 transition-colors shadow-lg"
+                  className="w-full sm:w-auto py-4 px-6 rounded-2xl text-sm font-bold text-stone-900 bg-amber-500 hover:bg-amber-400 shadow-xl shadow-amber-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Report Another Issue</span>
+                  <RefreshCw className="w-5 h-5" />
+                  <span>Report Another</span>
                 </button>
               )}
             </div>
