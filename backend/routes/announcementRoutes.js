@@ -41,7 +41,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     res.status(201).json(announcement);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error creating announcement' });
+    res.status(500).json({ error: `Server error creating announcement: ${err.message}` });
   }
 });
 
