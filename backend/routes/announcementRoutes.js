@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { emitAnnouncement } = require('../services/socketService');
 
 // @route   GET /api/announcements
 // @desc    Get all active announcements
@@ -33,6 +34,9 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       message,
       type: type || 'info'
     });
+
+    // Broadcast the announcement
+    emitAnnouncement(announcement);
 
     res.status(201).json(announcement);
   } catch (err) {

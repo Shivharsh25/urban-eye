@@ -102,11 +102,17 @@ function emitDetectionDeleted(id, reporterIds = []) {
   }
 }
 
+function emitAnnouncement(announcement) {
+  if (!ioInstance) return;
+  ioInstance.emit('announcement:created', announcement);
+}
+
 module.exports = {
   initSocket,
   emitPipelineProgress,
   emitDetectionCreated,
   emitDetectionMerged,
   emitDetectionUpdated,
-  emitDetectionDeleted
+  emitDetectionDeleted,
+  emitAnnouncement
 };

@@ -42,7 +42,7 @@ export default function AdminAnnouncementsPage() {
       fetchAnnouncements(); // Refresh the list
     } catch (err) {
       console.error(err);
-      setError('Failed to create announcement');
+      setError(err.response?.data?.error || err.message || 'Failed to create announcement');
     } finally {
       setCreating(false);
     }
