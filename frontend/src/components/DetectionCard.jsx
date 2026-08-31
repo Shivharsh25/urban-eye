@@ -42,7 +42,7 @@ export default function DetectionCard({ detection, onInspect, showReporterCount 
         <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-950 mb-3.5 border border-slate-800/80">
           {detection.imageUrl ? (
             <img 
-              src={detection.imageUrl} 
+              src={detection.imageUrl.startsWith('http') ? detection.imageUrl : `https://urban-eye-wi2j.onrender.com${detection.imageUrl}`} 
               alt={detection.type} 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

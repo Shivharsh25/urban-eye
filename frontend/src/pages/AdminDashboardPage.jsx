@@ -332,7 +332,7 @@ export default function AdminDashboardPage() {
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0">
                             {d.imageUrl ? (
-                              <img src={d.imageUrl} alt={d.type} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                              <img src={d.imageUrl.startsWith('http') ? d.imageUrl : `https://urban-eye-wi2j.onrender.com${d.imageUrl}`} alt={d.type} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-600 font-mono">N/A</div>
                             )}

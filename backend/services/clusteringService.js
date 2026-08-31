@@ -21,7 +21,7 @@ const CLUSTER_WINDOW_DAYS = 30;
  * @param {string} params.userId - Submitting user ID
  * @returns {Promise<{ isDuplicate: boolean, detection: Object, escalated: boolean, previousSeverity?: string }>}
  */
-async function processDuplicateCheck({ type, lat, lng, confidence, bbox, userId }) {
+async function processDuplicateCheck({ type, lat, lng, confidence, bbox, userId, imageUrl }) {
   const existing = await Detection.findNearbyOpen({
     type,
     lat,
@@ -68,8 +68,14 @@ async function processDuplicateCheck({ type, lat, lng, confidence, bbox, userId 
     reportCount: newReportCount,
     reporterIds: currentReporters,
     lastReportedAt: new Date().toISOString(),
-    severity: newSeverity
+    severity: newSeverity,
+    lat,
+    lng
   };
+
+  if (imageUrl) {
+    updates.imageUrl = imageUrl;
+  }
 
   const updatedDetection = await Detection.updateById(existing.id || existing._id, updates);
 

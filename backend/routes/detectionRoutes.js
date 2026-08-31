@@ -163,7 +163,8 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
       lng: location.lng,
       confidence: primaryDetection.confidence,
       bbox: primaryDetection.bbox,
-      userId
+      userId,
+      imageUrl: savedFile.url
     });
 
     // If duplicate was merged into an existing record:

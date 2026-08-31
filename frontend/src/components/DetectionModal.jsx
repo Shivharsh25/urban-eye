@@ -110,7 +110,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 {currentDetection.imageUrl ? (
                   <div ref={imageContainerRef} className="relative w-full h-full">
                     <img 
-                      src={currentDetection.imageUrl} 
+                      src={currentDetection.imageUrl.startsWith('http') ? currentDetection.imageUrl : `https://urban-eye-wi2j.onrender.com${currentDetection.imageUrl}`} 
                       alt="Incident Evidence" 
                       className="w-full h-full object-cover"
                     />
