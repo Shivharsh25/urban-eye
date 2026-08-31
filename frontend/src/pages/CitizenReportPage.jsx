@@ -130,7 +130,6 @@ export default function CitizenReportPage() {
           console.warn("Geolocation fallback failed in catch block", e);
         }
       }
-      }
       // Auto Submit Pipeline Trigger removed
     }
   };
