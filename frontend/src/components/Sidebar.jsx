@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 
-export default function Sidebar() {
+export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { user, isAdmin, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -52,7 +52,12 @@ export default function Sidebar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <aside className={`sticky top-0 h-screen border-r border-slate-800/80 glass-panel flex flex-col transition-all duration-300 z-50 ${isCollapsed ? 'w-20' : 'w-64'}`}>
+    <aside className={`
+      fixed inset-y-0 left-0 z-50 h-full border-r border-slate-800/80 glass-panel bg-[#090d16] flex flex-col transition-all duration-300
+      lg:static lg:translate-x-0
+      ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+      ${isCollapsed ? 'lg:w-20 w-64' : 'w-64'}
+    `}>
       
       {/* Brand Header */}
       <div className={`p-4 border-b border-slate-800/80 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} h-24 relative overflow-hidden`}>
@@ -72,32 +77,31 @@ export default function Sidebar() {
         {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
       </button>
 
-      {/* Navigation Links */}
       <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
         {user && (
           <>
             {isAdmin ? (
               <>
-                <NavItem to="/admin" icon={LayoutDashboard} label="City Dashboard" isActive={isActive('/admin')} isCollapsed={isCollapsed} />
-                <NavItem to="/report" icon={Camera} label="Report Issue" isActive={isActive('/report')} isCollapsed={isCollapsed} />
+                <NavItem to="/admin" icon={LayoutDashboard} label="City Dashboard" isActive={isActive('/admin')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/report" icon={Camera} label="Report Issue" isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
               </>
             ) : (
               <>
                 {!isCollapsed && <div className="text-[10px] uppercase font-bold tracking-widest text-slate-500 px-4 mb-2 mt-2">Core Access</div>}
-                <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" isActive={isActive('/dashboard')} isCollapsed={isCollapsed} />
-                <NavItem to="/report" icon={Camera} label="New Report" isActive={isActive('/report')} isCollapsed={isCollapsed} />
-                <NavItem to="/my-reports" icon={FileText} label="My Tracking" isActive={isActive('/my-reports')} isCollapsed={isCollapsed} />
+                <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" isActive={isActive('/dashboard')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/report" icon={Camera} label="New Report" isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/my-reports" icon={FileText} label="My Tracking" isActive={isActive('/my-reports')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
                 
                 {!isCollapsed && <div className="text-[10px] uppercase font-bold tracking-widest text-slate-500 px-4 mb-2 mt-6">City Network</div>}
-                <NavItem to="/map" icon={Map} label="Live Map" isActive={isActive('/map')} isCollapsed={isCollapsed} />
-                <NavItem to="/alerts" icon={Bell} label="Community Alerts" isActive={isActive('/alerts')} isCollapsed={isCollapsed} />
-                <NavItem to="/activity" icon={Activity} label="City Activity" isActive={isActive('/activity')} isCollapsed={isCollapsed} />
+                <NavItem to="/map" icon={Map} label="Live Map" isActive={isActive('/map')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/alerts" icon={Bell} label="Community Alerts" isActive={isActive('/alerts')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/activity" icon={Activity} label="City Activity" isActive={isActive('/activity')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
 
                 <div className="pt-4 mt-4 border-t border-slate-800/50">
                   {!isCollapsed && <div className="text-[10px] uppercase font-bold tracking-widest text-slate-500 px-4 mb-2">Account</div>}
-                  <NavItem to="/profile" icon={UserCircle} label="My Profile" isActive={isActive('/profile')} isCollapsed={isCollapsed} />
-                  <NavItem to="/settings" icon={Settings} label="Settings" isActive={isActive('/settings')} isCollapsed={isCollapsed} />
-                  <NavItem to="/support" icon={HelpCircle} label="Help & Support" isActive={isActive('/support')} isCollapsed={isCollapsed} />
+                  <NavItem to="/profile" icon={UserCircle} label="My Profile" isActive={isActive('/profile')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                  <NavItem to="/settings" icon={Settings} label="Settings" isActive={isActive('/settings')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                  <NavItem to="/support" icon={HelpCircle} label="Help & Support" isActive={isActive('/support')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
                 </div>
               </>
             )}
@@ -145,10 +149,11 @@ export default function Sidebar() {
   );
 }
 
-function NavItem({ to, icon: Icon, label, isActive, isCollapsed }) {
+function NavItem({ to, icon: Icon, label, isActive, isCollapsed, onClick }) {
   return (
     <Link
       to={to}
+      onClick={onClick}
       title={isCollapsed ? label : undefined}
       className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'space-x-3 px-4'} py-3 rounded-xl transition-all group relative overflow-hidden ${
         isActive
