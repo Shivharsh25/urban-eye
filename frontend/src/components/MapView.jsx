@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Map, Marker, InfoWindow, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { Layers, MapPin, Navigation, Map as MapIcon, Flame } from 'lucide-react';
 
-const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyC3XzCS017KU681EYAZ1E3j5BwRV49ETHU';
 
 // Internal component to handle programmatic map actions
 const MapHandler = ({ center, zoom, selectedLocation, userLocation }) => {

@@ -42,7 +42,7 @@ function HomeRedirect() {
 
   return <Navigate to={isAdmin ? "/admin" : "/dashboard"} replace />;
 }
-const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyC3XzCS017KU681EYAZ1E3j5BwRV49ETHU';
 export default function App() {
   return (
     <APIProvider apiKey={API_KEY}>
