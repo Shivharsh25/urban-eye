@@ -26,11 +26,10 @@ const AnnouncementSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-AnnouncementSchema.pre('save', function(next) {
+AnnouncementSchema.pre('save', function() {
   if (!this.id) {
     this.id = uuidv4();
   }
-  next();
 });
 
 AnnouncementSchema.statics.deleteById = async function(id) {
