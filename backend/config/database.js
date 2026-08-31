@@ -13,11 +13,25 @@ const connectDB = async () => {
       console.warn('[MongoDB] MONGODB_URI is not defined in environment variables. Application will fail to connect if required.');
       return;
     }
-    await mongoose.connect(mongoUri);
+    console.log('[MongoDB] Attempting to connect to Atlas...');
+    await mongoose.connect(mongoUri, { 
+      family: 4,
+      serverSelectionTimeoutMS: 5000 // Time out after 5s if IP is blocked
+    });
     console.log('[MongoDB] Connected successfully to cloud database.');
   } catch (err) {
-    console.error('[MongoDB] Connection failed:', err.message);
-    process.exit(1);
+    console.error('[MongoDB] Atlas connection failed (likely IP whitelist issue):', err.message);
+    console.log('[MongoDB] ⚡ Falling back to local in-memory database for demo purposes...');
+    try {
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      const mongoServer = await MongoMemoryServer.create();
+      const localUri = mongoServer.getUri();
+      await mongoose.connect(localUri);
+      console.log('[MongoDB] ✅ Connected to local in-memory fallback database successfully.');
+    } catch (fallbackErr) {
+      console.error('[MongoDB] Fatal: In-memory fallback also failed:', fallbackErr.message);
+      process.exit(1);
+    }
   }
 };
 

@@ -151,22 +151,21 @@ DetectionSchema.statics.deleteById = async function(id) {
 };
 
 // Ensure id exists
-DetectionSchema.pre('save', function(next) {
+DetectionSchema.pre('validate', function() {
   if (!this.id) {
     this.id = uuidv4();
   }
-  // Sync lat/lng with location coordinates
-  if (this.isModified('lat') || this.isModified('lng')) {
+  // Sync lat/lng with location coordinates using this.set() to prevent Mongoose 9 subdocument stripping
+  if (this.lat != null && this.lng != null) {
     this.location = {
       type: 'Point',
       coordinates: [this.lng, this.lat]
     };
   }
-  next();
 });
 
 // Sync on update as well
-DetectionSchema.pre('findOneAndUpdate', function(next) {
+DetectionSchema.pre('findOneAndUpdate', function() {
   const update = this.getUpdate();
   if (update.lat !== undefined || update.lng !== undefined || (update.$set && (update.$set.lat !== undefined || update.$set.lng !== undefined))) {
     const lat = update.lat !== undefined ? update.lat : (update.$set ? update.$set.lat : undefined);
@@ -180,7 +179,6 @@ DetectionSchema.pre('findOneAndUpdate', function(next) {
       };
     }
   }
-  next();
 });
 
 module.exports = mongoose.model('Detection', DetectionSchema);

@@ -20,8 +20,18 @@ async function getTransporter() {
   if (transporter) return transporter;
 
   const hasSmtpConfig = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
+  const hasGmailConfig = process.env.GMAIL_USER && process.env.GMAIL_PASS;
 
-  if (hasSmtpConfig) {
+  if (hasGmailConfig) {
+    console.log('[DispatchService] Using custom Gmail configuration:', process.env.GMAIL_USER);
+    transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS
+      }
+    });
+  } else if (hasSmtpConfig) {
     console.log('[DispatchService] Using custom SMTP configuration:', process.env.SMTP_HOST);
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,

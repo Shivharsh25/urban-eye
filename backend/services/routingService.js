@@ -8,10 +8,10 @@ const path = require('path');
 
 const DEPARTMENTS_FILE = path.join(__dirname, '../config/departments.json');
 let departments = {
-  pothole: { department: 'Roads & Public Works', email: 'roads@cityapp.local' },
-  garbage: { department: 'Sanitation Dept', email: 'sanitation@cityapp.local' },
-  water_leak: { department: 'Water Dept', email: 'water@cityapp.local' },
-  streetlight: { department: 'Electrical Dept', email: 'electrical@cityapp.local' }
+  pothole: { department: 'Roads & Public Works', email: 'shivharsh86017@gmail.com' },
+  garbage: { department: 'Sanitation Dept', email: 'shivharsh86017@gmail.com' },
+  water_leak: { department: 'Water Dept', email: 'shivharsh86017@gmail.com' },
+  streetlight: { department: 'Electrical Dept', email: 'shivharsh86017@gmail.com' }
 };
 
 if (fs.existsSync(DEPARTMENTS_FILE)) {
@@ -28,7 +28,7 @@ if (fs.existsSync(DEPARTMENTS_FILE)) {
  * @returns {{ department: string, email: string }}
  */
 function getDepartmentForType(type) {
-  return departments[type] || { department: 'Municipal Operations', email: 'ops@cityapp.local' };
+  return departments[type] || { department: 'Municipal Operations', email: 'shivharsh86017@gmail.com' };
 }
 
 /**
@@ -76,7 +76,7 @@ Map Pin:         https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=18/$
 3. TIMELINES & ASSETS
 -----------------------------------------------------
 Detected At:     ${formattedDate}
-Evidence Image:  ${imageUrl || 'No image attached'}
+Evidence Image:  ${imageUrl ? (imageUrl.startsWith('/') ? (process.env.CLIENT_URL || 'http://localhost:5173') + imageUrl : imageUrl) : 'No image attached'}
 
 4. AUTOMATED DISPATCH INSTRUCTIONS
 -----------------------------------------------------

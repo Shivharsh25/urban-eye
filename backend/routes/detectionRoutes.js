@@ -273,6 +273,10 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
       severity: duplicateCheck.calculatedSeverity,
       lat: location.lat,
       lng: location.lng,
+      location: {
+        type: 'Point',
+        coordinates: [location.lng, location.lat]
+      },
       address: streetAddress,
       status: 'assigned', // Automatically marked assigned upon dispatch
       reportText,
@@ -284,6 +288,10 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
       dispatchStatus: 'pending',
       bbox: primaryDetection.bbox
     };
+
+    console.log('====== newDetectionData DEBUG ======');
+    console.dir(newDetectionData, { depth: null });
+    console.log('====================================');
 
     let dispatchResult = { messageId: null, previewUrl: null };
     try {
