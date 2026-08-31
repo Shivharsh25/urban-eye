@@ -26,8 +26,8 @@ async function getTransporter() {
     console.log('[DispatchService] Using custom Gmail configuration:', process.env.GMAIL_USER);
     transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false, // upgrades later with STARTTLS
       auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS
@@ -123,7 +123,7 @@ async function dispatchIncidentReport({ detection, departmentEmail, departmentNa
   try {
     info = await Promise.race([
       mailer.sendMail(mailOptions),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
+      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 30000))
     ]);
   } catch (err) {
     console.error('[DispatchService WARNING] Failed to send email (timeout or network error):', err.message);
@@ -165,7 +165,7 @@ async function dispatchEscalationAlert({ detection, departmentEmail, departmentN
   try {
     info = await Promise.race([
       mailer.sendMail(mailOptions),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
+      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 30000))
     ]);
   } catch (err) {
     console.error('[DispatchService WARNING] Failed to send escalation alert:', err.message);
@@ -218,7 +218,7 @@ async function sendResolutionNotifications({ detection }) {
     try {
       const info = await Promise.race([
         mailer.sendMail(mailOptions),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 30000))
       ]);
       const previewUrl = nodemailer.getTestMessageUrl(info) || null;
       if (previewUrl) {
