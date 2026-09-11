@@ -8,10 +8,10 @@ const path = require('path');
 
 const DEPARTMENTS_FILE = path.join(__dirname, '../config/departments.json');
 let departments = {
-  pothole: { department: 'Roads & Public Works', email: 'shivharsh86017@gmail.com' },
-  garbage: { department: 'Sanitation Dept', email: 'shivharsh86017@gmail.com' },
-  water_leak: { department: 'Water Dept', email: 'shivharsh86017@gmail.com' },
-  streetlight: { department: 'Electrical Dept', email: 'shivharsh86017@gmail.com' }
+  pothole: { department: 'Roads & Public Works', email: 'shivharshtiwari86017@gmail.com' },
+  garbage: { department: 'Sanitation Dept', email: 'shivharshtiwari86017@gmail.com' },
+  water_leak: { department: 'Water Dept', email: 'shivharshtiwari86017@gmail.com' },
+  streetlight: { department: 'Electrical Dept', email: 'shivharshtiwari86017@gmail.com' }
 };
 
 if (fs.existsSync(DEPARTMENTS_FILE)) {
@@ -28,7 +28,7 @@ if (fs.existsSync(DEPARTMENTS_FILE)) {
  * @returns {{ department: string, email: string }}
  */
 function getDepartmentForType(type) {
-  return departments[type] || { department: 'Municipal Operations', email: 'shivharsh86017@gmail.com' };
+  return departments[type] || { department: 'Municipal Operations', email: 'shivharshtiwari86017@gmail.com' };
 }
 
 /**
