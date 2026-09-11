@@ -121,10 +121,7 @@ async function dispatchIncidentReport({ detection, departmentEmail, departmentNa
 
   let info;
   try {
-    info = await Promise.race([
-      mailer.sendMail(mailOptions),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
-    ]);
+    info = await mailer.sendMail(mailOptions);
   } catch (err) {
     console.error('[DispatchService WARNING] Failed to send email (timeout or network error):', err.message);
     info = { messageId: 'mock-id-timeout' };
@@ -163,10 +160,7 @@ async function dispatchEscalationAlert({ detection, departmentEmail, departmentN
 
   let info;
   try {
-    info = await Promise.race([
-      mailer.sendMail(mailOptions),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
-    ]);
+    info = await mailer.sendMail(mailOptions);
   } catch (err) {
     console.error('[DispatchService WARNING] Failed to send escalation alert:', err.message);
     info = { messageId: 'mock-id-timeout' };
@@ -216,10 +210,7 @@ async function sendResolutionNotifications({ detection }) {
     };
 
     try {
-      const info = await Promise.race([
-        mailer.sendMail(mailOptions),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP sendMail timed out')), 15000))
-      ]);
+        const info = await mailer.sendMail(mailOptions);
       const previewUrl = nodemailer.getTestMessageUrl(info) || null;
       if (previewUrl) {
         console.log(`[DispatchService] Resolution email sent to citizen (${user.email})! Preview: ${previewUrl}`);
