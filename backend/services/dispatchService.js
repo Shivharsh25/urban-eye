@@ -8,10 +8,36 @@
  */
 
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 const User = require('../models/User');
 
 let transporter = null;
 let etherealAccount = null;
+
+/**
+ * Helper to send email via Resend REST API (Bypasses Render SMTP Blocks)
+ */
+async function sendViaResend(mailOptions) {
+  try {
+    const response = await axios.post('https://api.resend.com/emails', {
+      from: 'onboarding@resend.dev', // Resend default test domain
+      to: typeof mailOptions.to === 'string' ? [mailOptions.to] : mailOptions.to,
+      subject: mailOptions.subject,
+      text: mailOptions.text,
+      html: mailOptions.html
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log('[DispatchService] Email successfully sent via Resend API!');
+    return { messageId: response.data.id || 'resend-id' };
+  } catch (err) {
+    console.error('[DispatchService ERROR] Resend API failed:', err.response?.data || err.message);
+    throw err;
+  }
+}
 
 /**
  * Initializes or returns the cached Nodemailer transporter
@@ -123,7 +149,11 @@ async function dispatchIncidentReport({ detection, departmentEmail, departmentNa
 
   let info;
   try {
-    info = await mailer.sendMail(mailOptions);
+    if (process.env.RESEND_API_KEY) {
+      info = await sendViaResend(mailOptions);
+    } else {
+      info = await mailer.sendMail(mailOptions);
+    }
   } catch (err) {
     console.error('[DispatchService WARNING] Failed to send email (timeout or network error):', err.message);
     info = { messageId: 'mock-id-timeout' };
@@ -162,7 +192,11 @@ async function dispatchEscalationAlert({ detection, departmentEmail, departmentN
 
   let info;
   try {
-    info = await mailer.sendMail(mailOptions);
+    if (process.env.RESEND_API_KEY) {
+      info = await sendViaResend(mailOptions);
+    } else {
+      info = await mailer.sendMail(mailOptions);
+    }
   } catch (err) {
     console.error('[DispatchService WARNING] Failed to send escalation alert:', err.message);
     info = { messageId: 'mock-id-timeout' };
@@ -212,7 +246,12 @@ async function sendResolutionNotifications({ detection }) {
     };
 
     try {
-        const info = await mailer.sendMail(mailOptions);
+        let info;
+        if (process.env.RESEND_API_KEY) {
+          info = await sendViaResend(mailOptions);
+        } else {
+          info = await mailer.sendMail(mailOptions);
+        }
       const previewUrl = nodemailer.getTestMessageUrl(info) || null;
       if (previewUrl) {
         console.log(`[DispatchService] Resolution email sent to citizen (${user.email})! Preview: ${previewUrl}`);
