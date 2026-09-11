@@ -15,7 +15,6 @@ const connectDB = async () => {
     }
     console.log('[MongoDB] Attempting to connect to Atlas...');
     await mongoose.connect(mongoUri, { 
-      family: 4,
       serverSelectionTimeoutMS: 5000 // Time out after 5s if IP is blocked
     });
     console.log('[MongoDB] Connected successfully to cloud database.');
