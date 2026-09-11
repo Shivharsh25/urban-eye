@@ -24,15 +24,17 @@ async function getTransporter() {
 
   if (hasGmailConfig) {
     console.log('[DispatchService] Using custom Gmail configuration:', process.env.GMAIL_USER);
-    transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // upgrades later with STARTTLS
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS
-      }
-    });
+      transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        connectionTimeout: 10000,
+        socketTimeout: 10000,
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS
+        }
+      });
     
     // Verify connection to help with debugging Render networking issues
     transporter.verify().then(() => {
