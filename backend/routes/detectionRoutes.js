@@ -354,7 +354,7 @@ router.get('/detections', requireAuth, async (req, res) => {
     const user = req.user;
     let query = {};
 
-    if (user.role === 'admin') {
+    if (user.role === 'admin' || req.query.scope === 'community' || req.query.community === 'true') {
       if (req.query.type) query.type = req.query.type;
       if (req.query.severity) query.severity = req.query.severity;
       if (req.query.status) query.status = req.query.status;

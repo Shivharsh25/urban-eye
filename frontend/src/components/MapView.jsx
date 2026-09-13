@@ -96,20 +96,41 @@ export default function MapView({
   onSelectDetection,
   onLocationSelect,
   selectedLocation,
-  center = { lat: 40.7128, lng: -74.0060 },
+  center = null,
   zoom = 14,
   height = "520px",
   allowPinDrop = false,
-  enableHeatmapToggle = false
+  enableHeatmapToggle = false,
+  showFilters = true
 }) {
   const [selectedType, setSelectedType] = useState('all');
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
-  const [mapCenter, setMapCenter] = useState(
-    Array.isArray(center) ? { lat: center[0], lng: center[1] } : center
-  );
+
+  // Compute smart effective center: prioritize custom center -> first detection -> civic default (NCR 28.47, 77.50)
+  const effectiveCenter = useMemo(() => {
+    if (center) {
+      const parsed = Array.isArray(center) ? { lat: center[0], lng: center[1] } : center;
+      if (parsed.lat && parsed.lng && (parsed.lat !== 40.7128 || parsed.lng !== -74.0060)) {
+        return parsed;
+      }
+    }
+    if (detections && detections.length > 0) {
+      const firstValid = detections.find(d => d.lat && d.lng && !isNaN(d.lat) && !isNaN(d.lng));
+      if (firstValid) {
+        return { lat: Number(firstValid.lat), lng: Number(firstValid.lng) };
+      }
+    }
+    return { lat: 28.4744, lng: 77.5040 };
+  }, [center, detections]);
+
+  const [mapCenter, setMapCenter] = useState(effectiveCenter);
+
+  useEffect(() => {
+    setMapCenter(effectiveCenter);
+  }, [effectiveCenter]);
 
   const fetchLiveLocation = () => {
     if (!navigator.geolocation) {
@@ -234,35 +255,39 @@ export default function MapView({
             <button
               onClick={fetchLiveLocation}
               disabled={isLocating}
-              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all backdrop-blur-xl shadow-lg bg-cyan-500/90 text-white hover:bg-cyan-400 border border-cyan-400/50 disabled:opacity-50"
+              className="flex items-center space-x-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-all backdrop-blur-xl shadow-lg bg-cyan-500/90 text-white hover:bg-cyan-400 border border-cyan-400/50 disabled:opacity-50"
             >
               <Navigation className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
               <span>{isLocating ? 'LOCATING...' : 'LIVE'}</span>
             </button>
           )}
 
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900/80 text-slate-200 border border-slate-700/50 backdrop-blur-xl shadow-lg outline-none cursor-pointer focus:border-cyan-500 transition-colors"
-          >
-            <option value="all">All Categories</option>
-            <option value="pothole">Potholes</option>
-            <option value="garbage">Garbage / Dumping</option>
-            <option value="water_leak">Water Leaks</option>
-            <option value="streetlight">Streetlights</option>
-          </select>
+          {showFilters && (
+            <>
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-900/90 text-slate-200 border border-slate-700/60 backdrop-blur-xl shadow-lg outline-none cursor-pointer focus:border-cyan-500 transition-colors"
+              >
+                <option value="all">All Categories</option>
+                <option value="pothole">Potholes</option>
+                <option value="garbage">Garbage / Dumping</option>
+                <option value="water_leak">Water Leaks</option>
+                <option value="streetlight">Streetlights</option>
+              </select>
 
-          <select
-            value={selectedSeverity}
-            onChange={(e) => setSelectedSeverity(e.target.value)}
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900/80 text-slate-200 border border-slate-700/50 backdrop-blur-xl shadow-lg outline-none cursor-pointer focus:border-cyan-500 transition-colors"
-          >
-            <option value="all">All Severities</option>
-            <option value="high">High Severity</option>
-            <option value="medium">Medium Severity</option>
-            <option value="low">Low Severity</option>
-          </select>
+              <select
+                value={selectedSeverity}
+                onChange={(e) => setSelectedSeverity(e.target.value)}
+                className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-900/90 text-slate-200 border border-slate-700/60 backdrop-blur-xl shadow-lg outline-none cursor-pointer focus:border-cyan-500 transition-colors"
+              >
+                <option value="all">All Severities</option>
+                <option value="high">High Severity</option>
+                <option value="medium">Medium Severity</option>
+                <option value="low">Low Severity</option>
+              </select>
+            </>
+          )}
         </div>
 
         <div className="flex flex-col items-end gap-2 pointer-events-auto">
