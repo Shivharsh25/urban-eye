@@ -13,16 +13,19 @@ import {
   Check, 
   ShieldCheck, 
   Send,
-  Trash2
+  Trash2,
+  Download
 } from 'lucide-react';
 import client from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { generateReportPDF } from '../utils/pdfGenerator';
 
 export default function DetectionModal({ detection, onClose, onStatusUpdated }) {
   const { user, isAdmin } = useAuth();
   const [currentDetection, setCurrentDetection] = useState(detection);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const imageContainerRef = useRef(null);
 
   useEffect(() => {
@@ -30,6 +33,19 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
   }, [detection]);
 
   if (!currentDetection) return null;
+
+  const handleDownloadPdf = async () => {
+    if (!currentDetection) return;
+    try {
+      setDownloadingPdf(true);
+      await generateReportPDF(currentDetection);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('Failed to generate PDF report.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   const handleStatusChange = async (newStatus) => {
     try {
@@ -61,14 +77,13 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
   };
 
   const copyReportText = () => {
-    if (currentDetection.reportText) {
-      navigator.clipboard.writeText(currentDetection.reportText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    if (!currentDetection.reportText) return;
+    navigator.clipboard.writeText(currentDetection.reportText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const severityColor = {
+  const severityBadge = {
     high: 'text-rose-400 bg-rose-950/60 border-rose-500/40',
     medium: 'text-amber-400 bg-amber-950/60 border-amber-500/40',
     low: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40'
@@ -90,12 +105,23 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               {currentDetection.type?.replace('_', ' ')} Incident Record
             </h3>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2.5">
+            <button
+              type="button"
+              disabled={downloadingPdf}
+              onClick={handleDownloadPdf}
+              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-500 shadow-md transition-all active:scale-95 disabled:opacity-50"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{downloadingPdf ? 'Exporting...' : 'Export PDF'}</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Modal Body */}
@@ -338,12 +364,23 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               </button>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="px-5 py-2 rounded-lg text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
-          >
-            Close Inspector
-          </button>
+          <div className="flex items-center space-x-2.5">
+            <button
+              type="button"
+              disabled={downloadingPdf}
+              onClick={handleDownloadPdf}
+              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-md transition-all active:scale-95 disabled:opacity-50"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{downloadingPdf ? 'Generating PDF...' : 'Download Official PDF'}</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
+            >
+              Close Inspector
+            </button>
+          </div>
         </div>
 
       </div>

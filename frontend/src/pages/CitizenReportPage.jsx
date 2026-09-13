@@ -10,7 +10,8 @@ import {
   Send, 
   Eye, 
   RefreshCw, 
-  FileText 
+  FileText,
+  Download
 } from 'lucide-react';
 import client from '../api/client';
 import { subscribeToJob } from '../api/socket';
@@ -19,6 +20,7 @@ import WebcamCapture from '../components/WebcamCapture';
 import UploadStepper from '../components/UploadStepper';
 import MapView from '../components/MapView';
 import DetectionModal from '../components/DetectionModal';
+import { generateReportPDF } from '../utils/pdfGenerator';
 import exifr from 'exifr';
 
 export default function CitizenReportPage() {
@@ -40,8 +42,22 @@ export default function CitizenReportPage() {
   const [pipelineError, setPipelineError] = useState(null);
   const [resultDetection, setResultDetection] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const fileInputRef = useRef(null);
+
+  const handleDownloadPDF = async () => {
+    if (!resultDetection) return;
+    try {
+      setDownloadingPdf(true);
+      await generateReportPDF(resultDetection, previewUrl);
+    } catch (err) {
+      console.error('Failed to generate PDF:', err);
+      alert('Could not generate PDF report. Please try again.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   // Subscribe to real-time pipeline events when jobId changes
   useEffect(() => {
@@ -363,11 +379,24 @@ export default function CitizenReportPage() {
           <div className="flex flex-wrap items-center gap-3 pt-2 relative z-10">
             <button
               type="button"
+              disabled={downloadingPdf}
+              onClick={handleDownloadPDF}
+              className="px-6 py-3 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-lg shadow-cyan-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 disabled:opacity-60"
+            >
+              {downloadingPdf ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <Download className="w-4 h-4 text-cyan-200" />
+              )}
+              <span>{downloadingPdf ? 'Generating PDF...' : 'Download PDF Report'}</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setShowDetailModal(true)}
               className="px-6 py-3 rounded-2xl text-sm font-bold text-stone-950 bg-amber-500 hover:bg-amber-400 shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
             >
               <Eye className="w-4 h-4" />
-              <span>Inspect AI Detection Details</span>
+              <span>Inspect AI Details</span>
             </button>
             <button
               type="button"

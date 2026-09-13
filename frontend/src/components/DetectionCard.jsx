@@ -7,8 +7,10 @@ import {
   ExternalLink, 
   AlertTriangle, 
   CheckCircle, 
-  Flame 
+  Flame,
+  Download
 } from 'lucide-react';
+import { generateReportPDF } from '../utils/pdfGenerator';
 
 export default function DetectionCard({ detection, onInspect, showReporterCount = true }) {
   if (!detection) return null;
@@ -103,13 +105,26 @@ export default function DetectionCard({ detection, onInspect, showReporterCount 
           </div>
         </div>
 
-        <button 
-          type="button"
-          className="text-xs font-semibold text-cyan-400 group-hover:text-cyan-300 flex items-center space-x-1"
-        >
-          <span>View</span>
-          <ExternalLink className="w-3 h-3" />
-        </button>
+        <div className="flex items-center space-x-2">
+          <button 
+            type="button"
+            title="Download PDF Report"
+            onClick={(e) => {
+              e.stopPropagation();
+              generateReportPDF(detection);
+            }}
+            className="p-1 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+          </button>
+          <button 
+            type="button"
+            className="text-xs font-semibold text-cyan-400 group-hover:text-cyan-300 flex items-center space-x-1"
+          >
+            <span>View</span>
+            <ExternalLink className="w-3 h-3" />
+          </button>
+        </div>
       </div>
 
     </div>
