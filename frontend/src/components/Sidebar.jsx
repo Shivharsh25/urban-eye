@@ -7,17 +7,21 @@ import {
   LayoutDashboard, 
   Camera, 
   FileText, 
-  UserCircle,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  Shield,
-  Radio,
-  Bell,
-  Map,
-  Settings,
-  HelpCircle,
-  Activity
+  UserCircle, 
+  LogOut, 
+  ChevronLeft, 
+  ChevronRight, 
+  Shield, 
+  Radio, 
+  Bell, 
+  Map, 
+  Settings, 
+  HelpCircle, 
+  Activity,
+  Sparkles,
+  ShieldCheck,
+  Flame,
+  RadioTower
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -53,52 +57,75 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
   return (
     <aside className={`
-      fixed inset-y-0 left-0 z-50 h-full border-r border-slate-800/80 glass-panel bg-[#090d16] flex flex-col transition-all duration-300
+      fixed inset-y-0 left-0 z-50 h-full border-r border-slate-800/80 bg-[#070b14]/95 backdrop-blur-2xl flex flex-col transition-all duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.6)]
       lg:static lg:translate-x-0
       ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       ${isCollapsed ? 'lg:w-20 w-64' : 'w-64'}
+      relative overflow-hidden
     `}>
-      
+      {/* Dynamic Ambient Background Glows */}
+      <div className="absolute -top-16 -left-16 w-48 h-48 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+      <div className="absolute bottom-28 -left-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(#06b6d4_0.75px,transparent_0.75px)] [background-size:16px_16px] opacity-10 pointer-events-none"></div>
+
       {/* Brand Header */}
-      <div className={`p-4 border-b border-slate-800/80 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} h-24 relative overflow-hidden`}>
-        {/* Decorative background glow */}
-        <div className="absolute -top-10 -left-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        
+      <div className={`p-4 border-b border-slate-800/80 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} h-24 relative z-10 bg-slate-950/40 backdrop-blur-md`}>
         <Link to={isAdmin ? "/admin" : "/dashboard"} className={`flex items-center space-x-4 group ${isCollapsed ? 'justify-center' : ''} relative z-10 w-full`}>
           <Logo size="md" subtitle="Active Watch" showText={!isCollapsed} />
         </Link>
       </div>
 
-      {/* Toggle Button */}
+      {/* Animated Glowing Toggle Button */}
       <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-24 bg-slate-800 text-slate-300 rounded-full p-1 shadow-lg border border-slate-700 hover:text-cyan-400 hover:border-cyan-500 transition-colors z-50 hidden sm:block"
+        className="absolute -right-3.5 top-24 bg-slate-900 text-cyan-400 rounded-full p-1.5 shadow-[0_0_15px_rgba(6,182,212,0.4)] border border-cyan-500/50 hover:border-cyan-300 hover:scale-110 hover:shadow-[0_0_25px_rgba(6,182,212,0.8)] transition-all z-50 hidden sm:flex items-center justify-center group"
+        title={isCollapsed ? "Expand Sidebar" : "Minimize Sidebar"}
       >
-        {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        {isCollapsed ? (
+          <ChevronRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+        ) : (
+          <ChevronLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+        )}
       </button>
 
-      <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
+      {/* Nav List */}
+      <nav className="flex-1 py-5 px-3 space-y-1.5 overflow-y-auto custom-scrollbar relative z-10">
         {user && (
           <>
             {isAdmin ? (
               <>
                 <NavItem to="/admin" icon={LayoutDashboard} label="City Dashboard" isActive={isActive('/admin')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
-                <NavItem to="/report" icon={Camera} label="Report Issue" isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/report" icon={Camera} label="Report Issue" isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="AI Scan" badgeColor="bg-cyan-500/20 text-cyan-300 border-cyan-500/30" />
               </>
             ) : (
               <>
-                {!isCollapsed && <div className="text-[10px] uppercase font-bold tracking-widest text-slate-500 px-4 mb-2 mt-2">Core Access</div>}
+                {!isCollapsed && (
+                  <div className="flex items-center space-x-2 px-3 mb-2 mt-1 text-[9px] font-mono font-bold tracking-[0.22em] text-slate-500 uppercase select-none">
+                    <span>Core Access</span>
+                    <div className="h-px flex-1 bg-gradient-to-r from-slate-800 via-cyan-500/20 to-transparent"></div>
+                  </div>
+                )}
                 <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" isActive={isActive('/dashboard')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
-                <NavItem to="/report" icon={Camera} label="New Report" isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/report" icon={Camera} label="New Report" isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="AI" badgeColor="bg-cyan-500/20 text-cyan-300 border-cyan-500/30" />
                 <NavItem to="/my-reports" icon={FileText} label="My Tracking" isActive={isActive('/my-reports')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
                 
-                {!isCollapsed && <div className="text-[10px] uppercase font-bold tracking-widest text-slate-500 px-4 mb-2 mt-6">City Network</div>}
-                <NavItem to="/map" icon={Map} label="Live Map" isActive={isActive('/map')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                {!isCollapsed && (
+                  <div className="flex items-center space-x-2 px-3 mb-2 mt-5 text-[9px] font-mono font-bold tracking-[0.22em] text-slate-500 uppercase select-none">
+                    <span>City Network</span>
+                    <div className="h-px flex-1 bg-gradient-to-r from-slate-800 via-cyan-500/20 to-transparent"></div>
+                  </div>
+                )}
+                <NavItem to="/map" icon={Map} label="Live Map" isActive={isActive('/map')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="LIVE" badgeColor="bg-emerald-500/20 text-emerald-400 border-emerald-500/30" isLivePulse={true} />
                 <NavItem to="/alerts" icon={Bell} label="Community Alerts" isActive={isActive('/alerts')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
                 <NavItem to="/activity" icon={Activity} label="City Activity" isActive={isActive('/activity')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
 
-                <div className="pt-4 mt-4 border-t border-slate-800/50">
-                  {!isCollapsed && <div className="text-[10px] uppercase font-bold tracking-widest text-slate-500 px-4 mb-2">Account</div>}
+                <div className="pt-3 mt-3 border-t border-slate-800/60">
+                  {!isCollapsed && (
+                    <div className="flex items-center space-x-2 px-3 mb-2 text-[9px] font-mono font-bold tracking-[0.22em] text-slate-500 uppercase select-none">
+                      <span>Account</span>
+                      <div className="h-px flex-1 bg-gradient-to-r from-slate-800 via-cyan-500/20 to-transparent"></div>
+                    </div>
+                  )}
                   <NavItem to="/profile" icon={UserCircle} label="My Profile" isActive={isActive('/profile')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
                   <NavItem to="/settings" icon={Settings} label="Settings" isActive={isActive('/settings')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
                   <NavItem to="/support" icon={HelpCircle} label="Help & Support" isActive={isActive('/support')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
@@ -110,37 +137,65 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       </nav>
 
       {/* Bottom Status & Profile */}
-      <div className="p-4 border-t border-slate-800/80 bg-slate-900/30">
+      <div className="p-3.5 border-t border-slate-800/80 bg-slate-950/60 backdrop-blur-md relative z-10">
         
-        {/* Live Socket Status */}
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3 mb-4'} rounded-xl bg-slate-950/50 border border-slate-800 p-2`}>
-          <span className="relative flex h-3 w-3 shrink-0">
-            {socketConnected && (
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        {/* Live System Telemetry Capsule */}
+        <div className={`flex items-center ${isCollapsed ? 'justify-center p-2' : 'justify-between px-3 py-2'} rounded-xl transition-all ${
+          socketConnected 
+            ? 'bg-emerald-950/30 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.12)]' 
+            : 'bg-rose-950/30 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.12)]'
+        } mb-3`}>
+          <div className="flex items-center space-x-2.5">
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
+              {socketConnected && (
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              )}
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${socketConnected ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-rose-500'}`}></span>
+            </span>
+            {!isCollapsed && (
+              <span className={`text-[10px] font-mono font-bold tracking-widest ${socketConnected ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {socketConnected ? 'LIVE FEED' : 'OFFLINE'}
+              </span>
             )}
-            <span className={`relative inline-flex rounded-full h-3 w-3 ${socketConnected ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-          </span>
-          {!isCollapsed && (
-             <span className={`text-[10px] font-mono tracking-widest ${socketConnected ? 'text-emerald-400' : 'text-rose-400'}`}>
-               {socketConnected ? 'LIVE FEED' : 'OFFLINE'}
-             </span>
+          </div>
+
+          {!isCollapsed && socketConnected && (
+            <div className="flex items-center space-x-1">
+              <span className="w-1 h-3 bg-emerald-400/80 rounded-full animate-pulse" style={{ animationDelay: '0s' }}></span>
+              <span className="w-1 h-2 bg-emerald-400/80 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></span>
+              <span className="w-1 h-4 bg-emerald-400/80 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></span>
+            </div>
           )}
         </div>
 
+        {/* Citizen Profile Card */}
         {user && (
-          <div className={`flex ${isCollapsed ? 'flex-col items-center space-y-3' : 'items-center justify-between mt-4'}`}>
-            {!isCollapsed && (
-              <div className="flex flex-col overflow-hidden pr-2">
-                <span className="text-sm font-bold text-slate-200 truncate">{user.name}</span>
-                <span className="text-[10px] text-slate-500 font-mono truncate">{isAdmin ? 'ADMIN' : 'CITIZEN'}</span>
+          <div className={`flex items-center ${isCollapsed ? 'justify-center flex-col space-y-2' : 'justify-between'} p-2 rounded-xl bg-slate-900/50 border border-slate-800/60`}>
+            <div className="flex items-center space-x-2.5 min-w-0 pr-1">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-600 via-sky-500 to-indigo-600 p-[1px] shadow-[0_0_10px_rgba(6,182,212,0.3)] shrink-0">
+                <div className="w-full h-full rounded-xl bg-[#0a0f1d] flex items-center justify-center text-xs font-black text-white">
+                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </div>
               </div>
-            )}
+              {!isCollapsed && (
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center space-x-1">
+                    <span className="text-xs font-bold text-slate-200 truncate">{user.name}</span>
+                    <ShieldCheck className="w-3 h-3 text-cyan-400 shrink-0" />
+                  </div>
+                  <span className="text-[9px] text-cyan-400 font-mono font-semibold tracking-wider uppercase truncate">
+                    {isAdmin ? 'MUNICIPAL ADMIN' : 'VERIFIED CITIZEN'}
+                  </span>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={handleLogout}
               title="Sign Out"
-              className={`flex items-center justify-center p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all shrink-0`}
+              className={`p-2 rounded-xl bg-slate-800 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-slate-700/60 hover:border-rose-500/40 hover:shadow-[0_0_12px_rgba(244,63,94,0.3)] transition-all shrink-0`}
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
@@ -149,24 +204,45 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   );
 }
 
-function NavItem({ to, icon: Icon, label, isActive, isCollapsed, onClick }) {
+function NavItem({ to, icon: Icon, label, isActive, isCollapsed, onClick, badge, badgeColor, isLivePulse }) {
   return (
     <Link
       to={to}
       onClick={onClick}
       title={isCollapsed ? label : undefined}
-      className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'space-x-3 px-4'} py-3 rounded-xl transition-all group relative overflow-hidden ${
+      className={`flex items-center ${isCollapsed ? 'justify-center p-2.5' : 'space-x-3 px-3 py-2.5'} rounded-2xl transition-all duration-200 group relative overflow-hidden ${
         isActive
-          ? 'bg-gradient-to-r from-cyan-600/20 to-blue-600/10 border border-cyan-500/30 text-cyan-400'
-          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent'
+          ? 'bg-gradient-to-r from-cyan-500/15 via-sky-500/10 to-transparent text-cyan-300 border-l-2 border-cyan-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_0_20px_rgba(6,182,212,0.12)] font-semibold'
+          : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/40 border-l-2 border-transparent hover:translate-x-1'
       }`}
     >
-      {isActive && (
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
-      )}
-      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-cyan-400' : 'group-hover:text-cyan-400 transition-colors'}`} />
+      {/* Icon with glowing container */}
+      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 ${
+        isActive 
+          ? 'bg-cyan-500/20 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.4)] border border-cyan-400/40' 
+          : 'bg-slate-900/60 text-slate-400 border border-slate-800/60 group-hover:text-cyan-300 group-hover:bg-slate-800 group-hover:border-cyan-500/30 group-hover:scale-105'
+      }`}>
+        <Icon className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110 group-hover:rotate-3'}`} />
+      </div>
+
       {!isCollapsed && (
-        <span className="text-sm font-semibold tracking-wide truncate">{label}</span>
+        <span className="text-xs font-semibold tracking-wide truncate flex-1">
+          {label}
+        </span>
+      )}
+
+      {!isCollapsed && badge && (
+        <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full border font-bold uppercase tracking-wider flex items-center gap-1 ${badgeColor || 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'}`}>
+          {isLivePulse && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>}
+          {badge}
+        </span>
+      )}
+
+      {/* Collapsed Tooltip */}
+      {isCollapsed && (
+        <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 text-cyan-300 text-xs font-bold rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-2xl border border-slate-700 z-50">
+          {label}
+        </div>
       )}
     </Link>
   );
