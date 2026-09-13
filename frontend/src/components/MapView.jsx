@@ -123,9 +123,13 @@ export default function MapView({
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
-        setUserLocation(coords);
+        // Just use the parent's selectedLocation if possible, clear userLocation to allow free dragging
         if (onLocationSelect && allowPinDrop) {
           onLocationSelect(coords);
+          setUserLocation(null); // Clear this so selectedLocation takes over
+          setMapCenter(coords);
+        } else {
+          setUserLocation(coords);
         }
         setIsLocating(false);
       },
@@ -144,6 +148,7 @@ export default function MapView({
       const lat = typeof latLng.lat === 'function' ? latLng.lat() : latLng.lat;
       const lng = typeof latLng.lng === 'function' ? latLng.lng() : latLng.lng;
       
+      setUserLocation(null); // Free up the pin if they click elsewhere
       onLocationSelect({
         lat: Number(lat.toFixed(6)),
         lng: Number(lng.toFixed(6))
@@ -204,7 +209,21 @@ export default function MapView({
 
           {/* Render Dropped Pin */}
           {allowPinDrop && selectedLocation && !userLocation && (
-             <Marker position={selectedLocation} title="Dropped Pin" zIndex={90} />
+             <Marker 
+               position={selectedLocation} 
+               title="Dropped Pin" 
+               zIndex={90} 
+               draggable={true}
+               onDragEnd={(e) => {
+                 const latLng = e.latLng;
+                 if (latLng && onLocationSelect) {
+                   onLocationSelect({
+                     lat: Number(latLng.lat().toFixed(6)),
+                     lng: Number(latLng.lng().toFixed(6))
+                   });
+                 }
+               }}
+             />
           )}
         </Map>
 

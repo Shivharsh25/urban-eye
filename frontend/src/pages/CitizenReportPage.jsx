@@ -62,9 +62,19 @@ export default function CitizenReportPage() {
   useEffect(() => {
     const fetchAddress = async () => {
       try {
-        const res = await client.get(`/api/geocode?lat=${pinLocation.lat}&lng=${pinLocation.lng}`);
-        if (res.data && res.data.address) {
-          setAddress(res.data.address);
+        const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyC3XzCS017KU681EYAZ1E3j5BwRV49ETHU';
+        // Use client-side Google Maps Geocoding for immediate and reliable address
+        const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${pinLocation.lat},${pinLocation.lng}&key=${apiKey}`);
+        const data = await res.json();
+        
+        if (data.results && data.results.length > 0) {
+          setAddress(data.results[0].formatted_address);
+        } else {
+          // Fallback to backend if Google fails
+          const backendRes = await client.get(`/api/geocode?lat=${pinLocation.lat}&lng=${pinLocation.lng}`);
+          if (backendRes.data && backendRes.data.address) {
+            setAddress(backendRes.data.address);
+          }
         }
       } catch (err) {
         console.error("Reverse geocoding failed:", err);
