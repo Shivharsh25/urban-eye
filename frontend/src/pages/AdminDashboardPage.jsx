@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Flame, 
@@ -14,7 +15,8 @@ import {
   Building2, 
   Users, 
   Bell, 
-  Download 
+  Download,
+  ArrowRight
 } from 'lucide-react';
 import client from '../api/client';
 import { subscribeToDetections } from '../api/socket';
@@ -27,15 +29,6 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Filters & Search
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [filterSeverity, setFilterSeverity] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterDept, setFilterDept] = useState('all');
-  const [sortField, setSortField] = useState('createdAt');
-  const [sortDir, setSortDir] = useState(-1);
 
   // Modals & Notifications
   const [selectedDetection, setSelectedDetection] = useState(null);
@@ -117,32 +110,7 @@ export default function AdminDashboardPage() {
     }, 6000);
   };
 
-  // Filter and Sort Table Data
-  const filteredDetections = detections.filter((d) => {
-    if (filterType !== 'all' && d.type !== filterType) return false;
-    if (filterSeverity !== 'all' && d.severity !== filterSeverity) return false;
-    if (filterStatus !== 'all' && d.status !== filterStatus) return false;
-    if (filterDept !== 'all' && d.assignedDepartment !== filterDept) return false;
 
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      const matchAddress = d.address && d.address.toLowerCase().includes(term);
-      const matchId = (d.id || d._id || '').toLowerCase().includes(term);
-      const matchType = d.type && d.type.toLowerCase().includes(term);
-      const matchDept = d.assignedDepartment && d.assignedDepartment.toLowerCase().includes(term);
-      if (!matchAddress && !matchId && !matchType && !matchDept) return false;
-    }
-
-    return true;
-  });
-
-  filteredDetections.sort((a, b) => {
-    const valA = a[sortField] || 0;
-    const valB = b[sortField] || 0;
-    if (valA < valB) return sortDir === 1 ? -1 : 1;
-    if (valA > valB) return sortDir === 1 ? 1 : -1;
-    return 0;
-  });
 
   const severityBadge = (sev) => {
     const styles = {
@@ -232,201 +200,169 @@ export default function AdminDashboardPage() {
             </h3>
           </div>
           <span className="text-xs text-slate-400 font-mono">
-            Displaying {filteredDetections.length} geocoded incidents
+            Displaying {detections.length} geocoded incidents
           </span>
         </div>
 
         <MapView
-          detections={filteredDetections}
+          detections={detections}
           onSelectDetection={(d) => setSelectedDetection(d)}
           height="480px"
           enableHeatmapToggle={true}
         />
       </div>
 
-      {/* Filterable Incident Triage Table */}
-        {/* Table Container */}
-        <div className="rounded-3xl glass-card border-t border-t-white/5 flex flex-col shadow-2xl overflow-hidden mt-6">
-          <div className="p-6 border-b border-slate-800/60 bg-slate-900/40 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <h2 className="text-lg font-bold text-slate-100 flex items-center space-x-2">
-              <Layers className="w-5 h-5 text-cyan-500" />
-              <span>Reported Issues</span>
-            </h2>
-            
-            {/* Search & Filter Bar */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search..."
-                  className="pl-9 pr-4 py-2 rounded-xl bg-slate-950/50 border border-slate-700/50 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-full sm:w-48 font-mono"
-                />
+      {/* City Operations Quick Triage & Priority Stream */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        
+        {/* Recent Priority Alerts Strip (Spans 2 columns) */}
+        <div className="lg:col-span-2 rounded-3xl glass-card border border-slate-800/80 shadow-2xl overflow-hidden bg-slate-900/40 flex flex-col">
+          <div className="p-5 border-b border-slate-800/60 bg-slate-950/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-4 h-4 text-rose-400" />
               </div>
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-slate-950/50 border border-slate-700/50 text-sm text-slate-300 font-mono focus:outline-none focus:border-cyan-500"
-              >
-                <option value="all">All Types</option>
-                <option value="pothole">Potholes</option>
-                <option value="garbage">Garbage</option>
-                <option value="water_leak">Water Leaks</option>
-                <option value="streetlight">Streetlights</option>
-              </select>
-              <select
-                value={filterSeverity}
-                onChange={(e) => setFilterSeverity(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-slate-950/50 border border-slate-700/50 text-sm text-slate-300 font-mono focus:outline-none focus:border-cyan-500"
-              >
-                <option value="all">All Severities</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-slate-950/50 border border-slate-700/50 text-sm text-slate-300 font-mono focus:outline-none focus:border-cyan-500"
-              >
-                <option value="all">All Statuses</option>
-                <option value="new">New</option>
-                <option value="assigned">Assigned</option>
-                <option value="resolved">Resolved</option>
-              </select>
+              <div>
+                <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                  <span>Recent Priority Incidents</span>
+                  <span className="text-[11px] font-mono text-cyan-400 font-normal">({detections.length} total)</span>
+                </h3>
+                <p className="text-[11px] text-slate-400">
+                  Latest municipal defect reports requiring assessment
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/admin/issues"
+              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all shadow-sm group shrink-0 w-fit"
+            >
+              <Layers className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Open Reported Issues Hub</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+
+          <div className="divide-y divide-slate-800/50 flex-1">
+            {detections.slice(0, 5).length === 0 ? (
+              <div className="p-10 text-center text-slate-500 text-xs">
+                No active incidents recorded.
+              </div>
+            ) : (
+              detections.slice(0, 5).map((d) => (
+                <div
+                  key={d.id || d._id}
+                  onClick={() => setSelectedDetection(d)}
+                  className="p-4 hover:bg-slate-800/40 transition-colors flex items-center justify-between gap-3 cursor-pointer group"
+                >
+                  <div className="flex items-center space-x-3.5 min-w-0">
+                    <div className="w-11 h-11 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0 shadow-inner">
+                      {d.imageUrl ? (
+                        <img 
+                          src={d.imageUrl.startsWith('http') ? d.imageUrl : `https://urban-eye-wi2j.onrender.com${d.imageUrl}`} 
+                          alt={d.type} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-600 font-mono">N/A</div>
+                      )}
+                    </div>
+                    <div className="truncate">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono text-xs font-bold text-slate-200 group-hover:text-cyan-400 transition-colors">
+                          #{d.id ? d.id.slice(-8).toUpperCase() : (d._id ? d._id.slice(-8).toUpperCase() : 'INCIDENT')}
+                        </span>
+                        <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">
+                          {d.type?.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 truncate mt-0.5" title={d.address}>
+                        {d.address || `${Number(d.lat).toFixed(4)}, ${Number(d.lng).toFixed(4)}`}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2.5 shrink-0">
+                    {severityBadge(d.severity)}
+                    {statusBadge(d.status)}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedDetection(d);
+                      }}
+                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950/50 border border-slate-700 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-400 transition-colors"
+                      title="Inspect AI Details & Letter"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="p-3 bg-slate-950/40 border-t border-slate-800/60 text-center">
+            <Link
+              to="/admin/issues"
+              className="text-xs text-slate-400 hover:text-cyan-400 font-semibold transition-colors inline-flex items-center space-x-1.5"
+            >
+              <span>View full filterable registry with search & CSV export in Reported Issues</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Quick Operational Dispatch & Department Load (Spans 1 column) */}
+        <div className="rounded-3xl glass-card border border-slate-800/80 shadow-2xl p-5 bg-slate-900/40 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-slate-800/60">
+              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center shrink-0">
+                <Building2 className="w-4 h-4 text-indigo-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white tracking-wide">
+                  Department Workload
+                </h3>
+                <p className="text-[11px] text-slate-400">
+                  Active municipal dispatch distribution
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2.5">
+              {[
+                { name: 'Roads & Public Works', count: detections.filter(d => (d.assignedDepartment || '').includes('Roads') || d.type === 'pothole').length, dot: 'bg-amber-400' },
+                { name: 'Sanitation Dept', count: detections.filter(d => (d.assignedDepartment || '').includes('Sanitation') || d.type === 'garbage').length, dot: 'bg-emerald-400' },
+                { name: 'Electrical & Lighting', count: detections.filter(d => (d.assignedDepartment || '').includes('Electrical') || d.type === 'streetlight').length, dot: 'bg-cyan-400' },
+                { name: 'Water & Sewage Board', count: detections.filter(d => (d.assignedDepartment || '').includes('Water') || d.type === 'water_leak').length, dot: 'bg-sky-400' },
+              ].map((dept) => (
+                <div key={dept.name} className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60 flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5 min-w-0">
+                    <span className={`w-2 h-2 rounded-full ${dept.dot}`}></span>
+                    <span className="text-xs text-slate-300 font-medium truncate">{dept.name}</span>
+                  </div>
+                  <span className="font-mono text-xs font-bold text-slate-200 px-2.5 py-0.5 rounded-lg bg-slate-900 border border-slate-800">
+                    {dept.count}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="overflow-x-auto flex-1 bg-slate-900/20">
-            <table className="w-full text-left text-sm font-sans whitespace-nowrap">
-              <thead className="bg-slate-950/80 border-b border-slate-800/60 text-xs text-slate-400 uppercase tracking-wider font-semibold">
-                <tr>
-                  <th className="px-6 py-4">Ref ID & Asset</th>
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4">Severity</th>
-                  <th className="px-6 py-4">Assigned Dept</th>
-                  <th className="px-6 py-4">Location</th>
-                  <th className="px-6 py-4">Reports</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/50">
-                {filteredDetections.length === 0 ? (
-                  <tr>
-                    <td colSpan="8" className="px-6 py-12 text-center text-slate-500">
-                      No incidents matching current criteria
-                    </td>
-                  </tr>
-                ) : (
-                  filteredDetections.map((d) => (
-                    <tr
-                      key={d.id || d._id}
-                      className="hover:bg-slate-800/30 transition-colors group cursor-pointer"
-                      onClick={() => setSelectedDetection(d)}
-                    >
-                      {/* Ref ID & Thumbnail */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0">
-                            {d.imageUrl ? (
-                              <img src={d.imageUrl.startsWith('http') ? d.imageUrl : `https://urban-eye-wi2j.onrender.com${d.imageUrl}`} alt={d.type} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-600 font-mono">N/A</div>
-                            )}
-                          </div>
-                          <span className="font-bold text-slate-200 group-hover:text-cyan-400 transition-colors font-mono">
-                            #{d.id || d._id}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Category */}
-                      <td className="px-6 py-4 uppercase font-black tracking-wider text-cyan-400 text-xs">
-                        {d.type?.replace('_', ' ') || 'UNKNOWN'}
-                      </td>
-
-                      {/* Severity */}
-                      <td className="px-6 py-4">
-                        {severityBadge(d.severity)}
-                      </td>
-
-                      {/* Assigned Dept */}
-                      <td className="px-6 py-4 text-slate-300 font-medium">
-                        <span className="truncate block max-w-[180px]">
-                          {d.assignedDepartment || 'Municipal Ops'}
-                        </span>
-                      </td>
-
-                      {/* Location & Address */}
-                      <td className="px-6 py-4 text-slate-300 font-medium">
-                        <span className="truncate block max-w-[220px]">
-                          {d.address || `${d.lat}, ${d.lng}`}
-                        </span>
-                      </td>
-
-                      {/* Reports Count */}
-                      <td className="px-6 py-4 font-bold text-slate-200">
-                        <span className="px-3 py-1 rounded-lg bg-slate-800/50 border border-slate-700/50 text-xs">
-                          {d.reportCount || 1}
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-6 py-4">
-                        {statusBadge(d.status)}
-                      </td>
-
-                      {/* Action Button */}
-                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedDetection(d)}
-                            className="px-4 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:text-slate-950 hover:bg-cyan-400 border border-cyan-500/40 transition-all inline-flex items-center space-x-2 shadow-lg shadow-cyan-500/10"
-                          >
-                            <Eye className="w-4 h-4" />
-                            <span>Inspect</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              if (window.confirm('Are you sure you want to permanently delete this report?')) {
-                                try {
-                                  const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/detections/${d.id || d._id}`, {
-                                    method: 'DELETE',
-                                    headers: {
-                                      'Authorization': `Bearer ${localStorage.getItem('urban_eye_token')}`
-                                    }
-                                  });
-                                  if (response.ok) {
-                                    setDetections((prev) => prev.filter((item) => item.id !== d.id && item._id !== d._id));
-                                  } else {
-                                    alert('Failed to delete report');
-                                  }
-                                } catch (err) {
-                                  console.error(err);
-                                  alert('Error deleting report');
-                                }
-                              }
-                            }}
-                            className="px-4 py-2 rounded-xl text-xs font-bold text-red-400 hover:text-slate-950 hover:bg-red-400 border border-red-500/40 transition-all inline-flex items-center space-x-2 shadow-lg shadow-red-500/10"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            <span>Delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          <div className="mt-5 pt-4 border-t border-slate-800/60">
+            <Link
+              to="/admin/issues"
+              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-cyan-500/20 transition-all group"
+            >
+              <Layers className="w-4 h-4" />
+              <span>Go to Reported Issues Hub</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
+
+      </div>
 
       {/* Detection Inspection & Triage Modal */}
       {selectedDetection && (

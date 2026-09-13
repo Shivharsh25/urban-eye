@@ -9,6 +9,7 @@ import CitizenDashboardPage from './pages/CitizenDashboardPage';
 import CitizenReportPage from './pages/CitizenReportPage';
 import CitizenReportsPage from './pages/CitizenReportsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminIssuesPage from './pages/AdminIssuesPage';
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminUsersPage from './pages/AdminUsersPage';
@@ -154,6 +155,16 @@ export default function App() {
                 <ProtectedRoute adminOnly={true}>
                   <AdminLayout>
                     <AdminDashboardPage />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/issues"
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminLayout>
+                    <AdminIssuesPage />
                   </AdminLayout>
                 </ProtectedRoute>
               }
