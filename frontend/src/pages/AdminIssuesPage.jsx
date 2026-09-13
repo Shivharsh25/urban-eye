@@ -200,6 +200,90 @@ export default function AdminIssuesPage() {
         </div>
       </div>
 
+      {/* 4 Glowing Telemetry KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Issues */}
+        <div className="relative overflow-hidden rounded-2xl p-4 bg-slate-900/60 border border-slate-800/80 shadow-lg backdrop-blur-xl group hover:border-cyan-500/40 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-cyan-500/20 transition-all"></div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Issues</span>
+            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+              <Layers className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">{detections.length}</span>
+            <span className="text-[10px] font-mono text-cyan-400 font-semibold">Live Mongo Feed</span>
+          </div>
+          <div className="mt-2 text-[11px] text-slate-400 flex items-center gap-1">
+            <span>Filtered count:</span>
+            <span className="font-bold text-slate-200">{filteredDetections.length}</span>
+          </div>
+        </div>
+
+        {/* Critical & High Priority */}
+        <div className="relative overflow-hidden rounded-2xl p-4 bg-slate-900/60 border border-rose-500/30 shadow-lg shadow-rose-950/20 backdrop-blur-xl group hover:border-rose-500/50 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-rose-500/20 transition-all"></div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-rose-300 uppercase tracking-wider">High / Critical</span>
+            <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-black text-rose-400 tracking-tight">
+              {detections.filter(d => ['high', 'critical'].includes((d.severity || '').toLowerCase())).length}
+            </span>
+            <span className="text-[10px] font-mono text-rose-400/80 font-bold px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">Action Required</span>
+          </div>
+          <div className="mt-2 text-[11px] text-slate-400">
+            Urgent road hazards & safety defects
+          </div>
+        </div>
+
+        {/* In Triage / Assigned */}
+        <div className="relative overflow-hidden rounded-2xl p-4 bg-slate-900/60 border border-amber-500/30 shadow-lg shadow-amber-950/20 backdrop-blur-xl group hover:border-amber-500/50 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all"></div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">Active Triage</span>
+            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+              <Clock className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-black text-amber-400 tracking-tight">
+              {detections.filter(d => ['new', 'assigned'].includes((d.status || '').toLowerCase())).length}
+            </span>
+            <span className="text-[10px] font-mono text-amber-400/80 font-bold">Assigned to Depts</span>
+          </div>
+          <div className="mt-2 text-[11px] text-slate-400">
+            Pending field crew resolution
+          </div>
+        </div>
+
+        {/* Resolved */}
+        <div className="relative overflow-hidden rounded-2xl p-4 bg-slate-900/60 border border-emerald-500/30 shadow-lg shadow-emerald-950/20 backdrop-blur-xl group hover:border-emerald-500/50 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all"></div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">Resolved Cases</span>
+            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight">
+              {detections.filter(d => (d.status || '').toLowerCase() === 'resolved').length}
+            </span>
+            <span className="text-[10px] font-mono text-emerald-400/80 font-bold">
+              {detections.length > 0 ? `${Math.round((detections.filter(d => (d.status || '').toLowerCase() === 'resolved').length / detections.length) * 100)}% Rate` : '0%'}
+            </span>
+          </div>
+          <div className="mt-2 text-[11px] text-slate-400">
+            Successfully closed & verified
+          </div>
+        </div>
+      </div>
+
       {/* Main Table Container */}
       <div className="rounded-3xl glass-card border border-slate-800/80 flex flex-col shadow-2xl overflow-hidden bg-slate-900/40">
         

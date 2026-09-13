@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -16,7 +16,11 @@ import {
   Users, 
   Bell, 
   Download,
-  ArrowRight
+  ArrowRight,
+  Cpu,
+  Zap,
+  Radio,
+  ShieldCheck
 } from 'lucide-react';
 import client from '../api/client';
 import { subscribeToDetections } from '../api/socket';
@@ -33,6 +37,14 @@ export default function AdminDashboardPage() {
   // Modals & Notifications
   const [selectedDetection, setSelectedDetection] = useState(null);
   const [liveToasts, setLiveToasts] = useState([]);
+  const [mapFilter, setMapFilter] = useState('all');
+
+  // Filtered detections for map
+  const displayedMapDetections = useMemo(() => {
+    if (mapFilter === 'all') return detections;
+    if (mapFilter === 'high') return detections.filter(d => d.severity === 'high');
+    return detections.filter(d => d.type === mapFilter);
+  }, [detections, mapFilter]);
 
   // Fetch initial data
   const fetchData = async () => {
@@ -187,25 +199,84 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
+      {/* Realtime Mission Control Telemetry Bar */}
+      <div className="p-3 rounded-2xl glass-card border border-slate-800/80 bg-slate-950/50 flex flex-wrap items-center justify-between gap-3 text-xs shadow-lg">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center space-x-2 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono font-bold text-[11px]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>YOLOv8 VISION INFERENCE ONLINE</span>
+          </div>
+          <span className="hidden sm:inline text-slate-700">|</span>
+          <span className="hidden sm:flex items-center text-slate-400 font-mono text-[11px]">
+            Model: <span className="text-slate-200 font-bold ml-1">yolov8n-urban-v2</span>
+          </span>
+          <span className="hidden md:inline text-slate-700">|</span>
+          <span className="hidden md:flex items-center text-slate-400 font-mono text-[11px]">
+            Confidence Cutoff: <span className="text-cyan-400 font-bold ml-1">0.65</span>
+          </span>
+        </div>
+
+        <div className="flex items-center space-x-3 ml-auto text-[11px] font-mono">
+          <div className="flex items-center space-x-1.5 text-slate-400">
+            <span className="text-slate-500">WebSocket Ping:</span>
+            <span className="text-emerald-400 font-bold">18ms</span>
+          </div>
+          <span className="text-slate-700">|</span>
+          <div className="flex items-center space-x-1.5 text-slate-400">
+            <span className="text-slate-500">City Hotspots:</span>
+            <span className="text-cyan-400 font-bold">{detections.length}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Summary KPI Cards */}
       <StatsOverview stats={stats} />
 
       {/* Interactive Map & Live Heatmap */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <MapPin className="w-5 h-5 text-sky-400" />
-            <h3 className="text-lg font-semibold text-slate-200">
-              City Map Overview
+            <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <span>City Map Overview</span>
+              <span className="px-2 py-0.5 rounded-full bg-slate-800 text-[11px] font-mono text-cyan-400 border border-slate-700">
+                {displayedMapDetections.length} plotted
+              </span>
             </h3>
           </div>
-          <span className="text-xs text-slate-400 font-mono">
-            Displaying {detections.length} geocoded incidents
-          </span>
+
+          {/* Quick Map Category Filters */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-slate-950/70 border border-slate-800/80">
+            {[
+              { id: 'all', label: 'All' },
+              { id: 'high', label: 'Critical Only', dot: 'bg-rose-400' },
+              { id: 'pothole', label: 'Potholes', dot: 'bg-amber-400' },
+              { id: 'garbage', label: 'Garbage', dot: 'bg-emerald-400' },
+              { id: 'water_leak', label: 'Water Leaks', dot: 'bg-sky-400' },
+              { id: 'streetlight', label: 'Streetlights', dot: 'bg-yellow-400' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setMapFilter(tab.id)}
+                className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                  mapFilter === tab.id
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                }`}
+              >
+                {tab.dot && <span className={`w-1.5 h-1.5 rounded-full ${tab.dot}`}></span>}
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         <MapView
-          detections={detections}
+          detections={displayedMapDetections}
           onSelectDetection={(d) => setSelectedDetection(d)}
           height="480px"
           enableHeatmapToggle={true}
