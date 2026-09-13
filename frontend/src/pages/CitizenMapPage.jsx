@@ -15,7 +15,13 @@ import {
   ShieldAlert, 
   Eye, 
   RefreshCw,
-  Locate
+  Locate,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Minimize2,
+  X,
+  SlidersHorizontal
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
@@ -30,6 +36,69 @@ export default function CitizenMapPage() {
   const [selectedDetection, setSelectedDetection] = useState(null);
   const [customCenter, setCustomCenter] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
+
+  // Panel visibility states with localStorage persistence
+  const [isLeftOpen, setIsLeftOpen] = useState(() => {
+    try {
+      const stored = localStorage.getItem('urban_eye_map_left_open');
+      return stored !== null ? stored === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const [isRightOpen, setIsRightOpen] = useState(() => {
+    try {
+      const stored = localStorage.getItem('urban_eye_map_right_open');
+      return stored !== null ? stored === 'true' : false;
+    } catch {
+      return false;
+    }
+  });
+
+  const updateLeftOpen = (val) => {
+    setIsLeftOpen(val);
+    try {
+      localStorage.setItem('urban_eye_map_left_open', String(val));
+    } catch {}
+  };
+
+  const updateRightOpen = (val) => {
+    setIsRightOpen(val);
+    try {
+      localStorage.setItem('urban_eye_map_right_open', String(val));
+    } catch {}
+  };
+
+  const isFullMap = !isLeftOpen && !isRightOpen;
+
+  const toggleFullMap = () => {
+    if (isFullMap) {
+      updateLeftOpen(true);
+      updateRightOpen(true);
+    } else {
+      updateLeftOpen(false);
+      updateRightOpen(false);
+    }
+  };
+
+  // Keyboard shortcut (M: toggle full map, Esc: close cards)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName)) return;
+      if (e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        toggleFullMap();
+      } else if (e.key === 'Escape') {
+        if (isLeftOpen || isRightOpen) {
+          updateLeftOpen(false);
+          updateRightOpen(false);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLeftOpen, isRightOpen, isFullMap]);
 
   const fetchReports = async () => {
     try {
@@ -113,70 +182,142 @@ export default function CitizenMapPage() {
   return (
     <div className="flex h-screen bg-[#05080f] overflow-hidden relative font-sans">
       
-      {/* Floating Filter Panel */}
-      <div className="absolute top-6 left-6 z-10 w-72 flex flex-col space-y-4 pointer-events-auto">
-        
+      {/* 1. Floating Trigger Button when Left Panel is Hidden */}
+      <div 
+        className={`absolute top-6 left-6 z-20 transition-all duration-300 ease-in-out ${
+          isLeftOpen 
+            ? 'opacity-0 pointer-events-none -translate-x-12 scale-95' 
+            : 'opacity-100 pointer-events-auto translate-x-0 scale-100'
+        }`}
+      >
+        <button
+          onClick={() => updateLeftOpen(true)}
+          className="glass-panel px-4 py-2.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 text-slate-200 hover:text-white flex items-center space-x-3 shadow-2xl backdrop-blur-xl transition-all duration-200 group hover:scale-[1.02]"
+          title="Open Layer Filters & Grid Info"
+        >
+          <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
+            <Filter className="w-4 h-4" />
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="text-xs font-bold leading-tight">Layer Filters</span>
+            <span className="text-[10px] text-cyan-400 font-mono font-medium">
+              {activeFilter === 'all' ? `${filteredReports.length} Incidents` : filters.find(f => f.id === activeFilter)?.label}
+            </span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
+        </button>
+      </div>
+
+      {/* 2. Floating Left Panel (Grid Info & Layer Filters) */}
+      <div 
+        className={`absolute top-6 left-6 z-20 w-72 max-w-[calc(100vw-3rem)] flex flex-col space-y-3 pointer-events-auto max-h-[calc(100vh-3rem)] overflow-y-auto custom-scrollbar transition-all duration-300 ease-in-out ${
+          isLeftOpen 
+            ? 'translate-x-0 opacity-100' 
+            : '-translate-x-[120%] opacity-0 pointer-events-none'
+        }`}
+      >
         {/* Header Card */}
-        <div className="glass-panel p-5 rounded-2xl bg-slate-900/85 border border-slate-800/80 backdrop-blur-xl shadow-2xl">
+        <div className="glass-panel p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl shadow-2xl">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-cyan-400" />
+              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
+                <MapPin className="w-4 h-4 text-cyan-400" />
               </div>
               <div>
-                <h1 className="text-xl font-black text-white tracking-tight">Live Grid</h1>
-                <p className="text-[10px] text-cyan-400/70 font-mono uppercase tracking-widest">Urban Network</p>
+                <h1 className="text-lg font-black text-white tracking-tight">Live Grid</h1>
+                <p className="text-[9px] text-cyan-400/80 font-mono uppercase tracking-widest">Urban Network</p>
               </div>
             </div>
             
-            <button
-              onClick={fetchReports}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-              title="Refresh Map"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={fetchReports}
+                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                title="Refresh Map Data"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+              
+              <button
+                onClick={() => updateLeftOpen(false)}
+                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition-colors border border-transparent hover:border-rose-500/30"
+                title="Hide Filters Panel"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-          <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+
+          <p className="text-xs text-slate-400 leading-relaxed">
             Real-time geospatial visualization of infrastructure hazards across your municipal sector.
           </p>
 
-          <div className="mt-3 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-            <span className="text-slate-400 font-semibold">Active Incidents:</span>
+          <div className="mt-3 pt-2.5 border-t border-slate-800/70 flex items-center justify-between text-xs">
+            <span className="text-slate-400 font-medium">Active Incidents:</span>
             <span className="font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
               {filteredReports.length}
             </span>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="glass-panel p-3 rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl shadow-2xl">
-          <div className="flex items-center space-x-2 px-2 pb-3 mb-1 border-b border-slate-800/50">
-            <Filter className="w-4 h-4 text-slate-400" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Layer Filters</span>
+        {/* Filters Card */}
+        <div className="glass-panel p-3 rounded-2xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl shadow-2xl">
+          <div className="flex items-center justify-between px-2 pb-2.5 mb-1.5 border-b border-slate-800/60">
+            <div className="flex items-center space-x-2">
+              <Filter className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Layer Filters</span>
+            </div>
+            {activeFilter !== 'all' && (
+              <button
+                onClick={() => setActiveFilter('all')}
+                className="text-[10px] text-cyan-400 hover:text-cyan-300 font-mono font-bold"
+              >
+                Reset
+              </button>
+            )}
           </div>
           <div className="flex flex-col space-y-1">
-            {filters.map(filter => (
-              <button
-                key={filter.id}
-                onClick={() => setActiveFilter(filter.id)}
-                className={`flex items-center space-x-3 px-3 py-2 rounded-xl transition-all ${
-                  activeFilter === filter.id
-                    ? `${filter.bg} border ${filter.border}`
-                    : 'border border-transparent hover:bg-slate-800/50'
-                }`}
-              >
-                <filter.icon className={`w-4 h-4 ${activeFilter === filter.id ? filter.color : 'text-slate-500'}`} />
-                <span className={`text-sm font-semibold ${activeFilter === filter.id ? 'text-white' : 'text-slate-400'}`}>
-                  {filter.label}
-                </span>
-              </button>
-            ))}
+            {filters.map(filter => {
+              const count = filter.id === 'all' 
+                ? reports.length 
+                : reports.filter(r => {
+                    const t = (r.type || '').toLowerCase();
+                    if (filter.id === 'pothole') return t.includes('pothole') || t.includes('road');
+                    if (filter.id === 'waste') return t.includes('waste') || t.includes('garbage') || t.includes('dump');
+                    if (filter.id === 'water') return t.includes('water') || t.includes('leak');
+                    if (filter.id === 'lighting') return t.includes('light') || t.includes('lamp');
+                    return false;
+                  }).length;
+
+              return (
+                <button
+                  key={filter.id}
+                  onClick={() => setActiveFilter(filter.id)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all ${
+                    activeFilter === filter.id
+                      ? `${filter.bg} border ${filter.border} shadow-sm`
+                      : 'border border-transparent hover:bg-slate-800/50'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2.5">
+                    <filter.icon className={`w-4 h-4 ${activeFilter === filter.id ? filter.color : 'text-slate-500'}`} />
+                    <span className={`text-xs font-semibold ${activeFilter === filter.id ? 'text-white font-bold' : 'text-slate-400'}`}>
+                      {filter.label}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md ${
+                    activeFilter === filter.id ? 'bg-slate-900/60 text-white font-bold' : 'text-slate-500'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Map Container */}
+      {/* 3. Full-Screen Map Container */}
       <div className="flex-1 w-full h-full relative">
         <div className="w-full h-full relative z-0">
           <MapView 
@@ -208,52 +349,122 @@ export default function CitizenMapPage() {
           </div>
         )}
 
-        {/* Top Centered Status HUD */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 glass-panel px-5 py-2 rounded-full bg-slate-900/85 border border-cyan-500/30 backdrop-blur-xl flex items-center space-x-3 shadow-2xl pointer-events-auto">
+        {/* 4. Top Centered Status HUD & Master Zen Mode Toggle */}
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 glass-panel px-4 py-2 rounded-full bg-slate-900/90 border border-slate-700/80 backdrop-blur-xl flex items-center space-x-3 shadow-2xl pointer-events-auto">
+           {/* Live Pins Badge */}
            <div className="flex items-center space-x-2">
              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]"></div>
-             <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">
-               {reports.length} Pins Live
+             <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest whitespace-nowrap">
+               {filteredReports.length} Pins Live
              </span>
            </div>
            
            <div className="h-4 w-px bg-slate-700"></div>
 
+           {/* Locate Me */}
            <button 
              onClick={handleLocateMe}
              disabled={isLocating}
-             className="flex items-center gap-1 text-[11px] font-mono text-cyan-400 hover:text-cyan-300 uppercase tracking-widest transition-colors"
+             className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest transition-colors"
+             title="Center map on your current location"
            >
              <Locate className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
-             <span>{isLocating ? 'Locating...' : 'My Location'}</span>
+             <span className="hidden sm:inline">{isLocating ? 'Locating...' : 'My Location'}</span>
            </button>
 
            <div className="h-4 w-px bg-slate-700"></div>
 
+           {/* Radar Toggle */}
            <button 
              onClick={() => setShowScanner(!showScanner)}
-             className="text-[10px] font-mono text-slate-400 hover:text-slate-200 uppercase tracking-widest transition-colors"
+             className={`text-[10px] font-mono uppercase tracking-widest transition-colors ${showScanner ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'}`}
+             title="Toggle Radar Sweep Animation"
            >
-             {showScanner ? 'Hide Radar' : 'Show Radar'}
+             {showScanner ? 'Radar ON' : 'Radar OFF'}
+           </button>
+
+           <div className="h-4 w-px bg-slate-700"></div>
+
+           {/* Full Map / Zen Mode Toggle */}
+           <button 
+             onClick={toggleFullMap}
+             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
+               isFullMap 
+                 ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 shadow-md shadow-cyan-500/25 font-black' 
+                 : 'bg-slate-800/80 text-cyan-400 hover:bg-slate-700/80 hover:text-cyan-300 border border-cyan-500/30'
+             }`}
+             title={isFullMap ? "Restore side cards (Shortcut: M)" : "Hide all side cards for clean full map view (Shortcut: M)"}
+           >
+             {isFullMap ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+             <span>{isFullMap ? 'Show Cards' : 'Full Map'}</span>
            </button>
         </div>
       </div>
 
-      {/* Right Side: Live Feed Panel */}
-      <div className="absolute right-6 top-6 bottom-6 w-84 z-20 flex flex-col pointer-events-auto">
+      {/* 5. Floating Trigger Button when Right Feed is Hidden */}
+      <div 
+        className={`absolute top-6 right-6 z-20 transition-all duration-300 ease-in-out ${
+          isRightOpen 
+            ? 'opacity-0 pointer-events-none translate-x-12 scale-95' 
+            : 'opacity-100 pointer-events-auto translate-x-0 scale-100'
+        }`}
+      >
+        <button
+          onClick={() => updateRightOpen(true)}
+          className="glass-panel px-4 py-2.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 text-slate-200 hover:text-white flex items-center space-x-3 shadow-2xl backdrop-blur-xl transition-all duration-200 group hover:scale-[1.02]"
+          title="Open Live Incident Feed"
+        >
+          <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 group-hover:-translate-x-0.5 transition-all" />
+          <div className="relative w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
+            <Activity className="w-4 h-4" />
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+            </span>
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="text-xs font-bold leading-tight">Incident Feed</span>
+            <span className="text-[10px] text-cyan-400 font-mono font-medium">
+              {filteredReports.length} Live
+            </span>
+          </div>
+        </button>
+      </div>
+
+      {/* 6. Floating Right Panel: Live Feed */}
+      <div 
+        className={`absolute right-6 top-6 bottom-6 w-84 max-w-[calc(100vw-3rem)] z-20 flex flex-col pointer-events-auto transition-all duration-300 ease-in-out ${
+          isRightOpen 
+            ? 'translate-x-0 opacity-100' 
+            : 'translate-x-[120%] opacity-0 pointer-events-none'
+        }`}
+      >
         <div className="glass-panel h-full rounded-2xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden">
           
+          {/* Header */}
           <div className="p-4 border-b border-slate-800/80 flex items-center justify-between bg-black/20">
             <div className="flex items-center space-x-2.5">
               <Activity className="w-4 h-4 text-cyan-400" />
               <h2 className="text-xs font-bold text-white uppercase tracking-widest">Live Incident Feed</h2>
             </div>
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-            </span>
+            
+            <div className="flex items-center space-x-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+              </span>
+
+              <button
+                onClick={() => updateRightOpen(false)}
+                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition-colors border border-transparent hover:border-rose-500/30 ml-1"
+                title="Hide Live Feed"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
+          {/* Incidents List */}
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2.5">
             {loading ? (
               <div className="flex justify-center p-8">
@@ -299,6 +510,7 @@ export default function CitizenMapPage() {
             )}
           </div>
 
+          {/* Bottom Button */}
           <div className="p-3 border-t border-slate-800/80 bg-black/20">
             <button 
               onClick={() => navigate('/my-reports')}
@@ -311,7 +523,7 @@ export default function CitizenMapPage() {
         </div>
       </div>
 
-      {/* Incident Modal */}
+      {/* 7. Incident Modal */}
       {selectedDetection && (
         <DetectionModal 
           detection={selectedDetection} 
