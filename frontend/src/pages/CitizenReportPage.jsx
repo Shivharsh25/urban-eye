@@ -62,24 +62,44 @@ export default function CitizenReportPage() {
   useEffect(() => {
     const fetchAddress = async () => {
       try {
-        const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyC3XzCS017KU681EYAZ1E3j5BwRV49ETHU';
-        // Use client-side Google Maps Geocoding for immediate and reliable address
-        const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${pinLocation.lat},${pinLocation.lng}&key=${apiKey}`);
-        const data = await res.json();
-        
-        if (data.results && data.results.length > 0) {
-          setAddress(data.results[0].formatted_address);
+        // 1. Try Google Maps JS API Geocoder if loaded
+        if (window.google && window.google.maps && window.google.maps.Geocoder) {
+          const geocoder = new window.google.maps.Geocoder();
+          geocoder.geocode({ location: { lat: pinLocation.lat, lng: pinLocation.lng } }, async (results, status) => {
+            if (status === 'OK' && results[0]) {
+              setAddress(results[0].formatted_address);
+            } else {
+              await tryNominatimFallback();
+            }
+          });
         } else {
-          // Fallback to backend if Google fails
+          // If Google Maps API is not ready, try Nominatim
+          await tryNominatimFallback();
+        }
+      } catch (err) {
+        console.error("Reverse geocoding failed:", err);
+      }
+    };
+    
+    const tryNominatimFallback = async () => {
+      try {
+        // 2. OpenStreetMap Nominatim fallback
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pinLocation.lat}&lon=${pinLocation.lng}`);
+        const data = await res.json();
+        if (data && data.display_name) {
+          setAddress(data.display_name);
+        } else {
+          // 3. Fallback to backend
           const backendRes = await client.get(`/api/geocode?lat=${pinLocation.lat}&lng=${pinLocation.lng}`);
           if (backendRes.data && backendRes.data.address) {
             setAddress(backendRes.data.address);
           }
         }
       } catch (err) {
-        console.error("Reverse geocoding failed:", err);
+        console.error("Nominatim fallback failed:", err);
       }
     };
+
     fetchAddress();
   }, [pinLocation]);
 
