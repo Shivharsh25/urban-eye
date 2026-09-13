@@ -14,11 +14,17 @@ import {
   ShieldCheck, 
   Send,
   Trash2,
-  Download
+  Download,
+  Edit3,
+  Save,
+  RotateCcw,
+  FileText,
+  Sparkles
 } from 'lucide-react';
 import client from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { generateReportPDF } from '../utils/pdfGenerator';
+import { generateFormalComplaintLetter } from '../utils/formalReportTemplate';
 
 export default function DetectionModal({ detection, onClose, onStatusUpdated }) {
   const { user, isAdmin } = useAuth();
@@ -26,10 +32,30 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [copied, setCopied] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [isEditingReport, setIsEditingReport] = useState(false);
+  const [editedReportText, setEditedReportText] = useState('');
+  const [savingReport, setSavingReport] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const imageContainerRef = useRef(null);
 
   useEffect(() => {
     setCurrentDetection(detection);
+    if (detection) {
+      const initialText = (detection.reportText && detection.reportText.includes('FORMAL'))
+        ? detection.reportText
+        : generateFormalComplaintLetter({
+            id: detection.id || detection._id,
+            type: detection.type || 'pothole',
+            severity: detection.severity || 'medium',
+            address: detection.address,
+            lat: detection.lat,
+            lng: detection.lng,
+            reportCount: detection.reportCount || 1,
+            createdAt: detection.createdAt,
+            assignedDepartment: detection.assignedDepartment
+          });
+      setEditedReportText(initialText);
+    }
   }, [detection]);
 
   if (!currentDetection) return null;
@@ -77,10 +103,47 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
   };
 
   const copyReportText = () => {
-    if (!currentDetection.reportText) return;
-    navigator.clipboard.writeText(currentDetection.reportText);
+    const textToCopy = isEditingReport ? editedReportText : (currentDetection.reportText || editedReportText);
+    if (!textToCopy) return;
+    navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSaveReportText = async () => {
+    try {
+      setSavingReport(true);
+      const res = await client.patch(`/api/detections/${currentDetection.id || currentDetection._id}`, {
+        reportText: editedReportText
+      });
+      setCurrentDetection(res.data.detection);
+      if (onStatusUpdated) onStatusUpdated(res.data.detection);
+      setIsEditingReport(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to update report text:', err);
+      alert('Failed to save changes to the report letter.');
+    } finally {
+      setSavingReport(false);
+    }
+  };
+
+  const handleResetTemplate = () => {
+    if (window.confirm('Reset this complaint letter back to the standard official formal template? Any manual edits will be overwritten.')) {
+      const template = generateFormalComplaintLetter({
+        id: currentDetection.id || currentDetection._id,
+        type: currentDetection.type || 'pothole',
+        severity: currentDetection.severity || 'medium',
+        address: currentDetection.address,
+        lat: currentDetection.lat,
+        lng: currentDetection.lng,
+        reportCount: currentDetection.reportCount || 1,
+        createdAt: currentDetection.createdAt,
+        assignedDepartment: currentDetection.assignedDepartment
+      });
+      setEditedReportText(template);
+    }
   };
 
   const severityColor = {
@@ -269,23 +332,96 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
             </div>
           )}
 
-          {/* Auto-Generated Municipal Report Text */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold font-mono text-slate-400">
-                AUTONOMOUSLY GENERATED WORK ORDER REPORT
-              </span>
-              <button
-                onClick={copyReportText}
-                className="flex items-center space-x-1 text-xs text-cyan-400 hover:text-cyan-300 font-mono"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'COPIED' : 'COPY REPORT'}</span>
-              </button>
+          {/* Official Formal Grievance Complaint Letter (View & Edit Mode) */}
+          <div className="p-5 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-3 shadow-inner">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-cyan-400" />
+                <h4 className="text-xs font-bold font-mono text-slate-200 uppercase tracking-wider">
+                  Official Formal Municipal Grievance Letter
+                </h4>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {saveSuccess && (
+                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 animate-fade-in">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Saved Successfully
+                  </span>
+                )}
+
+                {!isEditingReport ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingReport(true)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-colors shadow-sm"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Edit Letter</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={copyReportText}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-colors shadow-sm"
+                    >
+                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copied ? 'Copied' : 'Copy Letter'}</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleResetTemplate}
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700 transition-colors"
+                      title="Reset to standard formal template"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Reset Template</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditedReportText(currentDetection.reportText || '');
+                        setIsEditingReport(false);
+                      }}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      disabled={savingReport}
+                      onClick={handleSaveReportText}
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>{savingReport ? 'Saving...' : 'Save Letter'}</span>
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-            <pre className="p-5 rounded-2xl bg-slate-950/50 border border-slate-800/80 text-xs font-mono text-slate-300 overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-inner">
-              {currentDetection.reportText || 'Generating official dispatch report...'}
-            </pre>
+
+            {isEditingReport ? (
+              <div className="space-y-2">
+                <p className="text-[11px] text-amber-400/90 font-medium">
+                  ✏️ You can edit any part of this formal complaint letter, add specific landmark notes, or adjust the problem description before exporting the PDF.
+                </p>
+                <textarea
+                  value={editedReportText}
+                  onChange={(e) => setEditedReportText(e.target.value)}
+                  rows={15}
+                  className="w-full p-4 rounded-xl bg-slate-900 border border-cyan-500/40 text-xs font-mono text-slate-200 focus:outline-none focus:ring-1 focus:ring-cyan-500 leading-relaxed custom-scrollbar shadow-inner"
+                  placeholder="Enter formal complaint letter text..."
+                />
+              </div>
+            ) : (
+              <pre className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-slate-300 overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-inner">
+                {currentDetection.reportText || editedReportText}
+              </pre>
+            )}
           </div>
 
           {/* Admin-Only Status Triage Controls */}

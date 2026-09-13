@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf';
+import { generateFormalComplaintLetter } from './formalReportTemplate';
 
 /**
  * Loads an image from a URL or Blob and converts it to a data URL for jsPDF.
@@ -36,7 +37,7 @@ const loadImageDataUrl = (src) => {
 };
 
 /**
- * Generates and downloads an official Urban EYE Incident PDF Report.
+ * Generates and downloads an official Urban EYE Incident PDF Report with formal complaint letter.
  * @param {Object} detection - The incident detection object
  * @param {string} [fallbackImageUrl] - Optional preview or uploaded image URL
  */
@@ -65,18 +66,37 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
   const category = (detection.type || 'Infrastructure Defect').toUpperCase();
   const severity = (detection.severity || 'Medium').toUpperCase();
   const status = (detection.status || 'ASSIGNED').toUpperCase();
-  const department = detection.assignedDepartment || 'Municipal Public Works';
+  const department = detection.assignedDepartment || 'Municipal Public Works Department';
   const address = detection.address || 'Location coordinates recorded via GPS';
-  const lat = detection.lat ? Number(detection.lat).toFixed(5) : 'N/A';
-  const lng = detection.lng ? Number(detection.lng).toFixed(5) : 'N/A';
+  const lat = detection.lat ? Number(detection.lat).toFixed(6) : 'N/A';
+  const lng = detection.lng ? Number(detection.lng).toFixed(6) : 'N/A';
   const reportCount = detection.reportCount || 1;
   const confidence = detection.confidence ? `${Math.round(detection.confidence * 100)}%` : '94% (Verified)';
 
-  // ================= TOP HEADER BANNER =================
+  // Formal complaint letter text: use saved edited text or generate standard formal letter
+  const formalLetterText = detection.reportText && detection.reportText.includes('FORMAL')
+    ? detection.reportText
+    : generateFormalComplaintLetter({
+        id: reportId,
+        type: detection.type || 'pothole',
+        severity: detection.severity || 'medium',
+        address: address,
+        lat: detection.lat,
+        lng: detection.lng,
+        reportCount: reportCount,
+        createdAt: detection.createdAt,
+        assignedDepartment: department,
+        customRemarks: detection.customRemarks || ''
+      });
+
+  // =========================================================================
+  // PAGE 1: OFFICIAL INCIDENT DOSSIER & EVIDENCE
+  // =========================================================================
+
+  // Top Header Banner
   doc.setFillColor(15, 23, 42); // slate-900
   doc.rect(0, 0, pageWidth, 32, 'F');
 
-  // Brand Name & Tagline
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
   doc.setTextColor(56, 189, 248); // sky-400
@@ -87,11 +107,11 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
   doc.setTextColor(148, 163, 184); // slate-400
   doc.text('SMART CIVIC INFRASTRUCTURE & AI INCIDENT TRIAGE PLATFORM', margin, 20);
 
-  // Reference & Date Badge (Right Aligned)
+  // Reference & Date Badge
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
   doc.setTextColor(255, 255, 255);
-  doc.text(`REPORT #${reportId.toString().slice(-8).toUpperCase()}`, pageWidth - margin, 13, { align: 'right' });
+  doc.text(`REF #${reportId.toString().slice(-8).toUpperCase()}`, pageWidth - margin, 13, { align: 'right' });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
@@ -104,8 +124,7 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
 
   let currentY = 40;
 
-  // ================= STATUS & SEVERITY BAR =================
-  // Severity pill color
+  // Status & Severity Bar
   let sevR = 245, sevG = 158, sevB = 11; // Amber
   if (severity === 'HIGH' || severity === 'CRITICAL') {
     sevR = 239; sevG = 68; sevB = 68; // Red
@@ -113,7 +132,6 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
     sevR = 16; sevG = 185; sevB = 129; // Green
   }
 
-  // Draw container box
   doc.setFillColor(248, 250, 252); // slate-50
   doc.setDrawColor(226, 232, 240); // slate-200
   doc.roundedRect(margin, currentY, contentWidth, 24, 2, 2, 'FD');
@@ -122,13 +140,13 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
-  doc.text('INCIDENT TYPE', margin + 6, currentY + 7);
-  doc.setFontSize(11);
+  doc.text('INCIDENT CLASSIFICATION', margin + 6, currentY + 7);
+  doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
   doc.text(category, margin + 6, currentY + 16);
 
   // Severity
-  const col2X = margin + 50;
+  const col2X = margin + 55;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
@@ -140,7 +158,7 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
   doc.text(severity, col2X + 12, currentY + 15, { align: 'center' });
 
   // Status
-  const col3X = margin + 92;
+  const col3X = margin + 95;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
@@ -150,7 +168,7 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
   doc.text(status, col3X, currentY + 15);
 
   // Assigned Department
-  const col4X = margin + 135;
+  const col4X = margin + 138;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
@@ -162,7 +180,7 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
 
   currentY += 30;
 
-  // ================= SECTION: LOCATION INTELLIGENCE =================
+  // SECTION 1: Location Intelligence
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
@@ -195,7 +213,7 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
 
   currentY += 28;
 
-  // ================= SECTION: PHOTO EVIDENCE =================
+  // SECTION 2: Visual Evidence Box
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
@@ -206,11 +224,9 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
 
   currentY += 6;
 
-  // Try to load image
   const imageSource = fallbackImageUrl || detection.imageUrl;
   let imageDataUrl = null;
   if (imageSource) {
-    // If relative path from server
     const fullImgUrl = imageSource.startsWith('http') 
       ? imageSource 
       : `https://urban-eye-wi2j.onrender.com${imageSource}`;
@@ -225,17 +241,15 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
       doc.setFillColor(15, 23, 42);
       doc.roundedRect(margin, currentY, imgBoxWidth, imgBoxHeight, 2, 2, 'F');
       
-      // Calculate aspect ratio fit
       const displayW = imgBoxWidth - 8;
       const displayH = imgBoxHeight - 8;
       doc.addImage(imageDataUrl, 'JPEG', margin + 4, currentY + 4, displayW, displayH, undefined, 'FAST');
       
-      // Stamp on top of image
       doc.setFillColor(0, 0, 0);
       doc.rect(margin + 6, currentY + imgBoxHeight - 12, 54, 7, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
-      doc.setTextColor(16, 185, 129); // green
+      doc.setTextColor(16, 185, 129);
       doc.text('✓ AI GEO-VERIFIED EVIDENCE', margin + 8, currentY + imgBoxHeight - 7);
     } catch (e) {
       console.warn('Failed to embed image in PDF:', e);
@@ -247,7 +261,7 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
 
   currentY += imgBoxHeight + 8;
 
-  // ================= SECTION: AI TRIAGE & DISPATCH AUDIT =================
+  // SECTION 3: AI Triage & Dispatch Audit Trail
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
@@ -258,7 +272,6 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
 
   currentY += 7;
 
-  // 4 Info Tiles
   const tileWidth = (contentWidth - 9) / 4;
   const tileHeight = 22;
 
@@ -290,25 +303,107 @@ export async function generateReportPDF(detection, fallbackImageUrl = null) {
     doc.text(t.sub, tileX + 3, currentY + 18);
   });
 
-  currentY += tileHeight + 8;
+  // Footer for Page 1
+  renderFooter(doc, pageWidth, pageHeight, margin, 1, 2);
 
-  // ================= FOOTER / SIGN OFF =================
+  // =========================================================================
+  // PAGE 2: OFFICIAL FORMAL COMPLAINT & GRIEVANCE LETTER
+  // =========================================================================
+  doc.addPage();
+
+  // Page 2 Header Banner
   doc.setFillColor(15, 23, 42);
-  doc.rect(0, pageHeight - 16, pageWidth, 16, 'F');
+  doc.rect(0, 0, pageWidth, 24, 'F');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(56, 189, 248);
+  doc.text('URBAN EYE • OFFICIAL CIVIC GRIEVANCE', margin, 12);
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(148, 163, 184);
+  doc.text('FORMAL MUNICIPAL REDRESSAL COMPLAINT LETTER', margin, 18);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(255, 255, 255);
+  doc.text(`REF: #${reportId.toString().slice(-8).toUpperCase()}`, pageWidth - margin, 15, { align: 'right' });
+
+  doc.setFillColor(14, 165, 233);
+  doc.rect(0, 24, pageWidth, 1, 'F');
+
+  let page2Y = 32;
+
+  // Formal Letter Paper Container
+  doc.setFillColor(255, 255, 255);
+  doc.setDrawColor(203, 213, 225);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(margin, page2Y, contentWidth, pageHeight - page2Y - 24, 2, 2, 'FD');
+
+  // Letter Content Padding
+  let textY = page2Y + 8;
+  const letterMargin = margin + 7;
+  const letterContentWidth = contentWidth - 14;
+
+  // Render the lines of the formal letter
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(15, 23, 42);
+
+  const lines = formalLetterText.split('\n');
+  
+  for (const line of lines) {
+    // Check if line is a header or divider
+    if (line.startsWith('FORMAL CIVIC GRIEVANCE') || line.startsWith('SUBJECT:')) {
+      doc.setFont('courier', 'bold');
+      doc.setTextColor(15, 23, 42);
+    } else if (line.startsWith('TO:') || line.startsWith('Respected') || line.match(/^[0-9]\./)) {
+      doc.setFont('courier', 'bold');
+      doc.setTextColor(30, 41, 59);
+    } else {
+      doc.setFont('courier', 'normal');
+      doc.setTextColor(51, 65, 85);
+    }
+
+    if (line.trim() === '') {
+      textY += 3.5;
+    } else {
+      const wrappedLines = doc.splitTextToSize(line, letterContentWidth);
+      for (const wl of wrappedLines) {
+        if (textY > pageHeight - 32) {
+          // If letter exceeds bounds, add page
+          renderFooter(doc, pageWidth, pageHeight, margin, 2, 3);
+          doc.addPage();
+          textY = 25;
+        }
+        doc.text(wl, letterMargin, textY);
+        textY += 4.2;
+      }
+    }
+  }
+
+  // Footer for Page 2
+  renderFooter(doc, pageWidth, pageHeight, margin, 2, 2);
+
+  // Save the PDF file
+  const cleanId = String(reportId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  doc.save(`Formal_Civic_Grievance_Report_${cleanId}.pdf`);
+}
+
+function renderFooter(doc, pageWidth, pageHeight, margin, currentPage, totalPages) {
+  doc.setFillColor(15, 23, 42);
+  doc.rect(0, pageHeight - 14, pageWidth, 14, 'F');
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.5);
   doc.setTextColor(148, 163, 184);
-  doc.text('Urban EYE Smart Governance Platform • Automated Civic Issue Resolution System', margin, pageHeight - 8);
+  doc.text('Urban EYE Smart Governance Platform • Automated Civic Issue Resolution System', margin, pageHeight - 6);
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7.5);
   doc.setTextColor(56, 189, 248);
-  doc.text('OFFICIAL DIGITAL RECORD', pageWidth - margin, pageHeight - 8, { align: 'right' });
-
-  // Save the PDF file
-  const cleanId = String(reportId).replace(/[^a-zA-Z0-9_-]/g, '_');
-  doc.save(`UrbanEye_Incident_Report_${cleanId}.pdf`);
+  doc.text(`PAGE ${currentPage} OF ${totalPages}`, pageWidth - margin, pageHeight - 6, { align: 'right' });
 }
 
 function renderPlaceholderImageBox(doc, x, y, width, height) {

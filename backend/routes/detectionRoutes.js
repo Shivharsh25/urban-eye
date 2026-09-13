@@ -464,6 +464,40 @@ router.patch('/detections/:id/status', requireAuth, requireAdmin, async (req, re
 });
 
 /**
+ * PATCH /api/detections/:id
+ * Edit formal reportText, address, or citizen remarks
+ */
+router.patch('/detections/:id', requireAuth, async (req, res) => {
+  try {
+    const { reportText, address, customRemarks, type, severity } = req.body;
+    const user = req.user;
+
+    const detection = await Detection.findById(req.params.id);
+    if (!detection) {
+      return res.status(404).json({ error: 'Detection record not found.' });
+    }
+
+    const updates = {};
+    if (reportText !== undefined) updates.reportText = reportText;
+    if (address !== undefined) updates.address = address;
+    if (customRemarks !== undefined) updates.customRemarks = customRemarks;
+    if (type !== undefined && user.role === 'admin') updates.type = type;
+    if (severity !== undefined && user.role === 'admin') updates.severity = severity;
+
+    const updated = await Detection.updateById(req.params.id, updates);
+    emitDetectionUpdated(updated);
+
+    return res.json({
+      message: 'Formal report content updated successfully.',
+      detection: updated
+    });
+  } catch (err) {
+    console.error('[Detections API] Report update error:', err);
+    return res.status(500).json({ error: 'Failed to update report content.' });
+  }
+});
+
+/**
  * GET /api/geocode
  * Backend proxy for Reverse Geocoding
  */

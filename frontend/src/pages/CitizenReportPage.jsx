@@ -11,7 +11,11 @@ import {
   Eye, 
   RefreshCw, 
   FileText,
-  Download
+  Download,
+  Edit3,
+  Save,
+  Check,
+  RotateCcw
 } from 'lucide-react';
 import client from '../api/client';
 import { subscribeToJob } from '../api/socket';
@@ -21,6 +25,7 @@ import UploadStepper from '../components/UploadStepper';
 import MapView from '../components/MapView';
 import DetectionModal from '../components/DetectionModal';
 import { generateReportPDF } from '../utils/pdfGenerator';
+import { generateFormalComplaintLetter } from '../utils/formalReportTemplate';
 import exifr from 'exifr';
 
 export default function CitizenReportPage() {
@@ -43,8 +48,50 @@ export default function CitizenReportPage() {
   const [resultDetection, setResultDetection] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [isEditingLetter, setIsEditingLetter] = useState(false);
+  const [editedLetterText, setEditedLetterText] = useState('');
+  const [savingLetter, setSavingLetter] = useState(false);
+  const [saveLetterSuccess, setSaveLetterSuccess] = useState(false);
 
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (resultDetection) {
+      const text = (resultDetection.reportText && resultDetection.reportText.includes('FORMAL'))
+        ? resultDetection.reportText
+        : generateFormalComplaintLetter({
+            id: resultDetection.id || resultDetection._id,
+            type: resultDetection.type,
+            severity: resultDetection.severity,
+            address: resultDetection.address,
+            lat: resultDetection.lat,
+            lng: resultDetection.lng,
+            reportCount: resultDetection.reportCount || 1,
+            createdAt: resultDetection.createdAt,
+            assignedDepartment: resultDetection.assignedDepartment
+          });
+      setEditedLetterText(text);
+    }
+  }, [resultDetection]);
+
+  const handleSaveLetterUpdates = async () => {
+    if (!resultDetection) return;
+    try {
+      setSavingLetter(true);
+      const res = await client.patch(`/api/detections/${resultDetection.id || resultDetection._id}`, {
+        reportText: editedLetterText
+      });
+      setResultDetection(res.data.detection);
+      setIsEditingLetter(false);
+      setSaveLetterSuccess(true);
+      setTimeout(() => setSaveLetterSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to update letter:', err);
+      alert('Could not save updates to formal report.');
+    } finally {
+      setSavingLetter(false);
+    }
+  };
 
   const handleDownloadPDF = async () => {
     if (!resultDetection) return;
@@ -374,6 +421,79 @@ export default function CitizenReportPage() {
               <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">CITIZEN REPORTS</span>
               <span className="font-bold text-stone-200 text-sm">{resultDetection.reportCount || 1} reported</span>
             </div>
+          </div>
+
+          {/* Formal Municipal Grievance Complaint Letter Card */}
+          <div className="p-5 rounded-2xl bg-stone-950/70 border border-stone-800 space-y-3 relative z-10 shadow-inner">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-stone-800/80">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-cyan-400" />
+                <span className="text-xs font-bold text-stone-200 uppercase tracking-wider">
+                  Generated Formal Municipal Grievance Letter
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {saveLetterSuccess && (
+                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Saved
+                  </span>
+                )}
+
+                {!isEditingLetter ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingLetter(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>Edit Letter</span>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditedLetterText(resultDetection.reportText || '');
+                        setIsEditingLetter(false);
+                      }}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-white bg-stone-900 border border-stone-800 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      disabled={savingLetter}
+                      onClick={handleSaveLetterUpdates}
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold text-stone-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>{savingLetter ? 'Saving...' : 'Save Updates'}</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {isEditingLetter ? (
+              <div className="space-y-2">
+                <p className="text-[11px] text-amber-400/90 font-medium">
+                  ✏️ You can edit any part of this formal complaint letter, add specific landmark notes, or adjust the problem description before exporting the PDF.
+                </p>
+                <textarea
+                  value={editedLetterText}
+                  onChange={(e) => setEditedLetterText(e.target.value)}
+                  rows={14}
+                  className="w-full p-4 rounded-xl bg-stone-900 border border-cyan-500/40 text-xs font-mono text-stone-200 focus:outline-none focus:ring-1 focus:ring-cyan-500 leading-relaxed custom-scrollbar shadow-inner"
+                  placeholder="Formal complaint letter..."
+                />
+              </div>
+            ) : (
+              <pre className="p-4 rounded-xl bg-stone-900/90 border border-stone-800 text-xs font-mono text-stone-300 overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-72 custom-scrollbar shadow-inner">
+                {resultDetection.reportText || editedLetterText}
+              </pre>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-2 relative z-10">
