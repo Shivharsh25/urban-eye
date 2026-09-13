@@ -83,7 +83,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const severityBadge = {
+  const severityColor = {
     high: 'text-rose-400 bg-rose-950/60 border-rose-500/40',
     medium: 'text-amber-400 bg-amber-950/60 border-amber-500/40',
     low: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40'
