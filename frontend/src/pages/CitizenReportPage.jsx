@@ -247,8 +247,8 @@ export default function CitizenReportPage() {
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/20 blur-[100px] rounded-full pointer-events-none"></div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
         
-        <div className="relative p-8 md:p-12 flex flex-col md:flex-row md:items-center justify-between z-10">
-          <div className="max-w-2xl">
+        <div className="relative p-8 md:p-12 flex flex-col lg:flex-row lg:items-center justify-between z-10 gap-8">
+          <div className="max-w-xl">
             <div className="flex items-center space-x-3 mb-4">
               <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest flex items-center shadow-inner">
                 <Sparkles className="w-3 h-3 mr-2" />
@@ -264,13 +264,13 @@ export default function CitizenReportPage() {
           </div>
 
           {/* Demo Quick Sample Buttons */}
-          <div className="mt-8 md:mt-0 flex flex-col items-start md:items-end space-y-2">
+          <div className="flex flex-col items-start lg:items-end space-y-2 shrink-0">
             <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest pl-1">Override AI Fallback Type</span>
-            <div className="relative">
+            <div className="relative w-full lg:w-auto">
               <select
                 value={typeHint}
                 onChange={(e) => setTypeHint(e.target.value)}
-                className="appearance-none pl-5 pr-10 py-3 rounded-xl bg-stone-950/80 border border-stone-700 text-sm font-bold text-amber-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none shadow-xl transition-all cursor-pointer backdrop-blur-md"
+                className="w-full lg:w-auto appearance-none pl-5 pr-10 py-3 rounded-xl bg-stone-950/80 border border-stone-700 text-sm font-bold text-amber-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none shadow-xl transition-all cursor-pointer backdrop-blur-md"
               >
                 <option value="pothole">Pothole (Roads & Works)</option>
                 <option value="garbage">Garbage / Dumping (Sanitation)</option>
@@ -285,7 +285,7 @@ export default function CitizenReportPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         
         {/* Left Form Column */}
         <div className="lg:col-span-7 space-y-8">
@@ -350,18 +350,18 @@ export default function CitizenReportPage() {
                     Supports JPG, PNG, WEBP with automatic client-side compression
                   </p>
 
-                  <div className="mt-8 flex items-center space-x-4" onClick={(e) => e.stopPropagation()}>
+                  <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="px-6 py-3 rounded-xl text-sm font-bold bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 transition-colors shadow-lg"
+                      className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 transition-colors shadow-lg"
                     >
                       Browse Files
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowWebcam(true)}
-                      className="flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xl shadow-amber-500/25 hover:from-amber-400 hover:to-rose-400 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-xl shadow-amber-500/25 hover:from-amber-400 hover:to-rose-400 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                       <Camera className="w-5 h-5" />
                       <span>Take Photo</span>
@@ -400,12 +400,12 @@ export default function CitizenReportPage() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="e.g. 420 Grand Avenue, opposite Metro Station"
-                  className="w-full px-5 py-3.5 rounded-2xl bg-stone-950/60 border border-stone-700/80 text-stone-100 text-sm placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-inner"
+                  className="w-full px-5 py-3.5 rounded-2xl bg-stone-950/60 border border-stone-700/80 text-stone-100 text-sm placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-inner truncate"
                 />
               </div>
 
 
-              <div className="grid grid-cols-2 gap-4 relative z-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
                 <div>
                   <label className="block text-xs font-bold text-stone-400 mb-2">
                     LATITUDE

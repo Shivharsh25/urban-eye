@@ -209,7 +209,7 @@ export default function MapView({
         </Map>
 
       {/* Floating Map Controls */}
-      <div className="absolute top-4 left-4 right-4 z-[400] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+      <div className="absolute top-4 left-4 right-4 z-[400] flex flex-wrap items-start justify-between gap-2 pointer-events-none">
         <div className="flex flex-wrap items-center gap-2 pointer-events-auto">
           {allowPinDrop && (
             <button
@@ -246,8 +246,8 @@ export default function MapView({
           </select>
         </div>
 
-        {enableHeatmapToggle && (
-          <div className="pointer-events-auto">
+        <div className="flex flex-col items-end gap-2 pointer-events-auto">
+          {enableHeatmapToggle && (
             <button
               onClick={() => setShowHeatmap(!showHeatmap)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all backdrop-blur-xl shadow-lg border ${
@@ -259,8 +259,15 @@ export default function MapView({
               {showHeatmap ? <MapIcon className="w-4 h-4" /> : <Flame className="w-4 h-4 text-rose-400" />}
               <span>{showHeatmap ? 'VIEW PINS' : 'HEATMAP'}</span>
             </button>
-          </div>
-        )}
+          )}
+          
+          {allowPinDrop && (
+            <div className="px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold backdrop-blur-xl shadow-lg flex items-center space-x-2 pointer-events-none">
+              <MapPin className="w-3.5 h-3.5 animate-bounce" />
+              <span>Click map to pin</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Map Legend (Hide in Heatmap mode) */}
@@ -282,12 +289,6 @@ export default function MapView({
         </div>
       )}
 
-      {allowPinDrop && (
-        <div className="absolute top-4 right-4 z-[400] px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold backdrop-blur-xl shadow-lg flex items-center space-x-2 pointer-events-none">
-          <MapPin className="w-3.5 h-3.5 animate-bounce" />
-          <span>Click map to pin coordinate</span>
-        </div>
-      )}
     </div>
   );
 }
