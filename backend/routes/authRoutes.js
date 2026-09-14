@@ -127,6 +127,10 @@ router.get('/me', requireAuth, async (req, res) => {
         id: user.id || user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone || '',
+        bio: user.bio || '',
+        neighborhood: user.neighborhood || '',
+        photoUrl: user.photoUrl || null,
         role: user.role,
         createdAt: user.createdAt
       }
@@ -134,6 +138,45 @@ router.get('/me', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('[Auth API] Profile fetch error:', err);
     return res.status(500).json({ error: 'Failed to fetch user profile.' });
+  }
+});
+
+/**
+ * PATCH /api/auth/profile
+ * Update current authenticated user profile
+ */
+router.patch('/profile', requireAuth, async (req, res) => {
+  try {
+    const { name, phone, bio, neighborhood, photoUrl } = req.body;
+    const updates = {};
+    if (name !== undefined) updates.name = name.trim();
+    if (phone !== undefined) updates.phone = phone.trim();
+    if (bio !== undefined) updates.bio = bio;
+    if (neighborhood !== undefined) updates.neighborhood = neighborhood;
+    if (photoUrl !== undefined) updates.photoUrl = photoUrl;
+
+    const updatedUser = await User.updateById(req.user.id, updates);
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    return res.json({
+      message: 'Profile updated successfully',
+      user: {
+        id: updatedUser.id || updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone || '',
+        bio: updatedUser.bio || '',
+        neighborhood: updatedUser.neighborhood || '',
+        photoUrl: updatedUser.photoUrl || null,
+        role: updatedUser.role,
+        createdAt: updatedUser.createdAt
+      }
+    });
+  } catch (err) {
+    console.error('[Auth API] Profile update error:', err);
+    return res.status(500).json({ error: 'Failed to update user profile.' });
   }
 });
 

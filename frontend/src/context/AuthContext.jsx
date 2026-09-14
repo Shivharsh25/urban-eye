@@ -100,6 +100,14 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('urban_eye_user');
   };
 
+  const updateUser = (updatedUser) => {
+    setUser(prev => {
+      const merged = { ...prev, ...updatedUser };
+      localStorage.setItem('urban_eye_user', JSON.stringify(merged));
+      return merged;
+    });
+  };
+
   const value = {
     user,
     token,
@@ -108,7 +116,8 @@ export function AuthProvider({ children }) {
     login,
     loginWithPhone,
     register,
-    logout
+    logout,
+    updateUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
