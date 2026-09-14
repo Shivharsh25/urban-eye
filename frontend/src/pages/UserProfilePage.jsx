@@ -6,7 +6,8 @@ import {
   Edit3, Upload, X, Save, Calendar, Phone, Bell, 
   ExternalLink, Download, Sparkles, AlertTriangle, 
   Trash2, Droplets, CheckCircle2, ChevronRight,
-  FileText, LogOut, Check, SlidersHorizontal, Compass
+  FileText, LogOut, Check, SlidersHorizontal, Compass,
+  ThumbsUp, Eye
 } from 'lucide-react';
 import client from '../api/client';
 import DetectionModal from '../components/DetectionModal';
