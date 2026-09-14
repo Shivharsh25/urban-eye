@@ -37,9 +37,9 @@ export default function CitizenLayout({ children }) {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative z-10">
-        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
-          <div className="pb-10 lg:pb-0">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative z-10 w-full max-w-full">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative flex flex-col min-h-0 w-full max-w-full">
+          <div className="flex-1 flex flex-col min-h-0 w-full max-w-full">
             {children}
           </div>
         </main>

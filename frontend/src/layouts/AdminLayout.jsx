@@ -290,11 +290,11 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative z-10">
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#090d16] relative">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative z-10 w-full max-w-full">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#090d16] relative flex flex-col min-h-0 w-full max-w-full">
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-5 pointer-events-none"></div>
           <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-cyan-900/20 rounded-full blur-[120px] pointer-events-none"></div>
-          <div className="pb-10 lg:pb-0">
+          <div className="flex-1 flex flex-col min-h-0 w-full max-w-full relative z-10">
             {children}
           </div>
         </main>

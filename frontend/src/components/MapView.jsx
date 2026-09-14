@@ -109,7 +109,7 @@ export default function MapView({
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
-  const [isLegendCollapsed, setIsLegendCollapsed] = useState(false);
+  const [isLegendCollapsed, setIsLegendCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
   // Compute smart effective center: prioritize custom center -> first detection -> civic default (NCR 28.47, 77.50)
   const effectiveCenter = useMemo(() => {
@@ -200,7 +200,7 @@ export default function MapView({
   }
 
   return (
-    <div className="relative w-full rounded-3xl overflow-hidden border border-slate-800/80 shadow-2xl glass-panel group" style={{ height }}>
+    <div className={`relative w-full overflow-hidden shadow-2xl glass-panel group ${height === '100%' ? 'h-full rounded-none border-0' : 'rounded-2xl sm:rounded-3xl border border-slate-800/80'}`} style={{ height }}>
         <Map
           defaultCenter={mapCenter}
           defaultZoom={zoom}

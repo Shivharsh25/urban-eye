@@ -295,30 +295,30 @@ export default function CitizenDashboardPage() {
   const resolutionPercentage = totalIncidentsCount > 0 ? Math.round((resolvedCount / totalIncidentsCount) * 100) : 100;
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in relative z-10 font-sans">
+    <div className="p-3 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto space-y-5 sm:space-y-6 animate-fade-in relative z-10 font-sans min-w-0 overflow-x-hidden pb-16 lg:pb-8">
       
       {/* Top Welcome & Notification Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-800/60">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-slate-800/60 w-full min-w-0">
+        <div className="min-w-0">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight truncate">
               Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-cyan-300">{user?.name?.split(' ')[0] || 'Citizen'}</span>
             </h1>
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
               Live Grid Active
             </span>
           </div>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-slate-400 text-xs sm:text-sm mt-1 truncate">
             Real-time urban surveillance, community impact tracking, and civic resolution dispatch.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             onClick={() => fetchData(true)}
             disabled={refreshing}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60 transition-all shadow-md active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60 transition-all shadow-md active:scale-95 disabled:opacity-50"
             title="Refresh feed"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${refreshing ? 'animate-spin' : ''}`} />
@@ -327,7 +327,7 @@ export default function CitizenDashboardPage() {
           
           <button
             onClick={() => navigate('/report')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
+            className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
           >
             <Camera className="w-3.5 h-3.5" />
             <span>New Report</span>
@@ -336,173 +336,171 @@ export default function CitizenDashboardPage() {
       </div>
 
       {/* 4-Card Community Metric Overview Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Community Issues</span>
-            <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
-              <MapPin className="w-4 h-4 text-sky-400" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 w-full min-w-0">
+        <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Community Issues</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center shrink-0">
+              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-400" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-white">{totalIncidentsCount}</span>
-            <span className="text-xs font-semibold text-slate-500">active in area</span>
+          <div className="mt-2 flex items-baseline gap-1.5">
+            <span className="text-xl sm:text-3xl font-black text-white">{totalIncidentsCount}</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">in area</span>
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-cyan-400 font-medium">
-            <Sparkles className="w-3 h-3" />
-            <span>GPS verified incidents</span>
+          <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-cyan-400 font-medium truncate">
+            <Sparkles className="w-3 h-3 shrink-0" />
+            <span className="truncate">GPS verified</span>
           </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">City Resolution Rate</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
+        <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Resolution Rate</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-white">{resolutionPercentage}%</span>
-            <span className="text-xs font-semibold text-emerald-400">resolved</span>
+          <div className="mt-2 flex items-baseline gap-1.5">
+            <span className="text-xl sm:text-3xl font-black text-white">{resolutionPercentage}%</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-emerald-400 truncate">resolved</span>
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400/80 font-medium">
-            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-            <span>{resolvedCount} municipal fixes</span>
+          <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-emerald-400/80 font-medium truncate">
+            <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+            <span className="truncate">{resolvedCount} fixes</span>
           </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">My Submissions</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-              <FileText className="w-4 h-4 text-indigo-400" />
+        <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">My Submissions</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
+              <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-white">{userStats.totalReports}</span>
-            <span className="text-xs font-semibold text-slate-400">filed by you</span>
+          <div className="mt-2 flex items-baseline gap-1.5">
+            <span className="text-xl sm:text-3xl font-black text-white">{userStats.totalReports}</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 truncate">filed</span>
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-indigo-300 font-medium">
-            <CheckCircle className="w-3 h-3 text-emerald-400" />
-            <span>{userStats.resolvedReports} resolved</span>
+          <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-indigo-300 font-medium truncate">
+            <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
+            <span className="truncate">{userStats.resolvedReports} done</span>
           </div>
         </div>
 
-        <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Civic Trust Score</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-              <Award className="w-4 h-4 text-amber-400" />
+        <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Civic Trust</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className={`text-2xl sm:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r ${tier.textGradient}`}>{userStats.civicScore}</span>
-            <span className="text-xs font-bold uppercase text-amber-400/90">{tier.name}</span>
+          <div className="mt-2 flex items-baseline gap-1.5">
+            <span className={`text-xl sm:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r ${tier.textGradient}`}>{userStats.civicScore}</span>
+            <span className="text-[10px] sm:text-xs font-bold uppercase text-amber-400/90 truncate">{tier.name}</span>
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-400 font-medium truncate">
-            <span>{tier.next - userStats.civicScore} pts to next rank</span>
+          <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">
+            <span className="truncate">{tier.next - userStats.civicScore} pts to next rank</span>
           </div>
         </div>
       </div>
 
       {/* Quick Action Navigation Buttons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 w-full min-w-0">
         <button 
           onClick={() => navigate('/report')} 
-          className="glass-card hover:border-sky-500/40 p-4 rounded-2xl flex items-center gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-sky-500/5 to-slate-900/50"
+          className="glass-card hover:border-sky-500/40 p-3 sm:p-4 rounded-2xl flex items-center gap-2.5 sm:gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-sky-500/5 to-slate-900/50 min-w-0 w-full overflow-hidden"
         >
-          <div className="w-11 h-11 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Camera className="w-5 h-5 text-sky-400" />
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+            <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-sky-400" />
           </div>
-          <div className="min-w-0">
-            <div className="text-sm font-bold text-white flex items-center gap-1">
+          <div className="min-w-0 flex-1">
+            <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
               Report Issue
-              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform" />
+              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </div>
-            <p className="text-[11px] text-slate-400 truncate">AI Detection & Dispatch</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">AI Detection</p>
           </div>
         </button>
 
         <button 
           onClick={() => navigate('/my-reports')} 
-          className="glass-card hover:border-indigo-500/40 p-4 rounded-2xl flex items-center gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-indigo-500/5 to-slate-900/50"
+          className="glass-card hover:border-indigo-500/40 p-3 sm:p-4 rounded-2xl flex items-center gap-2.5 sm:gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-indigo-500/5 to-slate-900/50 min-w-0 w-full overflow-hidden"
         >
-          <div className="w-11 h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Activity className="w-5 h-5 text-indigo-400" />
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+            <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
           </div>
-          <div className="min-w-0">
-            <div className="text-sm font-bold text-white flex items-center gap-1">
-              My Activity & PDF
-              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform" />
+          <div className="min-w-0 flex-1">
+            <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
+              My Activity
+              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </div>
-            <p className="text-[11px] text-slate-400 truncate">Status timeline & exports</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">Status & PDF</p>
           </div>
         </button>
 
         <button 
           onClick={() => navigate('/map')} 
-          className="glass-card hover:border-emerald-500/40 p-4 rounded-2xl flex items-center gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-emerald-500/5 to-slate-900/50"
+          className="glass-card hover:border-emerald-500/40 p-3 sm:p-4 rounded-2xl flex items-center gap-2.5 sm:gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-emerald-500/5 to-slate-900/50 min-w-0 w-full overflow-hidden"
         >
-          <div className="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Compass className="w-5 h-5 text-emerald-400" />
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+            <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
           </div>
-          <div className="min-w-0">
-            <div className="text-sm font-bold text-white flex items-center gap-1">
-              Full Screen Map
-              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform" />
+          <div className="min-w-0 flex-1">
+            <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
+              Live Map
+              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </div>
-            <p className="text-[11px] text-slate-400 truncate">Interactive city scanner</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">City Scanner</p>
           </div>
         </button>
 
         <button 
           onClick={() => setShowEmergencyModal(true)} 
-          className="glass-card hover:border-rose-500/40 p-4 rounded-2xl flex items-center gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-rose-500/5 to-slate-900/50"
+          className="glass-card hover:border-rose-500/40 p-3 sm:p-4 rounded-2xl flex items-center gap-2.5 sm:gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-rose-500/5 to-slate-900/50 min-w-0 w-full overflow-hidden"
         >
-          <div className="w-11 h-11 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <PhoneCall className="w-5 h-5 text-rose-400 animate-pulse" />
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+            <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5 text-rose-400 animate-pulse" />
           </div>
-          <div className="min-w-0">
-            <div className="text-sm font-bold text-rose-200 flex items-center gap-1">
+          <div className="min-w-0 flex-1">
+            <div className="text-xs sm:text-sm font-bold text-rose-200 flex items-center gap-1 truncate">
               Emergency SOS
-              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform" />
+              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </div>
-            <p className="text-[11px] text-rose-300/70 truncate">Municipal Control Hotlines</p>
+            <p className="text-[10px] sm:text-[11px] text-rose-300/70 truncate">Hotlines</p>
           </div>
         </button>
       </div>
 
       {/* Main Grid: Left (Map & Local Activity) + Right (Civic Score & Alerts) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 w-full min-w-0">
         
         {/* Left 2 Columns */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-5 sm:space-y-6 w-full min-w-0">
           
           {/* Enhanced Community Impact Map Card */}
-          <div className="glass-card rounded-3xl overflow-hidden border border-slate-800/80 flex flex-col h-[460px] shadow-2xl relative bg-slate-950">
+          <div className="glass-card rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-800/80 flex flex-col h-[340px] sm:h-[460px] shadow-2xl relative bg-slate-950 w-full min-w-0">
             
             {/* Map Header Bar */}
-            <div className="px-5 py-3.5 border-b border-slate-800/70 flex flex-wrap items-center justify-between gap-2 bg-slate-900/80 backdrop-blur-xl z-10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center">
+            <div className="px-3.5 sm:px-5 py-3 border-b border-slate-800/70 flex items-center justify-between gap-2 bg-slate-900/80 backdrop-blur-xl z-10 w-full min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-7 h-7 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center shrink-0">
                   <MapPin className="w-4 h-4 text-sky-400" />
                 </div>
-                <div>
-                  <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                    Community Impact Map
-                    <span className="text-[11px] font-mono font-normal text-slate-400">
-                      ({recentReports.length} pins active)
-                    </span>
-                  </h2>
-                </div>
+                <h2 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 truncate">
+                  <span>Community Map</span>
+                  <span className="text-[10px] sm:text-[11px] font-mono font-normal text-slate-400">
+                    ({recentReports.length} pins)
+                  </span>
+                </h2>
               </div>
 
               {/* Map View Toolbar */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   onClick={handleLocateMe}
                   disabled={isLocating}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-all shadow-sm active:scale-95 disabled:opacity-50"
+                  className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-all shadow-sm active:scale-95 disabled:opacity-50"
                   title="Locate my GPS coordinates"
                 >
                   <Locate className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
@@ -512,50 +510,50 @@ export default function CitizenDashboardPage() {
                 {customMapCenter && (
                   <button
                     onClick={handleResetMapCenter}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all"
-                    title="Recenter on community incidents"
+                    className="px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all"
+                    title="Recenter map"
                   >
                     <span>Reset</span>
                   </button>
                 )}
 
-                <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 sm:px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Live Grid
+                  Live
                 </span>
               </div>
             </div>
 
             {/* Google Map Container with Connected Detections */}
-            <div className="flex-1 relative w-full h-full bg-slate-900">
+            <div className="flex-1 relative w-full h-full bg-slate-900 min-w-0">
               <MapView 
                 detections={recentReports}
                 center={mapCenter}
                 zoom={13}
                 height="100%"
                 onSelectDetection={(detection) => setSelectedDetection(detection)}
-                showFilters={true}
+                showFilters={false}
               />
             </div>
           </div>
 
           {/* Local Activity Feed */}
-          <div className="glass-card rounded-3xl p-6 border border-slate-800/80 bg-slate-900/40">
+          <div className="glass-card rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border border-slate-800/80 bg-slate-900/40 w-full min-w-0 overflow-hidden">
             
             {/* Feed Header & Filters */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-4 border-b border-slate-800/60">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 pb-3 border-b border-slate-800/60 w-full min-w-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center shrink-0">
                   <Activity className="w-4 h-4 text-indigo-400" />
                 </div>
-                <div>
-                  <h2 className="text-base font-bold text-white">Recent Activity in your Area</h2>
-                  <p className="text-xs text-slate-400">Click any incident to inspect details or download official PDF</p>
+                <div className="min-w-0">
+                  <h2 className="text-sm sm:text-base font-bold text-white truncate">Recent Activity in your Area</h2>
+                  <p className="text-[11px] sm:text-xs text-slate-400 truncate">Tap incident for details or official PDF</p>
                 </div>
               </div>
 
               {/* Status Filter Tabs */}
-              <div className="flex items-center p-1 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-semibold overflow-x-auto max-w-full">
+              <div className="flex items-center p-1 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-semibold overflow-x-auto max-w-full w-full sm:w-auto shrink-0 no-scrollbar">
                 <button 
                   onClick={() => setFilter('ALL')} 
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'ALL' ? 'bg-indigo-600/30 text-indigo-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
@@ -584,8 +582,8 @@ export default function CitizenDashboardPage() {
             </div>
 
             {/* Category Sub-Filters */}
-            <div className="flex flex-wrap items-center gap-2 mb-4 pb-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1">Filter:</span>
+            <div className="flex items-center gap-1.5 mb-4 pb-1 overflow-x-auto max-w-full w-full no-scrollbar">
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 shrink-0">Filter:</span>
               {[
                 { id: 'ALL', label: 'All Categories' },
                 { id: 'pothole', label: 'Roads & Potholes' },
@@ -596,7 +594,7 @@ export default function CitizenDashboardPage() {
                 <button
                   key={cat.id}
                   onClick={() => setCategoryFilter(cat.id)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border ${
+                  className={`shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border ${
                     categoryFilter === cat.id 
                       ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-sm' 
                       : 'bg-slate-900/50 text-slate-400 border-slate-800/80 hover:text-slate-300 hover:bg-slate-800/40'
@@ -614,7 +612,7 @@ export default function CitizenDashboardPage() {
                 <p className="text-xs text-slate-400 font-medium">Scanning community grid...</p>
               </div>
             ) : filteredReports.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-3 w-full min-w-0">
                 {filteredReports.slice(0, 8).map(report => {
                   const cat = getCategoryMeta(report.type);
                   const Icon = cat.icon;
@@ -626,51 +624,53 @@ export default function CitizenDashboardPage() {
                   return (
                     <div 
                       key={report._id || report.id} 
-                      className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/70 hover:border-slate-700/80 hover:bg-slate-850/70 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group cursor-pointer"
+                      className="p-3 sm:p-4 rounded-2xl bg-slate-900/60 border border-slate-800/70 hover:border-slate-700/80 hover:bg-slate-850/70 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 group cursor-pointer w-full min-w-0 overflow-hidden"
                       onClick={() => setSelectedDetection(report)}
                     >
-                      <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                      <div className="flex items-start gap-3 flex-1 min-w-0 w-full">
                         {/* Thumbnail or Category Icon */}
                         {imgUrl ? (
-                          <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-slate-700/60 shadow-md">
+                          <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden shrink-0 border border-slate-700/60 shadow-md">
                             <img src={imgUrl} alt={report.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                             <div className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60 backdrop-blur-sm">
-                              <Icon className={`w-3 h-3 ${cat.text}`} />
+                              <Icon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${cat.text}`} />
                             </div>
                           </div>
                         ) : (
-                          <div className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center border ${cat.border} ${cat.bg}`}>
+                          <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl shrink-0 flex items-center justify-center border ${cat.border} ${cat.bg}`}>
                             <Icon className={`w-5 h-5 ${cat.text}`} />
                           </div>
                         )}
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <span className="text-sm font-bold text-white capitalize group-hover:text-cyan-300 transition-colors truncate">
+                          <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1 min-w-0">
+                            <span className="text-xs sm:text-sm font-bold text-white capitalize group-hover:text-cyan-300 transition-colors truncate max-w-[150px] sm:max-w-none">
                               {cat.label}
                             </span>
-                            {getSeverityBadge(report.severity, report.priority)}
-                            {getStatusBadge(report.status)}
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {getSeverityBadge(report.severity, report.priority)}
+                              {getStatusBadge(report.status)}
+                            </div>
                           </div>
 
-                          <p className="text-xs text-slate-300 flex items-center gap-1.5 truncate">
-                            <MapPin className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+                          <p className="text-xs text-slate-300 flex items-center gap-1.5 min-w-0 w-full">
+                            <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                             <span className="truncate">{summaryText}</span>
                           </p>
 
-                          <div className="flex items-center gap-3 mt-1.5 text-[11px] text-slate-500 font-mono">
+                          <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] sm:text-[11px] text-slate-500 font-mono">
                             <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
+                              <Clock className="w-3 h-3 shrink-0" />
                               {new Date(report.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
                             <span>•</span>
-                            <span>Ward: {report.assignedDepartment?.split(' ')[0] || 'PWD'}</span>
+                            <span className="truncate">Ward: {report.assignedDepartment?.split(' ')[0] || 'PWD'}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Action buttons on card */}
-                      <div className="flex items-center gap-2 self-end sm:self-center" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-2 self-end sm:self-center shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t border-slate-800/60 sm:border-t-0" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleToggleUpvote(report._id || report.id)}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
@@ -689,7 +689,7 @@ export default function CitizenDashboardPage() {
                           className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 transition-all"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">Inspect & PDF</span>
+                          <span>Inspect & PDF</span>
                         </button>
                       </div>
                     </div>
