@@ -555,28 +555,28 @@ export default function CitizenDashboardPage() {
               </div>
 
               {/* Status Filter Tabs */}
-              <div className="flex items-center p-1 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-semibold">
+              <div className="flex items-center p-1 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-semibold overflow-x-auto max-w-full">
                 <button 
                   onClick={() => setFilter('ALL')} 
-                  className={`px-3 py-1.5 rounded-lg transition-all ${filter === 'ALL' ? 'bg-indigo-600/30 text-indigo-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'ALL' ? 'bg-indigo-600/30 text-indigo-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                 >
                   All
                 </button>
                 <button 
                   onClick={() => setFilter('CRITICAL')} 
-                  className={`px-3 py-1.5 rounded-lg transition-all ${filter === 'CRITICAL' ? 'bg-rose-500/20 text-rose-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'CRITICAL' ? 'bg-rose-500/20 text-rose-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                 >
                   Critical
                 </button>
                 <button 
                   onClick={() => setFilter('IN_PROGRESS')} 
-                  className={`px-3 py-1.5 rounded-lg transition-all ${filter === 'IN_PROGRESS' ? 'bg-amber-500/20 text-amber-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'IN_PROGRESS' ? 'bg-amber-500/20 text-amber-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                 >
                   Active
                 </button>
                 <button 
                   onClick={() => setFilter('RESOLVED')} 
-                  className={`px-3 py-1.5 rounded-lg transition-all ${filter === 'RESOLVED' ? 'bg-emerald-500/20 text-emerald-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'RESOLVED' ? 'bg-emerald-500/20 text-emerald-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                 >
                   Resolved
                 </button>

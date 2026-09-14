@@ -87,24 +87,29 @@ export default function AdminLayout({ children }) {
   ];
 
   return (
-    <div className="flex h-screen bg-[#090d16] overflow-hidden text-slate-100 font-sans selection:bg-cyan-500 selection:text-white">
+    <div className="flex flex-col lg:flex-row h-screen h-[100dvh] bg-[#090d16] overflow-hidden text-slate-100 font-sans selection:bg-cyan-500 selection:text-white">
       
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 w-full z-50 glass-panel border-b border-slate-800/80 px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden shrink-0 z-30 glass-panel border-b border-slate-800/80 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Eye className="w-6 h-6 text-cyan-400" />
           <span className="font-bold text-lg text-white tracking-tight">Urban EYE Admin</span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-300">
+        <button 
+          type="button"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+          className="text-slate-300 p-2 rounded-lg hover:bg-slate-800 transition-colors"
+          aria-label="Toggle Navigation Menu"
+        >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
-      </div>
+      </header>
 
       {/* Sidebar Navigation */}
       <aside className={`
-        fixed inset-y-0 left-0 z-40 glass-panel border-r border-slate-800/80 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-screen flex flex-col
+        fixed inset-y-0 left-0 z-50 glass-panel border-r border-slate-800/80 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:relative lg:shrink-0 lg:h-screen flex flex-col
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${isCollapsed ? 'lg:w-20 w-64' : 'lg:w-64 w-64'}
+        ${isCollapsed ? 'lg:w-20 w-72 max-w-[85vw]' : 'lg:w-64 w-72 max-w-[85vw]'}
       `}>
         {/* Brand Area & Collapse Toggle */}
         {isCollapsed ? (
@@ -127,8 +132,8 @@ export default function AdminLayout({ children }) {
             </button>
           </div>
         ) : (
-          <div className="h-20 flex items-center justify-between px-4 border-b border-slate-800/60 mt-12 lg:mt-0">
-            <Link to="/admin" className="flex items-center space-x-3 group min-w-0" title="Urban EYE Admin">
+          <div className="h-20 flex items-center justify-between px-4 border-b border-slate-800/60">
+            <Link to="/admin" className="flex items-center space-x-3 group min-w-0 flex-1" title="Urban EYE Admin">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-sky-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform duration-200 shrink-0">
                 <Eye className="w-5 h-5 text-white animate-pulse" />
               </div>
@@ -144,6 +149,14 @@ export default function AdminLayout({ children }) {
               title="Minimize Sidebar (Ctrl + B)"
             >
               <PanelLeftClose className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="lg:hidden flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 transition-all border border-slate-800/70 shrink-0 ml-1"
+              title="Close Menu"
+            >
+              <X className="w-5 h-5" />
             </button>
           </div>
         )}
@@ -277,16 +290,20 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#090d16] mt-16 lg:mt-0 relative">
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-5 pointer-events-none"></div>
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-cyan-900/20 rounded-full blur-[120px] pointer-events-none"></div>
-        {children}
-      </main>
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative z-10">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#090d16] relative">
+          <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-5 pointer-events-none"></div>
+          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-cyan-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+          <div className="pb-10 lg:pb-0">
+            {children}
+          </div>
+        </main>
+      </div>
 
       {/* Mobile Backdrop */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

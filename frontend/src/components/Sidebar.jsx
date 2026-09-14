@@ -23,7 +23,8 @@ import {
   Sparkles,
   ShieldCheck,
   Flame,
-  RadioTower
+  RadioTower,
+  X
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -89,18 +90,18 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
   return (
     <aside className={`
-      fixed inset-y-0 left-0 z-50 h-full border-r border-slate-800/80 bg-[#070b14]/95 backdrop-blur-2xl flex flex-col transition-all duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.6)]
-      lg:static lg:translate-x-0
+      fixed inset-y-0 left-0 z-50 h-full border-r border-slate-800/80 bg-[#070b14]/95 backdrop-blur-2xl flex flex-col transition-transform duration-300 shadow-[10px_0_30px_rgba(0,0,0,0.6)]
+      lg:static lg:relative lg:translate-x-0 lg:shrink-0
       ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-      ${isCollapsed ? 'lg:w-20 w-64' : 'w-64'}
-      relative overflow-hidden
+      ${isCollapsed ? 'lg:w-20 w-72 max-w-[85vw]' : 'w-72 sm:w-64 max-w-[85vw]'}
+      overflow-hidden
     `}>
       {/* Dynamic Ambient Background Glows */}
       <div className="absolute -top-16 -left-16 w-48 h-48 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
       <div className="absolute bottom-28 -left-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute inset-0 bg-[radial-gradient(#06b6d4_0.75px,transparent_0.75px)] [background-size:16px_16px] opacity-10 pointer-events-none"></div>
 
-      {/* Brand Header & Integrated Collapse Toggle (No Overflow / No Clipping) */}
+      {/* Brand Header & Integrated Collapse Toggle / Mobile Close Button */}
       {isCollapsed ? (
         <div className="h-20 flex flex-col items-center justify-center border-b border-slate-800/80 relative z-10 bg-slate-950/40 backdrop-blur-md py-2">
           <Link to={isAdmin ? "/admin" : "/dashboard"} className="group" title="Urban EYE">
@@ -109,10 +110,18 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           <button 
             type="button"
             onClick={toggleCollapse}
-            className="hidden sm:flex items-center justify-center mt-1 p-1 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80 transition-all group/btn"
+            className="hidden lg:flex items-center justify-center mt-1 p-1 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80 transition-all group/btn"
             title="Expand Sidebar (Ctrl + B)"
           >
             <PanelLeftOpen className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+            className="lg:hidden mt-1 p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 transition-all"
+            title="Close Navigation Drawer"
+          >
+            <X className="w-4 h-4" />
           </button>
         </div>
       ) : (
@@ -120,13 +129,23 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center space-x-3 group min-w-0 flex-1" title="Urban EYE">
             <Logo size="md" subtitle="Active Watch" showText={true} />
           </Link>
+          {/* Desktop Collapse Toggle */}
           <button 
             type="button"
             onClick={toggleCollapse}
-            className="hidden sm:flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80 transition-all border border-slate-800/70 hover:border-cyan-500/40 shrink-0 ml-1"
+            className="hidden lg:flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80 transition-all border border-slate-800/70 hover:border-cyan-500/40 shrink-0 ml-1"
             title="Minimize Sidebar (Ctrl + B)"
           >
             <PanelLeftClose className="w-4 h-4" />
+          </button>
+          {/* Mobile Drawer Close Button */}
+          <button 
+            type="button"
+            onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+            className="lg:hidden flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 transition-all border border-slate-800/70 hover:border-rose-500/40 shrink-0 ml-1"
+            title="Close Navigation Drawer"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
       )}

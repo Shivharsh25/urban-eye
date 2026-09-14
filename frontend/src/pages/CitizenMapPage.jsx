@@ -180,11 +180,11 @@ export default function CitizenMapPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#05080f] overflow-hidden relative font-sans">
+    <div className="flex h-full min-h-[calc(100dvh-60px)] lg:min-h-full w-full bg-[#05080f] overflow-hidden relative font-sans">
       
       {/* 1. Floating Trigger Button when Left Panel is Hidden */}
       <div 
-        className={`absolute top-6 left-6 z-20 transition-all duration-300 ease-in-out ${
+        className={`absolute top-3 left-3 sm:top-6 sm:left-6 z-20 transition-all duration-300 ease-in-out ${
           isLeftOpen 
             ? 'opacity-0 pointer-events-none -translate-x-12 scale-95' 
             : 'opacity-100 pointer-events-auto translate-x-0 scale-100'
@@ -210,7 +210,7 @@ export default function CitizenMapPage() {
 
       {/* 2. Floating Left Panel (Grid Info & Layer Filters) */}
       <div 
-        className={`absolute top-6 left-6 z-20 w-72 max-w-[calc(100vw-3rem)] flex flex-col space-y-3 pointer-events-auto max-h-[calc(100vh-3rem)] overflow-y-auto custom-scrollbar transition-all duration-300 ease-in-out ${
+        className={`absolute top-3 left-3 right-3 sm:right-auto sm:left-6 sm:top-6 z-20 w-auto sm:w-72 max-w-[calc(100vw-1.5rem)] flex flex-col space-y-3 pointer-events-auto max-h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar transition-all duration-300 ease-in-out ${
           isLeftOpen 
             ? 'translate-x-0 opacity-100' 
             : '-translate-x-[120%] opacity-0 pointer-events-none'
@@ -403,7 +403,7 @@ export default function CitizenMapPage() {
 
       {/* 5. Floating Trigger Button when Right Feed is Hidden */}
       <div 
-        className={`absolute top-6 right-6 z-20 transition-all duration-300 ease-in-out ${
+        className={`absolute top-3 right-3 sm:top-6 sm:right-6 z-20 transition-all duration-300 ease-in-out ${
           isRightOpen 
             ? 'opacity-0 pointer-events-none translate-x-12 scale-95' 
             : 'opacity-100 pointer-events-auto translate-x-0 scale-100'
@@ -411,19 +411,19 @@ export default function CitizenMapPage() {
       >
         <button
           onClick={() => updateRightOpen(true)}
-          className="glass-panel px-4 py-2.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 text-slate-200 hover:text-white flex items-center space-x-3 shadow-2xl backdrop-blur-xl transition-all duration-200 group hover:scale-[1.02]"
+          className="glass-panel px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 text-slate-200 hover:text-white flex items-center space-x-2 sm:space-x-3 shadow-2xl backdrop-blur-xl transition-all duration-200 group hover:scale-[1.02]"
           title="Open Live Incident Feed"
         >
           <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 group-hover:-translate-x-0.5 transition-all" />
-          <div className="relative w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
-            <Activity className="w-4 h-4" />
+          <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
+            <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="absolute -top-1 -right-1 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
             </span>
           </div>
           <div className="flex flex-col text-left">
-            <span className="text-xs font-bold leading-tight">Incident Feed</span>
+            <span className="text-xs font-bold leading-tight">Feed</span>
             <span className="text-[10px] text-cyan-400 font-mono font-medium">
               {filteredReports.length} Live
             </span>
@@ -433,7 +433,7 @@ export default function CitizenMapPage() {
 
       {/* 6. Floating Right Panel: Live Feed */}
       <div 
-        className={`absolute right-6 top-6 bottom-6 w-84 max-w-[calc(100vw-3rem)] z-20 flex flex-col pointer-events-auto transition-all duration-300 ease-in-out ${
+        className={`absolute right-3 left-3 sm:left-auto sm:right-6 top-3 sm:top-6 bottom-3 sm:bottom-6 w-auto sm:w-84 max-w-[calc(100vw-1.5rem)] z-20 flex flex-col pointer-events-auto transition-all duration-300 ease-in-out ${
           isRightOpen 
             ? 'translate-x-0 opacity-100' 
             : 'translate-x-[120%] opacity-0 pointer-events-none'

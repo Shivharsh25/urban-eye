@@ -70,32 +70,32 @@ export default function CitizenReportsPage() {
   });
 
   return (
-    <div className="max-w-[1200px] mx-auto px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 pb-6 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 border-b border-slate-800/60">
         <div>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 shadow-lg shadow-cyan-500/10 shrink-0">
               <CheckCircle2 className="w-5 h-5 text-cyan-400" />
             </div>
-            <h1 className="text-3xl font-black text-white tracking-tight drop-shadow-md">
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-md">
               My Submitted Reports
             </h1>
             <span className="px-2 py-0.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-500/30 text-[10px] font-mono font-bold animate-pulse">
               LIVE TRACKING
             </span>
           </div>
-          <p className="text-sm text-slate-400 mt-2 font-medium">
+          <p className="text-xs sm:text-sm text-slate-400 mt-2 font-medium">
             Track real-time status changes and community confirmations for your reported infrastructure issues
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={fetchReports}
-            className="p-3 rounded-xl bg-slate-900/80 border border-slate-700 hover:text-white hover:bg-slate-800 transition-colors shadow-lg"
+            className="p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-slate-700 hover:text-white hover:bg-slate-800 transition-colors shadow-lg shrink-0"
             title="Refresh list"
           >
             <RefreshCw className={`w-4 h-4 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
@@ -103,7 +103,7 @@ export default function CitizenReportsPage() {
 
           <Link
             to="/report"
-            className="flex items-center space-x-2 px-5 py-3 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 shadow-xl shadow-cyan-500/20 transition-all hover:scale-105 active:scale-95"
+            className="flex-1 sm:flex-initial flex items-center justify-center space-x-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 shadow-xl shadow-cyan-500/20 transition-all hover:scale-105 active:scale-95"
           >
             <Camera className="w-4 h-4" />
             <span>Report New Issue</span>

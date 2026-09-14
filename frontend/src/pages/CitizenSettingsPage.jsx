@@ -21,7 +21,7 @@ export default function CitizenSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05080f] p-6 lg:p-10 relative overflow-hidden">
+    <div className="min-h-full p-4 sm:p-6 lg:p-10 relative overflow-hidden">
       
       {/* Background aesthetics */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -32,22 +32,30 @@ export default function CitizenSettingsPage() {
       <div className="max-w-4xl mx-auto relative z-10">
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-black text-white tracking-tight flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center">
-                <Settings className="w-6 h-6 text-slate-300" />
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center space-x-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
+                <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-slate-300" />
               </div>
               <span>Preferences</span>
             </h1>
-            <p className="text-slate-400 mt-2">Manage your Urban EYE account settings and notifications.</p>
+            <p className="text-slate-400 mt-2 text-xs sm:text-sm">Manage your Urban EYE account settings and notifications.</p>
           </div>
           
           <button 
+            type="button"
             onClick={handleSave}
-            className="hidden sm:flex items-center space-x-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+            className="flex items-center justify-center space-x-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] w-full sm:w-auto shrink-0"
           >
-            {saved ? <CheckCircle className="w-4 h-4" /> : <span>Save Changes</span>}
+            {saved ? (
+              <>
+                <CheckCircle className="w-4 h-4 text-emerald-300" />
+                <span>Saved!</span>
+              </>
+            ) : (
+              <span>Save Changes</span>
+            )}
           </button>
         </div>
 
