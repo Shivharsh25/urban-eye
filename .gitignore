@@ -4,3 +4,7 @@ node_modules/
 dist/
 build/
 backend/data/urban_eye_store.json
+__pycache__/
+*.py[cod]
+test_check.pdf
+test_num.pdf

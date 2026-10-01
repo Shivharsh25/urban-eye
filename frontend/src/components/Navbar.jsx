@@ -14,6 +14,7 @@ import {
   Radio, 
   Bell
 } from 'lucide-react';
+import UserMenuDropdown from './UserMenuDropdown';
 
 export default function Navbar() {
   const { user, isAdmin, logout } = useAuth();
@@ -149,54 +150,13 @@ export default function Navbar() {
                 )}
                 <span className={`relative inline-flex rounded-full h-2 w-2 ${socketConnected ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
               </span>
-              <span className={socketConnected ? 'text-emerald-400' : 'text-rose-400'}>
+              <span className={socketConnected ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
                 {socketConnected ? 'LIVE FEED' : 'OFFLINE'}
               </span>
             </div>
 
-            {user ? (
-              <div className="flex items-center space-x-3">
-                <Link to="/profile" className="hidden sm:flex flex-col items-end hover:bg-stone-800/50 p-2 rounded-lg transition-colors cursor-pointer">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="text-sm font-semibold text-stone-200">{user.name}</span>
-                    {isAdmin ? (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                        ADMIN
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40">
-                        CITIZEN
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-[11px] text-stone-400 font-mono">{user.email}</span>
-                </Link>
-
-                <button
-                  onClick={handleLogout}
-                  title="Log out"
-                  className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/20 hover:border-rose-500/40 transition-all duration-150 font-medium text-xs"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Sign Out</span>
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Link
-                  to="/login"
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-stone-200 hover:text-white bg-stone-800/70 hover:bg-stone-700/80 border border-stone-700 transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 shadow-md shadow-amber-500/20 transition-all"
-                >
-                  Citizen Register
-                </Link>
-              </div>
-            )}
+            {/* Tap option avatar dropdown matching screenshot */}
+            <UserMenuDropdown />
           </div>
 
         </div>

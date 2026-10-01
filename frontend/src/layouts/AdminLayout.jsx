@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getSocket } from '../api/socket';
+import TopHeader from '../components/TopHeader';
+import UserMenuDropdown from '../components/UserMenuDropdown';
+import SignOutModal from '../components/SignOutModal';
+import { useLanguage } from '../context/LanguageContext';
 import { 
   Eye, 
   LogOut, 
@@ -21,10 +25,12 @@ import {
 
 export default function AdminLayout({ children }) {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const [socketConnected, setSocketConnected] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
   // Sidebar collapse state with localStorage persistence
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -71,6 +77,11 @@ export default function AdminLayout({ children }) {
   }, []);
 
   const handleLogout = () => {
+    setShowSignOutConfirm(true);
+  };
+
+  const handleConfirmSignOut = () => {
+    setShowSignOutConfirm(false);
     logout();
     navigate('/login');
   };
@@ -78,31 +89,34 @@ export default function AdminLayout({ children }) {
   const isActive = (path) => location.pathname === path;
 
   const navItems = [
-    { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-    { name: 'Reported Issues', path: '/admin/issues', icon: Layers },
-    { name: 'Analytics', path: '/admin/analytics', icon: Activity },
-    { name: 'Users', path: '/admin/users', icon: Users },
-    { name: 'Announcements', path: '/admin/announcements', icon: Bell },
-    { name: 'Settings', path: '/admin/settings', icon: Settings },
+    { name: t('dashboard'), path: '/admin', icon: LayoutDashboard },
+    { name: t('reportedIssues'), path: '/admin/issues', icon: Layers },
+    { name: t('analytics'), path: '/admin/analytics', icon: Activity },
+    { name: t('users'), path: '/admin/users', icon: Users },
+    { name: t('announcements'), path: '/admin/announcements', icon: Bell },
+    { name: t('settings'), path: '/admin/settings', icon: Settings },
   ];
 
   return (
     <div className="flex flex-col lg:flex-row h-screen h-[100dvh] bg-[#090d16] overflow-hidden text-slate-100 font-sans selection:bg-cyan-500 selection:text-white">
       
       {/* Mobile Header */}
-      <header className="lg:hidden shrink-0 z-30 glass-panel border-b border-slate-800/80 px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden shrink-0 z-30 glass-panel border-b border-slate-800/80 px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Eye className="w-6 h-6 text-cyan-400" />
-          <span className="font-bold text-lg text-white tracking-tight">Urban EYE Admin</span>
+          <button 
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+            className="text-slate-300 p-1.5 rounded-lg hover:bg-slate-800 transition-colors mr-1"
+            aria-label="Toggle Navigation Menu"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          <Eye className="w-5 h-5 text-cyan-400" />
+          <span className="font-bold text-base text-white tracking-tight">Urban EYE Admin</span>
         </div>
-        <button 
-          type="button"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-          className="text-slate-300 p-2 rounded-lg hover:bg-slate-800 transition-colors"
-          aria-label="Toggle Navigation Menu"
-        >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center space-x-2">
+          <UserMenuDropdown />
+        </div>
       </header>
 
       {/* Sidebar Navigation */}
@@ -291,6 +305,11 @@ export default function AdminLayout({ children }) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative z-10 w-full max-w-full">
+        {/* Top Header with Language, Theme, Notifications & User Dropdown */}
+        <div className="hidden lg:block shrink-0">
+          <TopHeader />
+        </div>
+
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#090d16] relative flex flex-col min-h-0 w-full max-w-full">
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-5 pointer-events-none"></div>
           <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-cyan-900/20 rounded-full blur-[120px] pointer-events-none"></div>
@@ -307,6 +326,13 @@ export default function AdminLayout({ children }) {
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
+
+      {/* Sign Out Confirmation Modal */}
+      <SignOutModal 
+        isOpen={showSignOutConfirm}
+        onClose={() => setShowSignOutConfirm(false)}
+        onConfirm={handleConfirmSignOut}
+      />
     </div>
   );
 }

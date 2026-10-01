@@ -12,10 +12,12 @@ import {
 } from 'lucide-react';
 import client from '../api/client';
 import { subscribeToDetections } from '../api/socket';
+import { useLanguage } from '../context/LanguageContext';
 import DetectionCard from '../components/DetectionCard';
 import DetectionModal from '../components/DetectionModal';
 
 export default function CitizenReportsPage() {
+  const { t } = useLanguage();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,14 +82,14 @@ export default function CitizenReportsPage() {
               <CheckCircle2 className="w-5 h-5 text-cyan-400" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-md">
-              My Submitted Reports
+              {t('mySubmittedReports')}
             </h1>
             <span className="px-2 py-0.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-500/30 text-[10px] font-mono font-bold animate-pulse">
-              LIVE TRACKING
+              {t('liveTracking')}
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-2 font-medium">
-            Track real-time status changes and community confirmations for your reported infrastructure issues
+            {t('reportsSubtitle')}
           </p>
         </div>
 
@@ -106,7 +108,7 @@ export default function CitizenReportsPage() {
             className="flex-1 sm:flex-initial flex items-center justify-center space-x-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 shadow-xl shadow-cyan-500/20 transition-all hover:scale-105 active:scale-95"
           >
             <Camera className="w-4 h-4" />
-            <span>Report New Issue</span>
+            <span>{t('reportNewIssue')}</span>
           </Link>
         </div>
       </div>
@@ -123,7 +125,7 @@ export default function CitizenReportsPage() {
                 : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 hover:bg-slate-800'
             }`}
           >
-            {status === 'all' ? `All Reports (${reports.length})` : status}
+            {status === 'all' ? `${t('allReports')} (${reports.length})` : t(status, status)}
           </button>
         ))}
       </div>
@@ -132,7 +134,7 @@ export default function CitizenReportsPage() {
       {loading && reports.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-20 space-y-6">
           <div className="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
-          <p className="text-sm font-mono font-bold text-cyan-400 animate-pulse tracking-widest">SYNCING LIVE REPORTS...</p>
+          <p className="text-sm font-mono font-bold text-cyan-400 animate-pulse tracking-widest">{t('syncing')}</p>
         </div>
       ) : error ? (
         <div className="p-6 rounded-2xl glass-card border-rose-500/30 text-rose-300 text-sm flex items-center space-x-3 shadow-2xl">
@@ -145,18 +147,18 @@ export default function CitizenReportsPage() {
           <div className="w-20 h-20 bg-slate-900 rounded-3xl flex items-center justify-center shadow-inner mb-6 relative z-10 border border-slate-800/80">
             <FileText className="w-10 h-10 text-slate-500" />
           </div>
-          <h3 className="text-2xl font-black text-slate-100 relative z-10">No reports found</h3>
+          <h3 className="text-2xl font-black text-slate-100 relative z-10">{t('noReportsFound')}</h3>
           <p className="text-sm text-slate-400 mt-2 max-w-sm mx-auto relative z-10 font-medium">
             {filterStatus === 'all'
-              ? "You haven't submitted any infrastructure issue reports yet."
-              : `No reports with status "${filterStatus}".`}
+              ? t('noReportsSubmittedYet')
+              : `${t('noReportsFound')} (${t(filterStatus, filterStatus)}).`}
           </p>
           <Link
             to="/report"
             className="mt-8 relative z-10 inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 transition-all shadow-xl shadow-cyan-500/25 transform hover:scale-105 active:scale-95"
           >
             <Camera className="w-5 h-5" />
-            <span>Submit Your First Report</span>
+            <span>{t('submitFirstReport')}</span>
           </Link>
         </div>
       ) : (

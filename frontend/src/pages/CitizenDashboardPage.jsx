@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { 
   MapPin, 
   AlertTriangle, 
@@ -45,6 +47,7 @@ import { subscribeToDetections } from '../api/socket';
 
 export default function CitizenDashboardPage() {
   const { user } = useAuth();
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   
   // Data state
@@ -71,6 +74,23 @@ export default function CitizenDashboardPage() {
     resolvedReports: 0,
     civicScore: 85,
   });
+
+  // Lock body scroll and handle escape key for emergency modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && showEmergencyModal) {
+        setShowEmergencyModal(false);
+      }
+    };
+    if (showEmergencyModal) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [showEmergencyModal]);
 
   // Fetch community data
   const fetchData = async (isManualRefresh = false) => {
@@ -188,10 +208,10 @@ export default function CitizenDashboardPage() {
 
   // Civic tier calculation
   const getCivicTier = (score) => {
-    if (score >= 500) return { name: 'Platinum', color: 'from-cyan-300 via-sky-400 to-indigo-500', textGradient: 'from-cyan-400 to-blue-400', threshold: 500, next: 1000, badge: 'Civic Ambassador', perk: 'Direct priority municipal escalation' };
-    if (score >= 250) return { name: 'Gold', color: 'from-amber-300 via-amber-400 to-orange-500', textGradient: 'from-amber-400 to-orange-400', threshold: 250, next: 500, badge: 'Verified Guardian', perk: 'Priority dispatch & verified reporter badge' };
-    if (score >= 100) return { name: 'Silver', color: 'from-slate-200 via-slate-300 to-slate-400', textGradient: 'from-slate-200 to-slate-400', threshold: 100, next: 250, badge: 'Active Citizen', perk: 'Expedited AI incident triage' };
-    return { name: 'Bronze', color: 'from-orange-400 to-amber-600', textGradient: 'from-orange-400 to-amber-500', threshold: 0, next: 100, badge: 'Community Contributor', perk: 'Standard community reporting' };
+    if (score >= 500) return { name: t('platinumTier'), color: 'from-cyan-300 via-sky-400 to-indigo-500', textGradient: 'from-cyan-400 to-blue-400', threshold: 500, next: 1000, badge: t('ambassadorBadge'), perk: 'Direct priority municipal escalation' };
+    if (score >= 250) return { name: t('goldTier'), color: 'from-amber-300 via-amber-400 to-orange-500', textGradient: 'from-amber-400 to-orange-400', threshold: 250, next: 500, badge: t('guardianBadge'), perk: 'Priority dispatch & verified reporter badge' };
+    if (score >= 100) return { name: t('silverTier'), color: 'from-slate-200 via-slate-300 to-slate-400', textGradient: 'from-slate-200 to-slate-400', threshold: 100, next: 250, badge: t('activeBadge'), perk: 'Expedited AI incident triage' };
+    return { name: t('bronzeTier'), color: 'from-orange-400 to-amber-600', textGradient: 'from-orange-400 to-amber-500', threshold: 0, next: 100, badge: t('contributorBadge'), perk: 'Standard community reporting' };
   };
 
   const tier = getCivicTier(userStats.civicScore);
@@ -199,32 +219,32 @@ export default function CitizenDashboardPage() {
 
   // Category visual metadata
   const getCategoryMeta = (type) => {
-    const t = (type || '').toLowerCase();
-    if (t.includes('pothole') || t.includes('road')) {
-      return { label: 'Road Hazard / Pothole', icon: AlertTriangle, bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/30' };
+    const rawType = (type || '').toLowerCase();
+    if (rawType.includes('pothole') || rawType.includes('road')) {
+      return { label: t('roadHazard'), icon: AlertTriangle, bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/30' };
     }
-    if (t.includes('garbage') || t.includes('waste') || t.includes('dump')) {
-      return { label: 'Illegal Waste / Garbage', icon: Trash2, bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' };
+    if (rawType.includes('garbage') || rawType.includes('waste') || rawType.includes('dump')) {
+      return { label: t('illegalWaste'), icon: Trash2, bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' };
     }
-    if (t.includes('water') || t.includes('leak') || t.includes('drain')) {
-      return { label: 'Water Leak / Sewage', icon: Droplets, bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/30' };
+    if (rawType.includes('water') || rawType.includes('leak') || rawType.includes('drain')) {
+      return { label: t('waterSewage'), icon: Droplets, bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/30' };
     }
-    if (t.includes('light') || t.includes('lamp')) {
-      return { label: 'Streetlight Outage', icon: Zap, bg: 'bg-yellow-500/15', text: 'text-yellow-400', border: 'border-yellow-500/30' };
+    if (rawType.includes('light') || rawType.includes('lamp')) {
+      return { label: t('streetlight'), icon: Zap, bg: 'bg-yellow-500/15', text: 'text-yellow-400', border: 'border-yellow-500/30' };
     }
-    return { label: 'Civic Infrastructure', icon: ShieldAlert, bg: 'bg-indigo-500/15', text: 'text-indigo-400', border: 'border-indigo-500/30' };
+    return { label: t('civicInfra'), icon: ShieldAlert, bg: 'bg-indigo-500/15', text: 'text-indigo-400', border: 'border-indigo-500/30' };
   };
 
   // Severity color helper
   const getSeverityBadge = (severity, priority) => {
     const s = (severity || priority || 'medium').toLowerCase();
     if (s === 'high' || s === 'critical') {
-      return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-rose-500/15 text-rose-400 border border-rose-500/30">CRITICAL</span>;
+      return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-rose-500/15 text-rose-400 border border-rose-500/30">{t('critical')}</span>;
     }
     if (s === 'medium') {
-      return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">MEDIUM</span>;
+      return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">{t('medium')}</span>;
     }
-    return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">LOW</span>;
+    return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">{t('low')}</span>;
   };
 
   // Status badge helper
@@ -234,7 +254,7 @@ export default function CitizenDashboardPage() {
       return (
         <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          RESOLVED
+          {t('resolved')}
         </span>
       );
     }
@@ -242,14 +262,14 @@ export default function CitizenDashboardPage() {
       return (
         <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
-          IN PROGRESS
+          {t('inProgress')}
         </span>
       );
     }
     return (
       <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-400 border border-sky-500/30">
         <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
-        REPORTED
+        {t('reported')}
       </span>
     );
   };
@@ -302,15 +322,15 @@ export default function CitizenDashboardPage() {
         <div className="min-w-0">
           <div className="flex items-center gap-3">
             <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight truncate">
-              Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-cyan-300">{user?.name?.split(' ')[0] || 'Citizen'}</span>
+              {t('welcomeBack')}, <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-cyan-300">{user?.name?.split(' ')[0] || t('citizen')}</span>
             </h1>
             <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              Live Grid Active
+              {t('liveGridActive')}
             </span>
           </div>
           <p className="text-slate-400 text-xs sm:text-sm mt-1 truncate">
-            Real-time urban surveillance, community impact tracking, and civic resolution dispatch.
+            {t('dashboardSubtitle')}
           </p>
         </div>
 
@@ -322,7 +342,7 @@ export default function CitizenDashboardPage() {
             title="Refresh feed"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${refreshing ? 'animate-spin' : ''}`} />
-            <span>{refreshing ? 'Syncing...' : 'Sync Live'}</span>
+            <span>{refreshing ? t('syncing') : t('syncLive')}</span>
           </button>
           
           <button
@@ -330,7 +350,7 @@ export default function CitizenDashboardPage() {
             className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
           >
             <Camera className="w-3.5 h-3.5" />
-            <span>New Report</span>
+            <span>{t('newReport')}</span>
           </button>
         </div>
       </div>
@@ -339,58 +359,58 @@ export default function CitizenDashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 w-full min-w-0">
         <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
           <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Community Issues</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('communityIssues')}</span>
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center shrink-0">
               <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-400" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-xl sm:text-3xl font-black text-white">{totalIncidentsCount}</span>
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">in area</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">{t('inArea')}</span>
           </div>
           <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-cyan-400 font-medium truncate">
             <Sparkles className="w-3 h-3 shrink-0" />
-            <span className="truncate">GPS verified</span>
+            <span className="truncate">{t('gpsVerified')}</span>
           </div>
         </div>
 
         <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
           <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Resolution Rate</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('resolutionRate')}</span>
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
               <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-xl sm:text-3xl font-black text-white">{resolutionPercentage}%</span>
-            <span className="text-[10px] sm:text-xs font-semibold text-emerald-400 truncate">resolved</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-emerald-400 truncate">{t('resolved')}</span>
           </div>
           <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-emerald-400/80 font-medium truncate">
             <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
-            <span className="truncate">{resolvedCount} fixes</span>
+            <span className="truncate">{resolvedCount} {t('civicFixes')}</span>
           </div>
         </div>
 
         <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
           <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">My Submissions</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('mySubmissions')}</span>
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
               <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-xl sm:text-3xl font-black text-white">{userStats.totalReports}</span>
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 truncate">filed</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 truncate">{t('filed')}</span>
           </div>
           <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-indigo-300 font-medium truncate">
             <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
-            <span className="truncate">{userStats.resolvedReports} done</span>
+            <span className="truncate">{userStats.resolvedReports} {t('done')}</span>
           </div>
         </div>
 
         <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
           <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Civic Trust</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('trustScore')}</span>
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
               <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
             </div>
@@ -400,7 +420,7 @@ export default function CitizenDashboardPage() {
             <span className="text-[10px] sm:text-xs font-bold uppercase text-amber-400/90 truncate">{tier.name}</span>
           </div>
           <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">
-            <span className="truncate">{tier.next - userStats.civicScore} pts to next rank</span>
+            <span className="truncate">{tier.next - userStats.civicScore} {t('ptsToNextRank')}</span>
           </div>
         </div>
       </div>
@@ -416,10 +436,10 @@ export default function CitizenDashboardPage() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
-              Report Issue
+              {t('reportIssueAction')}
               <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">AI Detection</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">{t('aiDetection')}</p>
           </div>
         </button>
 
@@ -432,10 +452,10 @@ export default function CitizenDashboardPage() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
-              My Activity
+              {t('myActivity')}
               <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">Status & PDF</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">{t('statusAndPdf')}</p>
           </div>
         </button>
 
@@ -448,10 +468,10 @@ export default function CitizenDashboardPage() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
-              Live Map
+              {t('liveMap')}
               <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">City Scanner</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">{t('cityScanner')}</p>
           </div>
         </button>
 
@@ -464,10 +484,10 @@ export default function CitizenDashboardPage() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs sm:text-sm font-bold text-rose-200 flex items-center gap-1 truncate">
-              Emergency SOS
+              {t('emergencySOS')}
               <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
             </div>
-            <p className="text-[10px] sm:text-[11px] text-rose-300/70 truncate">Hotlines</p>
+            <p className="text-[10px] sm:text-[11px] text-rose-300/70 truncate">{t('hotlines')}</p>
           </div>
         </button>
       </div>
@@ -488,9 +508,9 @@ export default function CitizenDashboardPage() {
                   <MapPin className="w-4 h-4 text-sky-400" />
                 </div>
                 <h2 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 truncate">
-                  <span>Community Map</span>
+                  <span>{t('communityMap')}</span>
                   <span className="text-[10px] sm:text-[11px] font-mono font-normal text-slate-400">
-                    ({recentReports.length} pins)
+                    ({recentReports.length} {t('pins')})
                   </span>
                 </h2>
               </div>
@@ -504,7 +524,7 @@ export default function CitizenDashboardPage() {
                   title="Locate my GPS coordinates"
                 >
                   <Locate className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
-                  <span>{isLocating ? 'Locating...' : 'My GPS'}</span>
+                  <span>{isLocating ? t('locating') : t('myGps')}</span>
                 </button>
 
                 {customMapCenter && (
@@ -513,13 +533,13 @@ export default function CitizenDashboardPage() {
                     className="px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all"
                     title="Recenter map"
                   >
-                    <span>Reset</span>
+                    <span>{t('reset')}</span>
                   </button>
                 )}
 
                 <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 sm:px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Live
+                  {t('live')}
                 </span>
               </div>
             </div>
@@ -547,8 +567,8 @@ export default function CitizenDashboardPage() {
                   <Activity className="w-4 h-4 text-indigo-400" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm sm:text-base font-bold text-white truncate">Recent Activity in your Area</h2>
-                  <p className="text-[11px] sm:text-xs text-slate-400 truncate">Tap incident for details or official PDF</p>
+                  <h2 className="text-sm sm:text-base font-bold text-white truncate">{t('recentAreaActivity')}</h2>
+                  <p className="text-[11px] sm:text-xs text-slate-400 truncate">{t('tapIncidentHint')}</p>
                 </div>
               </div>
 
@@ -558,38 +578,38 @@ export default function CitizenDashboardPage() {
                   onClick={() => setFilter('ALL')} 
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'ALL' ? 'bg-indigo-600/30 text-indigo-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                 >
-                  All
+                  {t('all')}
                 </button>
                 <button 
                   onClick={() => setFilter('CRITICAL')} 
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'CRITICAL' ? 'bg-rose-500/20 text-rose-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                 >
-                  Critical
+                  {t('critical')}
                 </button>
                 <button 
                   onClick={() => setFilter('IN_PROGRESS')} 
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'IN_PROGRESS' ? 'bg-amber-500/20 text-amber-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                 >
-                  Active
+                  {t('active')}
                 </button>
                 <button 
                   onClick={() => setFilter('RESOLVED')} 
                   className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'RESOLVED' ? 'bg-emerald-500/20 text-emerald-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
                 >
-                  Resolved
+                  {t('resolved')}
                 </button>
               </div>
             </div>
 
             {/* Category Sub-Filters */}
             <div className="flex items-center gap-1.5 mb-4 pb-1 overflow-x-auto max-w-full w-full no-scrollbar">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 shrink-0">Filter:</span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 shrink-0">{t('filterBy')}</span>
               {[
-                { id: 'ALL', label: 'All Categories' },
-                { id: 'pothole', label: 'Roads & Potholes' },
-                { id: 'garbage', label: 'Garbage & Waste' },
-                { id: 'water_leak', label: 'Water & Leaks' },
-                { id: 'streetlight', label: 'Lighting' },
+                { id: 'ALL', label: t('allCategories') },
+                { id: 'pothole', label: t('potholes') },
+                { id: 'garbage', label: t('wasteGarbage') },
+                { id: 'water_leak', label: t('waterLeaks') },
+                { id: 'streetlight', label: t('streetlights') },
               ].map(cat => (
                 <button
                   key={cat.id}
@@ -609,7 +629,7 @@ export default function CitizenDashboardPage() {
             {loading ? (
               <div className="flex flex-col items-center justify-center p-12 space-y-3">
                 <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-400 rounded-full animate-spin"></div>
-                <p className="text-xs text-slate-400 font-medium">Scanning community grid...</p>
+                <p className="text-xs text-slate-400 font-medium">{t('scanningGrid')}</p>
               </div>
             ) : filteredReports.length > 0 ? (
               <div className="space-y-3 w-full min-w-0">
@@ -661,10 +681,10 @@ export default function CitizenDashboardPage() {
                           <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] sm:text-[11px] text-slate-500 font-mono">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3 shrink-0" />
-                              {new Date(report.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                              {new Date(report.createdAt).toLocaleDateString(lang === 'hi' ? 'hi-IN' : lang === 'mr' ? 'mr-IN' : lang === 'ta' ? 'ta-IN' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
                             <span>•</span>
-                            <span className="truncate">Ward: {report.assignedDepartment?.split(' ')[0] || 'PWD'}</span>
+                            <span className="truncate">{t('ward')}: {report.assignedDepartment?.split(' ')[0] || 'PWD'}</span>
                           </div>
                         </div>
                       </div>
@@ -678,7 +698,7 @@ export default function CitizenDashboardPage() {
                               ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm' 
                               : 'bg-slate-800/80 text-slate-400 border-slate-700/60 hover:text-cyan-300 hover:bg-slate-800'
                           }`}
-                          title="Confirm this issue exists in your area"
+                          title={t('confirmExistsTitle')}
                         >
                           <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-cyan-400 text-cyan-400' : ''}`} />
                           <span>{currentUpvotes}</span>
@@ -689,7 +709,7 @@ export default function CitizenDashboardPage() {
                           className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 transition-all"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                          <span>Inspect & PDF</span>
+                          <span>{t('inspectPdf')}</span>
                         </button>
                       </div>
                     </div>
@@ -699,13 +719,13 @@ export default function CitizenDashboardPage() {
             ) : (
               <div className="p-8 text-center text-slate-400 border border-slate-800/50 border-dashed rounded-2xl bg-slate-900/20">
                 <MapPin className="w-8 h-8 mx-auto text-slate-600 mb-2" />
-                <p className="text-sm font-semibold text-slate-300">No matching reports in your community.</p>
-                <p className="text-xs text-slate-500 mt-1">Try clearing filters or report an issue you discovered on the road.</p>
+                <p className="text-sm font-semibold text-slate-300">{t('noMatchingReports')}</p>
+                <p className="text-xs text-slate-500 mt-1">{t('clearFiltersHint')}</p>
                 <button
                   onClick={() => { setFilter('ALL'); setCategoryFilter('ALL'); }}
                   className="mt-3 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors"
                 >
-                  Reset Filters
+                  {t('resetFilters')}
                 </button>
               </div>
             )}
@@ -722,7 +742,7 @@ export default function CitizenDashboardPage() {
             <div className="flex items-center justify-between mb-4 relative z-10">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <Award className="w-5 h-5 text-amber-400" />
-                Civic Engagement Score
+                {t('civicEngagementScore')}
               </h2>
               <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300`}>
                 {tier.badge}
@@ -740,19 +760,19 @@ export default function CitizenDashboardPage() {
                   <span className={`text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r ${tier.textGradient}`}>
                     {userStats.civicScore}
                   </span>
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">PTS</span>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{t('pointsShort')}</span>
                 </div>
               </div>
 
               <p className={`text-xs font-extrabold tracking-widest uppercase mt-3 bg-clip-text text-transparent bg-gradient-to-r ${tier.textGradient}`}>
-                {tier.name} Tier Citizen
+                {tier.name} {t('tierCitizen')}
               </p>
               
               {/* Progress to Next Tier */}
               <div className="w-full mt-3">
                 <div className="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
-                  <span>Level Progress</span>
-                  <span className="text-amber-400 font-bold">{tier.next - userStats.civicScore} pts to {tier.name === 'Platinum' ? 'Legend' : 'Next Tier'}</span>
+                  <span>{t('levelProgress')}</span>
+                  <span className="text-amber-400 font-bold">{tier.next - userStats.civicScore} {t('ptsTo')} {tier.name === t('platinumTier') ? t('legend') : t('nextTier')}</span>
                 </div>
                 <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
                   <div 
@@ -768,28 +788,28 @@ export default function CitizenDashboardPage() {
               <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex flex-col items-center text-center">
                 <Camera className="w-4 h-4 text-cyan-400 mb-1" />
                 <span className="text-lg font-bold text-white">{userStats.totalReports}</span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Reported</span>
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{t('reported')}</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex flex-col items-center text-center">
                 <CheckCircle className="w-4 h-4 text-emerald-400 mb-1" />
                 <span className="text-lg font-bold text-white">{userStats.resolvedReports}</span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Resolved</span>
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{t('resolved')}</span>
               </div>
             </div>
 
             {/* How to Earn Points Box */}
             <div className="mt-4 p-3.5 rounded-xl bg-slate-950/40 border border-slate-800/60 text-xs space-y-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">How to Boost Score:</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{t('howToBoostScore')}</span>
               <div className="flex items-center justify-between text-[11px] text-slate-300">
-                <span>📸 Verified Incident Report</span>
+                <span>📸 {t('verifiedIncidentReport')}</span>
                 <span className="font-mono font-bold text-emerald-400">+25 pts</span>
               </div>
               <div className="flex items-center justify-between text-[11px] text-slate-300">
-                <span>✅ Municipal Fix Completed</span>
+                <span>✅ {t('municipalFixCompleted')}</span>
                 <span className="font-mono font-bold text-cyan-400">+50 pts</span>
               </div>
               <div className="flex items-center justify-between text-[11px] text-slate-300">
-                <span>👍 Confirm Community Hazard</span>
+                <span>👍 {t('confirmCommunityHazard')}</span>
                 <span className="font-mono font-bold text-amber-400">+5 pts</span>
               </div>
             </div>
@@ -800,11 +820,11 @@ export default function CitizenDashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <BellRing className="w-5 h-5 text-rose-400" />
-                Active Alerts
+                {t('activeAlerts')}
               </h2>
               {announcements.length > 0 && (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30">
-                  {announcements.length} Alert{announcements.length > 1 ? 's' : ''}
+                  {announcements.length} {t('alertsCount')}
                 </span>
               )}
             </div>
@@ -841,8 +861,8 @@ export default function CitizenDashboardPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center p-6 text-center border border-dashed border-slate-800 rounded-2xl bg-slate-950/40">
                   <ShieldCheck className="w-8 h-8 text-emerald-400/80 mb-2" />
-                  <p className="text-xs font-bold text-slate-300">All Clear in Sector</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">No critical municipal hazard warnings or route closures.</p>
+                  <p className="text-xs font-bold text-slate-300">{t('allClearSector')}</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">{t('allClearDesc')}</p>
                 </div>
               )}
             </div>
@@ -852,20 +872,20 @@ export default function CitizenDashboardPage() {
           <div className="glass-card rounded-3xl p-5 border border-slate-800/80 bg-slate-900/30">
             <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-cyan-400" />
-              Pro Tips for Faster Resolution
+              {t('proTipsTitle')}
             </h3>
             <div className="space-y-2.5 text-xs text-slate-400">
               <div className="flex items-start gap-2.5">
                 <span className="w-5 h-5 rounded-md bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
-                <span><strong>Capture Wide Angle:</strong> Include road dividers or nearby storefronts to help field teams locate the issue.</span>
+                <span><strong>{t('tip1Title')} </strong>{t('tip1Desc')}</span>
               </div>
               <div className="flex items-start gap-2.5">
                 <span className="w-5 h-5 rounded-md bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
-                <span><strong>Verify Map Pin:</strong> Fine-tune the GPS pin on the map preview if reporting after leaving the site.</span>
+                <span><strong>{t('tip2Title')} </strong>{t('tip2Desc')}</span>
               </div>
               <div className="flex items-start gap-2.5">
                 <span className="w-5 h-5 rounded-md bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
-                <span><strong>Download Official PDF:</strong> Use the generated PDF dispatch report if escalating to your local RWA or ward councillor.</span>
+                <span><strong>{t('tip3Title')} </strong>{t('tip3Desc')}</span>
               </div>
             </div>
           </div>
@@ -885,17 +905,26 @@ export default function CitizenDashboardPage() {
       )}
 
       {/* Emergency Hotlines Modal */}
-      {showEmergencyModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-card bg-slate-900 border border-slate-700/80 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-fade-in">
+      {showEmergencyModal && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[99999] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200"
+          style={{ minHeight: '100vh', width: '100vw' }}
+          onClick={() => setShowEmergencyModal(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="glass-card bg-slate-900 border border-slate-700/80 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-fade-in m-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center">
                   <PhoneCall className="w-5 h-5 text-rose-400 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Emergency Civic Hotlines</h3>
-                  <p className="text-xs text-slate-400">Direct dial for municipal and emergency services</p>
+                  <h3 className="text-base font-bold text-white">{t('emergencyModalTitle')}</h3>
+                  <p className="text-xs text-slate-400">{t('emergencyModalSubtitle')}</p>
                 </div>
               </div>
               <button 
@@ -908,11 +937,11 @@ export default function CitizenDashboardPage() {
 
             <div className="space-y-3">
               {[
-                { name: 'National Emergency / Police', number: '112', desc: 'Police, ambulance & disaster control', color: 'rose' },
-                { name: 'Fire Control Room', number: '101', desc: 'Fire hazards & rescue services', color: 'orange' },
-                { name: 'Municipal / PWD Road Control', number: '1800-180-0101', desc: 'Sinkholes, road collapse & fallen trees', color: 'sky' },
-                { name: 'Water Supply & Main Pipeline', number: '1916', desc: 'Major water line rupture & flooding', color: 'cyan' },
-                { name: 'Electricity Board / Live Wire', number: '1912', desc: 'High-voltage wire hazard & transformer fire', color: 'amber' },
+                { name: t('policeHelpline'), number: '112', desc: t('policeDesc'), color: 'rose' },
+                { name: t('fireHelpline'), number: '101', desc: t('fireDesc'), color: 'orange' },
+                { name: t('pwdHelpline'), number: '1800-180-0101', desc: t('pwdDesc'), color: 'sky' },
+                { name: t('waterHelpline'), number: '1916', desc: t('waterDesc'), color: 'cyan' },
+                { name: t('electricityHelpline'), number: '1912', desc: t('electricityDesc'), color: 'amber' },
               ].map(line => (
                 <a
                   key={line.number}
@@ -935,12 +964,13 @@ export default function CitizenDashboardPage() {
 
             <button
               onClick={() => setShowEmergencyModal(false)}
-              className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
             >
-              Close
+              {t('close')}
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

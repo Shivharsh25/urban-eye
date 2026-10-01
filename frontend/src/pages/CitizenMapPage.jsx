@@ -26,9 +26,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import { subscribeToDetections } from '../api/socket';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function CitizenMapPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [activeFilter, setActiveFilter] = useState('all');
   const [showScanner, setShowScanner] = useState(false);
   const [reports, setReports] = useState([]);
@@ -128,22 +130,22 @@ export default function CitizenMapPage() {
   }, []);
 
   const filters = [
-    { id: 'all', label: 'All Incidents', icon: Layers, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
-    { id: 'pothole', label: 'Road Hazards', icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
-    { id: 'waste', label: 'Illegal Dumping', icon: Trash2, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
-    { id: 'water', label: 'Water Leaks', icon: Droplets, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
-    { id: 'lighting', label: 'Streetlights', icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' }
+    { id: 'all', label: t('allIssues', 'All Incidents'), icon: Layers, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
+    { id: 'pothole', label: t('roadHazard', 'Road Hazards'), icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+    { id: 'waste', label: t('illegalWaste', 'Illegal Dumping'), icon: Trash2, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
+    { id: 'water', label: t('waterSewage', 'Water Leaks'), icon: Droplets, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+    { id: 'lighting', label: t('streetlights', 'Streetlights'), icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' }
   ];
 
   // Filter detections
   const filteredReports = useMemo(() => {
     if (activeFilter === 'all') return reports;
     return reports.filter(r => {
-      const t = (r.type || '').toLowerCase();
-      if (activeFilter === 'pothole') return t.includes('pothole') || t.includes('road');
-      if (activeFilter === 'waste') return t.includes('waste') || t.includes('garbage') || t.includes('dump');
-      if (activeFilter === 'water') return t.includes('water') || t.includes('leak');
-      if (activeFilter === 'lighting') return t.includes('light') || t.includes('lamp');
+      const rType = (r.type || '').toLowerCase();
+      if (activeFilter === 'pothole') return rType.includes('pothole') || rType.includes('road');
+      if (activeFilter === 'waste') return rType.includes('waste') || rType.includes('garbage') || rType.includes('dump');
+      if (activeFilter === 'water') return rType.includes('water') || rType.includes('leak');
+      if (activeFilter === 'lighting') return rType.includes('light') || rType.includes('lamp');
       return true;
     });
   }, [reports, activeFilter]);
@@ -226,7 +228,7 @@ export default function CitizenMapPage() {
           className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-bold shadow-xl backdrop-blur-xl active:scale-95 transition-all"
         >
           <Filter className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Filters</span>
+          <span>{t('filterBy')}</span>
           <span className="px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px]">
             {filteredReports.length}
           </span>
@@ -235,7 +237,7 @@ export default function CitizenMapPage() {
         {/* Center: Live Pin Indicator */}
         <div className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-emerald-400 text-xs font-mono font-bold shadow-xl backdrop-blur-xl">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>{filteredReports.length} Live</span>
+          <span>{filteredReports.length} {t('live')}</span>
         </div>
 
         {/* Right: GPS Locate & Feed Trigger */}
@@ -257,7 +259,7 @@ export default function CitizenMapPage() {
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-bold shadow-xl backdrop-blur-xl active:scale-95 transition-all"
           >
             <Activity className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Feed</span>
+            <span>{t('activity')}</span>
           </button>
         </div>
       </div>
@@ -290,9 +292,9 @@ export default function CitizenMapPage() {
             <Filter className="w-4 h-4" />
           </div>
           <div className="flex flex-col text-left">
-            <span className="text-xs font-bold leading-tight">Layer Filters</span>
+            <span className="text-xs font-bold leading-tight">{t('filterBy')}</span>
             <span className="text-[10px] text-cyan-400 font-mono font-medium">
-              {activeFilter === 'all' ? `${filteredReports.length} Incidents` : filters.find(f => f.id === activeFilter)?.label}
+              {activeFilter === 'all' ? `${filteredReports.length} ${t('pins')}` : filters.find(f => f.id === activeFilter)?.label}
             </span>
           </div>
           <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
@@ -315,8 +317,8 @@ export default function CitizenMapPage() {
                 <MapPin className="w-4 h-4 text-cyan-400" />
               </div>
               <div>
-                <h1 className="text-base sm:text-lg font-black text-white tracking-tight">Live Grid</h1>
-                <p className="text-[9px] text-cyan-400/80 font-mono uppercase tracking-widest">Urban Network</p>
+                <h1 className="text-base sm:text-lg font-black text-white tracking-tight">{t('liveGridActive')}</h1>
+                <p className="text-[9px] text-cyan-400/80 font-mono uppercase tracking-widest">{t('appSubtitle')}</p>
               </div>
             </div>
             
@@ -341,11 +343,11 @@ export default function CitizenMapPage() {
           </div>
 
           <p className="text-xs text-slate-400 leading-relaxed">
-            Real-time geospatial visualization of infrastructure hazards across your municipal sector.
+            {t('dashboardSubtitle')}
           </p>
 
           <div className="mt-3 pt-2.5 border-t border-slate-800/70 flex items-center justify-between text-xs">
-            <span className="text-slate-400 font-medium">Active Incidents:</span>
+            <span className="text-slate-400 font-medium">{t('communityIssues')}:</span>
             <span className="font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
               {filteredReports.length}
             </span>
@@ -357,14 +359,14 @@ export default function CitizenMapPage() {
           <div className="flex items-center justify-between px-2 pb-2.5 mb-1.5 border-b border-slate-800/60">
             <div className="flex items-center space-x-2">
               <Filter className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Layer Filters</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('filterBy')}</span>
             </div>
             {activeFilter !== 'all' && (
               <button
                 onClick={() => setActiveFilter('all')}
                 className="text-[10px] text-cyan-400 hover:text-cyan-300 font-mono font-bold"
               >
-                Reset
+                {t('reset')}
               </button>
             )}
           </div>
@@ -420,7 +422,7 @@ export default function CitizenMapPage() {
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]"></div>
             <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest whitespace-nowrap">
-              {filteredReports.length} Pins Live
+              {filteredReports.length} {t('pinsLive', 'Pins Live')}
             </span>
           </div>
           
@@ -434,7 +436,7 @@ export default function CitizenMapPage() {
             title="Center map on your current location"
           >
             <Locate className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
-            <span>{isLocating ? 'Locating...' : 'My Location'}</span>
+            <span>{isLocating ? t('locating', 'Locating...') : t('myLocation', 'My Location')}</span>
           </button>
 
           <div className="h-4 w-px bg-slate-700"></div>
@@ -445,7 +447,7 @@ export default function CitizenMapPage() {
             className={`text-[10px] font-mono uppercase tracking-widest transition-colors ${showScanner ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'}`}
             title="Toggle Radar Sweep Animation"
           >
-            {showScanner ? 'Radar ON' : 'Radar OFF'}
+            {showScanner ? t('radarOn', 'Radar ON') : t('radarOff', 'Radar OFF')}
           </button>
 
           <div className="h-4 w-px bg-slate-700"></div>
@@ -461,7 +463,7 @@ export default function CitizenMapPage() {
             title={isFullMap ? "Restore side cards (Shortcut: M)" : "Hide all side cards for clean full map view (Shortcut: M)"}
           >
             {isFullMap ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
-            <span>{isFullMap ? 'Show Cards' : 'Full Map'}</span>
+            <span>{isFullMap ? t('showCards', 'Show Cards') : t('fullMap', 'Full Map')}</span>
           </button>
       </div>
 
@@ -487,9 +489,9 @@ export default function CitizenMapPage() {
             </span>
           </div>
           <div className="flex flex-col text-left">
-            <span className="text-xs font-bold leading-tight">Feed</span>
+            <span className="text-xs font-bold leading-tight">{t('feed', 'Feed')}</span>
             <span className="text-[10px] text-cyan-400 font-mono font-medium">
-              {filteredReports.length} Live
+              {filteredReports.length} {t('live', 'Live')}
             </span>
           </div>
         </button>
@@ -509,7 +511,7 @@ export default function CitizenMapPage() {
           <div className="p-3.5 sm:p-4 border-b border-slate-800/80 flex items-center justify-between bg-black/20">
             <div className="flex items-center space-x-2.5">
               <Activity className="w-4 h-4 text-cyan-400" />
-              <h2 className="text-xs font-bold text-white uppercase tracking-widest">Live Incident Feed</h2>
+              <h2 className="text-xs font-bold text-white uppercase tracking-widest">{t('liveIncidentFeed', 'Live Incident Feed')}</h2>
             </div>
             
             <div className="flex items-center space-x-2">
@@ -568,9 +570,9 @@ export default function CitizenMapPage() {
                       </p>
                       <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-700/40 text-[10px]">
                         <span className={`uppercase font-extrabold ${report.severity === 'high' ? 'text-rose-400' : report.severity === 'medium' ? 'text-amber-400' : 'text-emerald-400'}`}>
-                          {report.severity || 'Medium'}
+                          {t((report.severity || 'medium').toLowerCase(), report.severity || 'Medium')}
                         </span>
-                        <span className="text-slate-400 capitalize">{report.status || 'Reported'}</span>
+                        <span className="text-slate-400 capitalize">{t((report.status || 'reported').toLowerCase(), report.status || 'Reported')}</span>
                       </div>
                     </div>
                   </div>
@@ -578,7 +580,7 @@ export default function CitizenMapPage() {
               ))
             ) : (
               <div className="p-6 text-center text-slate-500 text-xs">
-                No incidents found for current filter.
+                {t('noIncidentsForFilter', 'No incidents found for current filter.')}
               </div>
             )}
           </div>
@@ -589,7 +591,7 @@ export default function CitizenMapPage() {
               onClick={() => navigate('/my-reports')}
               className="w-full py-2 rounded-xl bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-widest hover:bg-cyan-500/20 border border-cyan-500/20 transition-all flex items-center justify-center space-x-2"
             >
-              <span>My Reports & PDF</span>
+              <span>{t('myReportsAndPdf', 'My Reports & PDF')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

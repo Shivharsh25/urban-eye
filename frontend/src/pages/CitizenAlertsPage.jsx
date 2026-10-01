@@ -1,13 +1,19 @@
 import React from 'react';
 import { Bell, AlertTriangle, Info, CheckCircle, Clock } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function CitizenAlertsPage() {
+  const { t } = useLanguage();
+
   const alerts = [
     {
       id: 1,
-      title: 'Major Road Closure: Main St.',
-      description: 'Main St will be closed from 4th Ave to 8th Ave for emergency water main repairs. Please use alternate routes.',
-      time: '10 mins ago',
+      titleKey: 'alert1Title',
+      defaultTitle: 'Major Road Closure: Main St.',
+      descKey: 'alert1Desc',
+      defaultDesc: 'Main St will be closed from 4th Ave to 8th Ave for emergency water main repairs. Please use alternate routes.',
+      timeKey: 'time10mAgo',
+      defaultTime: '10 mins ago',
       type: 'critical',
       icon: AlertTriangle,
       color: 'text-rose-400',
@@ -16,9 +22,12 @@ export default function CitizenAlertsPage() {
     },
     {
       id: 2,
-      title: 'Power Outage Resolved',
-      description: 'Power has been fully restored to the Northside district. Thank you for your patience.',
-      time: '2 hours ago',
+      titleKey: 'alert2Title',
+      defaultTitle: 'Power Outage Resolved',
+      descKey: 'alert2Desc',
+      defaultDesc: 'Power has been fully restored to the Northside district. Thank you for your patience.',
+      timeKey: 'time2hAgo',
+      defaultTime: '2 hours ago',
       type: 'success',
       icon: CheckCircle,
       color: 'text-emerald-400',
@@ -27,9 +36,12 @@ export default function CitizenAlertsPage() {
     },
     {
       id: 3,
-      title: 'Scheduled Maintenance',
-      description: 'City park facilities will undergo routine maintenance this weekend. Some areas may be restricted.',
-      time: '1 day ago',
+      titleKey: 'alert3Title',
+      defaultTitle: 'Scheduled Maintenance',
+      descKey: 'alert3Desc',
+      defaultDesc: 'City park facilities will undergo routine maintenance this weekend. Some areas may be restricted.',
+      timeKey: 'time1dAgo',
+      defaultTime: '1 day ago',
       type: 'info',
       icon: Info,
       color: 'text-blue-400',
@@ -57,13 +69,13 @@ export default function CitizenAlertsPage() {
               <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
                 <Bell className="w-6 h-6 text-cyan-400 animate-[ring_4s_infinite]" />
               </div>
-              <span>Community Alerts</span>
+              <span>{t('communityAlertsTitle', 'Community Alerts')}</span>
             </h1>
-            <p className="text-slate-400 mt-2">Stay informed with real-time city broadcasts and emergency updates.</p>
+            <p className="text-slate-400 mt-2">{t('communityAlertsSubtitle', 'Stay informed with real-time city broadcasts and emergency updates.')}</p>
           </div>
           <div className="hidden sm:flex items-center space-x-2 bg-slate-900/80 border border-slate-800 rounded-lg px-4 py-2">
              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-             <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest">Live Network</span>
+             <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest">{t('liveNetwork', 'Live Network')}</span>
           </div>
         </div>
 
@@ -84,13 +96,19 @@ export default function CitizenAlertsPage() {
                 
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">{alert.title}</h3>
+                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
+                      {t(alert.titleKey, alert.defaultTitle)}
+                    </h3>
                     <div className="flex items-center space-x-1.5 text-slate-500 mt-1 sm:mt-0">
                       <Clock className="w-3.5 h-3.5" />
-                      <span className="text-[11px] font-mono uppercase tracking-wider">{alert.time}</span>
+                      <span className="text-[11px] font-mono uppercase tracking-wider">
+                        {t(alert.timeKey, alert.defaultTime)}
+                      </span>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-300 leading-relaxed">{alert.description}</p>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    {t(alert.descKey, alert.defaultDesc)}
+                  </p>
                 </div>
               </div>
 
@@ -102,7 +120,7 @@ export default function CitizenAlertsPage() {
             <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 border border-slate-800 text-slate-500 mb-3">
               <CheckCircle className="w-4 h-4" />
             </div>
-            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">You're all caught up</p>
+            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">{t('allCaughtUp', "You're all caught up")}</p>
           </div>
         </div>
 

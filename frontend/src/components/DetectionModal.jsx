@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   X, 
   MapPin, 
@@ -23,11 +24,13 @@ import {
 } from 'lucide-react';
 import client from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { generateReportPDF } from '../utils/pdfGenerator';
 import { generateFormalComplaintLetter } from '../utils/formalReportTemplate';
 
 export default function DetectionModal({ detection, onClose, onStatusUpdated }) {
   const { user, isAdmin } = useAuth();
+  const { t } = useLanguage();
   const [currentDetection, setCurrentDetection] = useState(detection);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -58,7 +61,24 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
     }
   }, [detection]);
 
-  if (!currentDetection) return null;
+  // Handle body overflow and escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    if (detection) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [detection, onClose]);
+
+  if (!currentDetection || typeof document === 'undefined') return null;
 
   const handleDownloadPdf = async () => {
     if (!currentDetection) return;
@@ -152,11 +172,18 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
     low: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40'
   }[currentDetection.severity] || 'text-cyan-400 bg-cyan-950/60 border-cyan-500/40';
 
-  const bbox = currentDetection.bbox || { x: 50, y: 50, width: 200, height: 150 };
-
-  return (
-    <div className="fixed inset-0 z-[500] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-slate-900/95 border border-slate-700/50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh] glass-panel">
+  return createPortal(
+    <div 
+      className="fixed inset-0 z-[99998] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
+      style={{ minHeight: '100vh', width: '100vw' }}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div 
+        className="relative w-full max-w-4xl bg-slate-900/98 border border-slate-700/60 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden m-auto flex flex-col max-h-[92vh] glass-panel"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 bg-slate-950/70 gap-2">
@@ -165,7 +192,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               #{String(currentDetection.id || currentDetection._id).slice(-6)}
             </span>
             <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-slate-100 uppercase tracking-wide truncate">
-              {currentDetection.type?.replace('_', ' ')} Record
+              {currentDetection.type?.replace('_', ' ')} {t('incidentRecord', 'Record')}
             </h3>
           </div>
           <div className="flex items-center space-x-2 shrink-0">
@@ -176,8 +203,8 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-500 shadow-md transition-all active:scale-95 disabled:opacity-50"
             >
               <Download className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{downloadingPdf ? 'Exporting...' : 'Export PDF'}</span>
-              <span className="sm:hidden">{downloadingPdf ? '...' : 'PDF'}</span>
+              <span className="hidden sm:inline">{downloadingPdf ? t('generatingPdf', 'Exporting...') : t('downloadPdf', 'Export PDF')}</span>
+              <span className="sm:hidden">{downloadingPdf ? '...' : t('downloadPdf', 'PDF')}</span>
             </button>
             <button
               type="button"
@@ -222,7 +249,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                   </div>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-600 font-mono text-xs">
-                    NO IMAGE ASSET AVAILABLE
+                    {t('noImageCaptured', 'NO IMAGE ASSET AVAILABLE')}
                   </div>
                 )}
               </div>
@@ -234,15 +261,15 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 
                 {/* Severity Card */}
                 <div className={`p-3 rounded-xl border flex items-center justify-between ${severityColor}`}>
-                  <span className="text-xs font-bold font-mono">SEVERITY LEVEL</span>
-                  <span className="text-sm font-black uppercase tracking-wider">{currentDetection.severity}</span>
+                  <span className="text-xs font-bold font-mono">{t('severityLevel', 'SEVERITY LEVEL')}</span>
+                  <span className="text-sm font-black uppercase tracking-wider">{t(currentDetection.severity, currentDetection.severity)}</span>
                 </div>
 
                 {/* Status Card */}
                 <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
-                  <span className="text-xs font-bold font-mono text-slate-400">INCIDENT STATUS</span>
+                  <span className="text-xs font-bold font-mono text-slate-400">{t('incidentStatus', 'INCIDENT STATUS')}</span>
                   <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                    {currentDetection.status}
+                    {t(currentDetection.status, currentDetection.status)}
                   </span>
                 </div>
 
@@ -250,10 +277,10 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Users className="w-4 h-4 text-cyan-400" />
-                    <span className="text-xs font-bold font-mono text-slate-400">CITIZEN REPORTS</span>
+                    <span className="text-xs font-bold font-mono text-slate-400">{t('citizenReportsCount', 'CITIZEN REPORTS')}</span>
                   </div>
                   <span className="text-sm font-bold text-slate-100 font-mono">
-                    {currentDetection.reportCount || 1} distinct report{currentDetection.reportCount > 1 ? 's' : ''}
+                    {currentDetection.reportCount || 1} {t('verifiedReports', 'verified reports')}
                   </span>
                 </div>
 
@@ -261,7 +288,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Building2 className="w-4 h-4 text-cyan-400" />
-                    <span className="text-xs font-bold font-mono text-slate-400">ASSIGNED DEPT</span>
+                    <span className="text-xs font-bold font-mono text-slate-400">{t('assignedDept', 'ASSIGNED DEPT')}</span>
                   </div>
                   <span className="text-xs font-semibold text-slate-200">
                     {currentDetection.assignedDepartment || 'Municipal Operations'}
@@ -273,7 +300,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               {/* Timestamp */}
               <div className="text-[11px] text-slate-400 font-mono flex items-center space-x-1.5 pt-2 border-t border-slate-800">
                 <Calendar className="w-3.5 h-3.5" />
-                <span>Detected: {new Date(currentDetection.createdAt).toLocaleString()}</span>
+                <span>{t('dateReported', 'Detected')}: {new Date(currentDetection.createdAt).toLocaleString()}</span>
               </div>
             </div>
 
@@ -286,7 +313,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 <MapPin className="w-5 h-5 text-cyan-400" />
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-400 font-mono">LOCATION & ADDRESS</p>
+                <p className="text-xs font-bold text-slate-400 font-mono">{t('locationCoordinates', 'LOCATION & ADDRESS')}</p>
                 <p className="text-sm text-slate-200 font-medium">{currentDetection.address}</p>
                 <p className="text-xs text-slate-400 font-mono mt-0.5">
                   LAT: {Number(currentDetection.lat).toFixed(6)} | LNG: {Number(currentDetection.lng).toFixed(6)}
@@ -300,7 +327,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               rel="noopener noreferrer"
               className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-cyan-400 hover:text-cyan-300 bg-cyan-950/60 hover:bg-cyan-950 border border-cyan-500/30 transition-colors"
             >
-              <span>View on Map</span>
+              <span>{t('viewOnGoogleMaps', 'View on Map')}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -314,7 +341,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 </div>
                 <div>
                   <h5 className="text-xs font-bold text-cyan-300 font-mono">
-                    VERIFIABLE DISPATCH EMAIL SENT
+                    {t('verifiableDispatchSent', 'VERIFIABLE DISPATCH EMAIL SENT')}
                   </h5>
                   <p className="text-xs text-slate-400">
                     Real email dispatched via Nodemailer Ethereal to {currentDetection.assignedDepartment}
@@ -328,7 +355,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 rel="noopener noreferrer"
                 className="flex items-center space-x-1.5 px-4 py-2 rounded-lg text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 shadow-md shadow-cyan-500/20 transition-all"
               >
-                <span>Open Email Preview</span>
+                <span>{t('openEmailPreview', 'Open Email Preview')}</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>
@@ -340,7 +367,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-cyan-400" />
                 <h4 className="text-xs font-bold font-mono text-slate-200 uppercase tracking-wider">
-                  Official Formal Municipal Grievance Letter
+                  {t('generatedComplaintLetter', 'Official Formal Municipal Grievance Letter')}
                 </h4>
               </div>
 
@@ -348,7 +375,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 {saveSuccess && (
                   <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 animate-fade-in">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Saved Successfully
+                    {t('saved', 'Saved Successfully')}
                   </span>
                 )}
 
@@ -360,7 +387,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-colors shadow-sm"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
-                      <span>Edit Letter</span>
+                      <span>{t('editLetter', 'Edit Letter')}</span>
                     </button>
                     <button
                       type="button"
@@ -368,7 +395,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-colors shadow-sm"
                     >
                       {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copied ? 'Copied' : 'Copy Letter'}</span>
+                      <span>{copied ? t('copied', 'Copied') : t('copyLetter', 'Copy Letter')}</span>
                     </button>
                   </>
                 ) : (
@@ -380,7 +407,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                       title="Reset to standard formal template"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Reset Template</span>
+                      <span className="hidden sm:inline">{t('resetOfficialTemplate', 'Reset Template')}</span>
                     </button>
                     <button
                       type="button"
@@ -390,7 +417,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                       }}
                       className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
                     >
-                      Cancel
+                      {t('cancel', 'Cancel')}
                     </button>
                     <button
                       type="button"
@@ -399,7 +426,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                       className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-md active:scale-95 disabled:opacity-50"
                     >
                       <Save className="w-3.5 h-3.5" />
-                      <span>{savingReport ? 'Saving...' : 'Save Letter'}</span>
+                      <span>{savingReport ? t('saving', 'Saving...') : t('saveFormalLetter', 'Save Letter')}</span>
                     </button>
                   </>
                 )}
@@ -409,7 +436,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
             {isEditingReport ? (
               <div className="space-y-2">
                 <p className="text-[11px] text-amber-400/90 font-medium">
-                  ✏️ You can edit any part of this formal complaint letter, add specific landmark notes, or adjust the problem description before exporting the PDF.
+                  ✏️ {t('editLetterHelp', 'You can edit any part of this formal complaint letter, add specific landmark notes, or adjust the problem description before exporting the PDF.')}
                 </p>
                 <textarea
                   value={editedReportText}
@@ -433,7 +460,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 <div className="flex items-center space-x-2">
                   <ShieldCheck className="w-4 h-4 text-amber-400" />
                   <h5 className="text-xs font-bold text-amber-300 font-mono">
-                    ADMINISTRATIVE STATUS TRIAGE
+                    {t('adminStatusTriage', 'ADMINISTRATIVE STATUS TRIAGE')}
                   </h5>
                 </div>
                 <span className="text-[11px] text-slate-400">
@@ -452,7 +479,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                   }`}
                 >
-                  Mark New
+                  {t('markNew', 'Mark New')}
                 </button>
 
                 <button
@@ -465,7 +492,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                   }`}
                 >
-                  Mark Assigned
+                  {t('markAssigned', 'Mark Assigned')}
                 </button>
 
                 <button
@@ -479,7 +506,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                   }`}
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Mark Resolved (Notify All Reporters)</span>
+                  <span>{t('markResolved', 'Mark Resolved (Notify All Reporters)')}</span>
                 </button>
               </div>
             </div>
@@ -498,7 +525,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 className="flex items-center space-x-1.5 px-4 py-2 rounded-lg text-xs font-bold text-rose-400 hover:text-white bg-rose-950/40 hover:bg-rose-600 border border-rose-500/30 transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Delete Report</span>
+                <span>{t('deleteReport', 'Delete Report')}</span>
               </button>
             )}
           </div>
@@ -510,18 +537,19 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-md transition-all active:scale-95 disabled:opacity-50"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>{downloadingPdf ? 'Generating PDF...' : 'Download Official PDF'}</span>
+              <span>{downloadingPdf ? t('generatingPdf', 'Generating PDF...') : t('downloadPdfReport', 'Download Official PDF')}</span>
             </button>
             <button
               onClick={onClose}
               className="px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
             >
-              Close Inspector
+              {t('closeInspector', 'Close Inspector')}
             </button>
           </div>
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

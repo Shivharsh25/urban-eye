@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, ArrowRight, AlertCircle, Phone, CheckCircle, MapPin, Users, Activity, ShieldCheck } from 'lucide-react';
+import { useLanguage, SUPPORTED_LANGUAGES } from '../context/LanguageContext';
+import { Lock, Mail, ArrowRight, AlertCircle, Phone, CheckCircle, MapPin, Users, Activity, ShieldCheck, Globe } from 'lucide-react';
 import Logo from '../components/Logo';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 import { auth } from '../config/firebase';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import api from '../api/client';
@@ -21,6 +23,7 @@ export default function LoginPage() {
   const [stats, setStats] = useState({ activeCitizens: '12.4k+', issuesResolved: '45k+' });
 
   const { login, loginWithPhone } = useAuth();
+  const { lang, setLang, t } = useLanguage();
   const navigate = useNavigate();
 
   // Fetch Public Stats
@@ -44,7 +47,7 @@ export default function LoginPage() {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
-        callback: (response) => {
+        callback: () => {
           // reCAPTCHA solved
         },
         'expired-callback': () => {
@@ -61,8 +64,12 @@ export default function LoginPage() {
 
     try {
       if (loginMethod === 'email') {
-        await login(citizenEmail, citizenPassword);
-        navigate('/dashboard');
+        const loggedInUser = await login(citizenEmail, citizenPassword);
+        if (loggedInUser?.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
       } else {
         if (!window.confirmationResult) {
           throw new Error('Please request an OTP first.');
@@ -71,8 +78,12 @@ export default function LoginPage() {
         const firebaseUser = result.user;
         const idToken = await firebaseUser.getIdToken();
         
-        await loginWithPhone(firebaseUser.phoneNumber || citizenPhone, idToken);
-        navigate('/dashboard');
+        const loggedInUser = await loginWithPhone(firebaseUser.phoneNumber || citizenPhone, idToken);
+        if (loggedInUser?.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
       }
     } catch (err) {
       if (err.code === 'auth/invalid-verification-code') {
@@ -90,26 +101,23 @@ export default function LoginPage() {
       setCitizenError('Please enter your phone number.');
       return;
     }
-    
-    const formattedPhone = citizenPhone.startsWith('+') ? citizenPhone : `+1${citizenPhone.replace(/\D/g, '')}`;
-    
-    setCitizenError(null);
-    setOtpSuccessMsg('');
-    setLoading(true);
-    
+
     try {
+      setCitizenError(null);
+      setLoading(true);
+
       const appVerifier = window.recaptchaVerifier;
-      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+      const confirmationResult = await signInWithPhoneNumber(auth, citizenPhone, appVerifier);
       window.confirmationResult = confirmationResult;
       
       setOtpSent(true);
-      setOtpSuccessMsg('OTP sent successfully via Firebase!');
+      setOtpSuccessMsg('Verification code sent successfully!');
     } catch (err) {
-      console.error('Firebase SMS Error:', err);
+      console.error('SMS Send Error:', err);
       if (window.recaptchaVerifier) {
-         window.recaptchaVerifier.render().then(widgetId => {
-           grecaptcha.reset(widgetId);
-         });
+        window.recaptchaVerifier.render().then(widgetId => {
+          grecaptcha.reset(widgetId);
+        });
       }
       setCitizenError(err.message || 'Failed to send OTP.');
     } finally {
@@ -135,32 +143,32 @@ export default function LoginPage() {
           {/* Hero Content */}
           <div className="space-y-6">
             <h2 className="text-5xl font-bold text-white leading-tight">
-              Empowering citizens.<br />
+              {t('empoweringCitizens', 'Empowering citizens.')}<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">
-                Improving cities.
+                {t('improvingCities', 'Improving cities.')}
               </span>
             </h2>
             <p className="text-lg text-slate-300 max-w-md">
-              Join thousands of residents actively monitoring and reporting urban infrastructure issues in real-time.
+              {t('joinThousands', 'Join thousands of residents actively monitoring and reporting urban infrastructure issues in real-time.')}
             </p>
 
             <div className="grid grid-cols-2 gap-4 mt-8">
               <div className="glass-panel p-4 rounded-2xl bg-black/20 border border-white/5 backdrop-blur-sm">
                 <Users className="w-6 h-6 text-sky-400 mb-2" />
                 <div className="text-2xl font-bold text-white">{stats.activeCitizens}</div>
-                <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Active Citizens</div>
+                <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold">{t('activeBadge', 'Active Citizens')}</div>
               </div>
               <div className="glass-panel p-4 rounded-2xl bg-black/20 border border-white/5 backdrop-blur-sm">
                 <CheckCircle className="w-6 h-6 text-emerald-400 mb-2" />
                 <div className="text-2xl font-bold text-white">{stats.issuesResolved}</div>
-                <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Issues Resolved</div>
+                <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold">{t('issuesResolved', 'Issues Resolved')}</div>
               </div>
             </div>
           </div>
 
           <div className="flex items-center text-slate-400 text-sm space-x-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Secure & encrypted connection</span>
+            <span>{t('secureConnection', 'Secure & encrypted connection')}</span>
           </div>
         </div>
       </div>
@@ -176,18 +184,62 @@ export default function LoginPage() {
 
         <div className="w-full max-w-md relative z-10">
           
+          {/* Top Language Toggle */}
+          <div className="flex justify-end mb-6">
+            <div className="inline-flex items-center space-x-1 bg-slate-900/90 border border-slate-700/80 rounded-xl p-1 shadow-md">
+              <Globe className="w-3.5 h-3.5 text-cyan-400 ml-1.5 mr-0.5" />
+              {SUPPORTED_LANGUAGES.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => setLang(l.code)}
+                  className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
+                    lang === l.code
+                      ? 'bg-cyan-500 text-slate-950 font-bold shadow'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {l.native}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Mobile Header (Hidden on Desktop) */}
-          <div className="flex lg:hidden items-center justify-center space-x-4 mb-10">
+          <div className="flex lg:hidden items-center justify-center space-x-4 mb-6">
             <Logo size="md" subtitle="" />
           </div>
 
-          <div className="mb-10">
-            <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-            <p className="text-slate-400">Sign in to your citizen portal to continue.</p>
+          <div className="mb-6">
+            <h2 className="text-3xl font-bold text-white mb-2">{t('welcomeBack', 'Welcome Back')}</h2>
+            <p className="text-slate-400">{t('signInSubtitle', 'Sign in to your citizen portal to continue.')}</p>
+          </div>
+
+          {/* Google Sign-In */}
+          <div className="mb-6">
+            <GoogleAuthButton 
+              mode="signin"
+              onSuccess={(user) => {
+                if (user?.role === 'admin') {
+                  navigate('/admin');
+                } else {
+                  navigate('/dashboard');
+                }
+              }}
+              onError={(err) => setCitizenError(err)}
+            />
+
+            {/* Divider */}
+            <div className="relative my-5 flex items-center justify-center">
+              <div className="border-t border-slate-800 w-full"></div>
+              <span className="bg-[#0b101b] lg:bg-[#080c14] px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 absolute">
+                {t('orContinueWith', 'Or continue with')}
+              </span>
+            </div>
           </div>
 
           {/* Login Method Tabs */}
-          <div className="flex bg-slate-900/80 p-1 rounded-xl mb-8 shadow-inner border border-white/5">
+          <div className="flex bg-slate-900/80 p-1 rounded-xl mb-6 shadow-inner border border-white/5">
             <button
               type="button"
               onClick={() => { setLoginMethod('email'); setCitizenError(null); }}
@@ -197,7 +249,7 @@ export default function LoginPage() {
                   : 'text-slate-500 hover:text-slate-300'
               }`}
             >
-              Email Login
+              {t('emailLogin', 'Email Login')}
             </button>
             <button
               type="button"
@@ -208,7 +260,7 @@ export default function LoginPage() {
                   : 'text-slate-500 hover:text-slate-300'
               }`}
             >
-              Phone (OTP)
+              {t('phoneOtp', 'Phone (OTP)')}
             </button>
           </div>
 
@@ -230,7 +282,7 @@ export default function LoginPage() {
             {loginMethod === 'email' ? (
               <>
                 <div>
-                  <label className="block text-[12px] font-semibold text-slate-300 mb-2 uppercase tracking-wider">Email Address</label>
+                  <label className="block text-[12px] font-semibold text-slate-300 mb-2 uppercase tracking-wider">{t('emailAddress', 'Email Address')}</label>
                   <div className="relative group/input">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-cyan-400 transition-colors">
                       <Mail className="w-5 h-5" />
@@ -247,7 +299,7 @@ export default function LoginPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[12px] font-semibold text-slate-300 mb-2 uppercase tracking-wider">Password</label>
+                  <label className="block text-[12px] font-semibold text-slate-300 mb-2 uppercase tracking-wider">{t('password', 'Password')}</label>
                   <div className="relative group/input">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-cyan-400 transition-colors">
                       <Lock className="w-5 h-5" />
@@ -266,7 +318,7 @@ export default function LoginPage() {
             ) : (
               <>
                 <div>
-                  <label className="block text-[12px] font-semibold text-slate-300 mb-2 uppercase tracking-wider">Phone Number</label>
+                  <label className="block text-[12px] font-semibold text-slate-300 mb-2 uppercase tracking-wider">{t('phoneNumber', 'Phone Number')}</label>
                   <div className="relative group/input">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-cyan-400 transition-colors">
                       <Phone className="w-5 h-5" />
@@ -277,7 +329,7 @@ export default function LoginPage() {
                       disabled={otpSent}
                       value={citizenPhone}
                       onChange={(e) => setCitizenPhone(e.target.value)}
-                      placeholder="+1 234 567 8900"
+                      placeholder="+91 98765 43210"
                       className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-900/50 border border-slate-700 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:bg-slate-900 focus:ring-1 focus:ring-cyan-500/50 transition-all shadow-inner disabled:opacity-50"
                     />
                   </div>
@@ -285,7 +337,7 @@ export default function LoginPage() {
                 
                 {otpSent && (
                   <div className="animate-fade-in">
-                    <label className="block text-[12px] font-semibold text-slate-300 mb-2 uppercase tracking-wider">One-Time Password</label>
+                    <label className="block text-[12px] font-semibold text-slate-300 mb-2 uppercase tracking-wider">{t('oneTimePassword', 'One-Time Password')}</label>
                     <div className="relative group/input">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-cyan-400 transition-colors">
                         <Lock className="w-5 h-5" />
@@ -315,7 +367,7 @@ export default function LoginPage() {
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
                 ) : (
-                  <span>Send Verification Code</span>
+                  <span>{t('sendVerificationCode', 'Send Verification Code')}</span>
                 )}
               </button>
             ) : (
@@ -328,7 +380,7 @@ export default function LoginPage() {
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <>
-                    <span>{loginMethod === 'phone' ? 'Verify & Sign In' : 'Sign In'}</span>
+                    <span>{loginMethod === 'phone' ? t('verifyAndSignIn', 'Verify & Sign In') : t('signIn', 'Sign In')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -340,13 +392,13 @@ export default function LoginPage() {
 
           <div className="mt-8 pt-8 border-t border-slate-800 flex items-center justify-between">
             <p className="text-sm text-slate-400">
-              New to Urban EYE?{' '}
+              {t('newToUrbanEye', 'New to Urban EYE?')}{' '}
               <Link to="/register" className="text-cyan-400 hover:text-cyan-300 font-bold">
-                Create account
+                {t('createAccount', 'Create account')}
               </Link>
             </p>
             <Link to="/admin-login" className="text-[10px] uppercase font-bold tracking-widest text-slate-600 hover:text-indigo-400 transition-colors">
-              Official Access
+              {t('officialAccess', 'Official Access')}
             </Link>
           </div>
 

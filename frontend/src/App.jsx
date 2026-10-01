@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -48,9 +50,11 @@ export default function App() {
   return (
     <APIProvider apiKey={API_KEY}>
       <AuthProvider>
-        <BrowserRouter>
-          <ErrorBoundary>
-          <Routes>
+        <ThemeProvider>
+          <LanguageProvider>
+          <BrowserRouter>
+            <ErrorBoundary>
+            <Routes>
             {/* Public Auth Routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin-login" element={<AdminLoginPage />} />
@@ -215,7 +219,9 @@ export default function App() {
           </Routes>
         </ErrorBoundary>
       </BrowserRouter>
-    </AuthProvider>
-    </APIProvider>
+      </LanguageProvider>
+    </ThemeProvider>
+  </AuthProvider>
+</APIProvider>
   );
 }

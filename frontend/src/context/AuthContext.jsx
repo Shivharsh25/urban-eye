@@ -93,6 +93,63 @@ export function AuthProvider({ children }) {
     return receivedUser;
   };
 
+  const loginWithGoogle = async (googleData) => {
+    console.log('[AuthContext] loginWithGoogle called for:', googleData?.email);
+    const res = await client.post('/api/auth/google', {
+      email: googleData.email,
+      name: googleData.name,
+      photoUrl: googleData.photoUrl,
+      uid: googleData.uid,
+      idToken: googleData.idToken
+    });
+
+    const { token: receivedToken, user: receivedUser, isNewUser } = res.data;
+
+    setToken(receivedToken);
+    setUser(receivedUser);
+
+    localStorage.setItem('urban_eye_token', receivedToken);
+    localStorage.setItem('urban_eye_user', JSON.stringify(receivedUser));
+
+    const socket = getSocket();
+    if (socket?.connected) {
+      socket.emit('join:user', receivedUser.id);
+    }
+
+    return { user: receivedUser, isNewUser };
+  };
+
+  const requestGoogleOtp = async (googleData) => {
+    console.log('[AuthContext] requestGoogleOtp called for:', googleData?.email);
+    const res = await client.post('/api/auth/google-request-otp', {
+      email: googleData.email,
+      name: googleData.name,
+      photoUrl: googleData.photoUrl,
+      uid: googleData.uid,
+      idToken: googleData.idToken
+    });
+    return res.data;
+  };
+
+  const verifyGoogleOtp = async (email, otp) => {
+    console.log('[AuthContext] verifyGoogleOtp called for:', email);
+    const res = await client.post('/api/auth/google-verify-otp', { email, otp });
+    const { token: receivedToken, user: receivedUser, isNewUser } = res.data;
+
+    setToken(receivedToken);
+    setUser(receivedUser);
+
+    localStorage.setItem('urban_eye_token', receivedToken);
+    localStorage.setItem('urban_eye_user', JSON.stringify(receivedUser));
+
+    const socket = getSocket();
+    if (socket?.connected) {
+      socket.emit('join:user', receivedUser.id);
+    }
+
+    return { user: receivedUser, isNewUser };
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -115,6 +172,9 @@ export function AuthProvider({ children }) {
     isAdmin: user?.role === 'admin',
     login,
     loginWithPhone,
+    loginWithGoogle,
+    requestGoogleOtp,
+    verifyGoogleOtp,
     register,
     logout,
     updateUser

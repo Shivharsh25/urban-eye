@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getSocket } from '../api/socket';
 import { 
   Eye, 
   LayoutDashboard, 
@@ -21,18 +20,18 @@ import {
   HelpCircle, 
   Activity,
   Sparkles,
-  ShieldCheck,
   Flame,
   RadioTower,
   X
 } from 'lucide-react';
 import Logo from './Logo';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { user, isAdmin, logout } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
-  const [socketConnected, setSocketConnected] = useState(false);
 
   // Sidebar collapse state with localStorage persistence
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -52,22 +51,6 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       return next;
     });
   };
-
-  useEffect(() => {
-    const s = getSocket();
-    setSocketConnected(s.connected);
-
-    const onConnect = () => setSocketConnected(true);
-    const onDisconnect = () => setSocketConnected(false);
-
-    s.on('connect', onConnect);
-    s.on('disconnect', onDisconnect);
-
-    return () => {
-      s.off('connect', onConnect);
-      s.off('disconnect', onDisconnect);
-    };
-  }, []);
 
   // Keyboard shortcut (Ctrl + B) to toggle sidebar
   useEffect(() => {
@@ -151,135 +134,52 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       )}
 
       {/* Nav List */}
-      <nav className="flex-1 py-3 px-3 space-y-1 overflow-y-auto custom-scrollbar relative z-10">
+      <nav className="flex-1 py-3 px-3 pb-8 space-y-1 overflow-y-auto custom-scrollbar relative z-10">
         {user && (
           <>
             {isAdmin ? (
               <>
-                <NavItem to="/admin" icon={LayoutDashboard} label="City Dashboard" isActive={isActive('/admin')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
-                <NavItem to="/report" icon={Camera} label="Report Issue" isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="AI Scan" badgeColor="bg-cyan-500/20 text-cyan-300 border-cyan-500/30" />
+                <NavItem to="/admin" icon={LayoutDashboard} label={t('dashboard')} isActive={isActive('/admin')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/report" icon={Camera} label={t('reportIssue')} isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="AI Scan" badgeColor="bg-cyan-500/20 text-cyan-300 border-cyan-500/30" />
               </>
             ) : (
               <>
                 {!isCollapsed && (
                   <div className="flex items-center space-x-2 px-3 mb-1.5 mt-1 text-[9px] font-mono font-bold tracking-[0.22em] text-slate-500 uppercase select-none">
-                    <span>Core Access</span>
+                    <span>{t('coreAccess')}</span>
                     <div className="h-px flex-1 bg-gradient-to-r from-slate-800 via-cyan-500/20 to-transparent"></div>
                   </div>
                 )}
-                <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" isActive={isActive('/dashboard')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
-                <NavItem to="/report" icon={Camera} label="New Report" isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="AI" badgeColor="bg-cyan-500/20 text-cyan-300 border-cyan-500/30" />
-                <NavItem to="/my-reports" icon={FileText} label="My Tracking" isActive={isActive('/my-reports')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/dashboard" icon={LayoutDashboard} label={t('dashboard')} isActive={isActive('/dashboard')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/report" icon={Camera} label={t('newReport')} isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="AI" badgeColor="bg-cyan-500/20 text-cyan-300 border-cyan-500/30" />
+                <NavItem to="/my-reports" icon={FileText} label={t('myReports')} isActive={isActive('/my-reports')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
                 
                 {!isCollapsed && (
                   <div className="flex items-center space-x-2 px-3 mb-1.5 mt-4 text-[9px] font-mono font-bold tracking-[0.22em] text-slate-500 uppercase select-none">
-                    <span>City Network</span>
+                    <span>{t('cityNetwork')}</span>
                     <div className="h-px flex-1 bg-gradient-to-r from-slate-800 via-cyan-500/20 to-transparent"></div>
                   </div>
                 )}
-                <NavItem to="/map" icon={Map} label="Live Map" isActive={isActive('/map')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="LIVE" badgeColor="bg-emerald-500/20 text-emerald-400 border-emerald-500/30" isLivePulse={true} />
-                <NavItem to="/alerts" icon={Bell} label="Community Alerts" isActive={isActive('/alerts')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
-                <NavItem to="/activity" icon={Activity} label="City Activity" isActive={isActive('/activity')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/map" icon={Map} label={t('liveMap')} isActive={isActive('/map')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="LIVE" badgeColor="bg-emerald-500/20 text-emerald-400 border-emerald-500/30" isLivePulse={true} />
+                <NavItem to="/alerts" icon={Bell} label={t('alerts')} isActive={isActive('/alerts')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                <NavItem to="/activity" icon={Activity} label={t('activity')} isActive={isActive('/activity')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
 
                 <div className="pt-2.5 mt-2.5 border-t border-slate-800/60">
                   {!isCollapsed && (
                     <div className="flex items-center space-x-2 px-3 mb-1.5 text-[9px] font-mono font-bold tracking-[0.22em] text-slate-500 uppercase select-none">
-                      <span>Account</span>
+                      <span>{t('account')}</span>
                       <div className="h-px flex-1 bg-gradient-to-r from-slate-800 via-cyan-500/20 to-transparent"></div>
                     </div>
                   )}
-                  <NavItem to="/profile" icon={UserCircle} label="My Profile" isActive={isActive('/profile')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
-                  <NavItem to="/settings" icon={Settings} label="Settings" isActive={isActive('/settings')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
-                  <NavItem to="/support" icon={HelpCircle} label="Help & Support" isActive={isActive('/support')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                  <NavItem to="/profile" icon={UserCircle} label={t('profile')} isActive={isActive('/profile')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                  <NavItem to="/settings" icon={Settings} label={t('settings')} isActive={isActive('/settings')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
+                  <NavItem to="/support" icon={HelpCircle} label={t('support')} isActive={isActive('/support')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
                 </div>
               </>
             )}
           </>
         )}
       </nav>
-
-      {/* Bottom Status & Profile */}
-      <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 backdrop-blur-md relative z-10">
-        
-        {/* Live System Telemetry Capsule */}
-        <div className={`flex items-center ${isCollapsed ? 'justify-center p-1.5' : 'justify-between px-3 py-1.5'} rounded-xl transition-all ${
-          socketConnected 
-            ? 'bg-emerald-950/30 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.12)]' 
-            : 'bg-rose-950/30 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.12)]'
-        } mb-2.5`}>
-          <div className="flex items-center space-x-2">
-            <span className="relative flex h-2 w-2 shrink-0">
-              {socketConnected && (
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              )}
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${socketConnected ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-rose-500'}`}></span>
-            </span>
-            {!isCollapsed && (
-              <span className={`text-[10px] font-mono font-bold tracking-widest ${socketConnected ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {socketConnected ? 'LIVE FEED' : 'OFFLINE'}
-              </span>
-            )}
-          </div>
-
-          {!isCollapsed && socketConnected && (
-            <div className="flex items-center space-x-1">
-              <span className="w-1 h-2.5 bg-emerald-400/80 rounded-full animate-pulse" style={{ animationDelay: '0s' }}></span>
-              <span className="w-1 h-1.5 bg-emerald-400/80 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></span>
-              <span className="w-1 h-3.5 bg-emerald-400/80 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></span>
-            </div>
-          )}
-        </div>
-
-        {/* Citizen Profile Card */}
-        {user && (
-          isCollapsed ? (
-            <div className="flex flex-col items-center gap-2 pt-0.5">
-              <div 
-                className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 via-sky-500 to-indigo-600 p-[1px] shadow-[0_0_10px_rgba(6,182,212,0.3)] shrink-0 group relative cursor-pointer"
-                title={`${user.name} (${isAdmin ? 'Admin' : 'Citizen'})`}
-              >
-                <div className="w-full h-full rounded-xl bg-[#0a0f1d] flex items-center justify-center text-xs font-black text-cyan-300">
-                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                </div>
-              </div>
-              <button
-                onClick={handleLogout}
-                title="Sign Out"
-                className="p-2 rounded-xl bg-slate-800/80 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-slate-700/60 hover:border-rose-500/40 transition-all"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900/50 border border-slate-800/60">
-              <div className="flex items-center space-x-2.5 min-w-0 pr-1">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-600 via-sky-500 to-indigo-600 p-[1px] shadow-[0_0_10px_rgba(6,182,212,0.3)] shrink-0">
-                  <div className="w-full h-full rounded-xl bg-[#0a0f1d] flex items-center justify-center text-xs font-black text-white">
-                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                  </div>
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center space-x-1">
-                    <span className="text-xs font-bold text-slate-200 truncate">{user.name}</span>
-                    <ShieldCheck className="w-3 h-3 text-cyan-400 shrink-0" />
-                  </div>
-                  <span className="text-[9px] text-cyan-400 font-mono font-semibold tracking-wider uppercase truncate">
-                    {isAdmin ? 'MUNICIPAL ADMIN' : 'VERIFIED CITIZEN'}
-                  </span>
-                </div>
-              </div>
-
-              <button
-                onClick={handleLogout}
-                title="Sign Out"
-                className="p-1.5 rounded-xl bg-slate-800 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-slate-700/60 hover:border-rose-500/40 hover:shadow-[0_0_12px_rgba(244,63,94,0.3)] transition-all shrink-0"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )
-        )}
-      </div>
     </aside>
   );
 }

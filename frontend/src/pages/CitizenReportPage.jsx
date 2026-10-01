@@ -27,9 +27,11 @@ import DetectionModal from '../components/DetectionModal';
 import { generateReportPDF } from '../utils/pdfGenerator';
 import { generateFormalComplaintLetter } from '../utils/formalReportTemplate';
 import exifr from 'exifr';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function CitizenReportPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // State
   const [selectedFile, setSelectedFile] = useState(null);
@@ -345,14 +347,14 @@ export default function CitizenReportPage() {
             <div className="flex items-center space-x-3 mb-3">
               <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest flex items-center shadow-inner">
                 <Sparkles className="w-3.5 h-3.5 mr-2" />
-                Automated AI Triage & Dispatch
+                {t('aiDetection', 'Automated AI Triage & Dispatch')}
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-stone-200 to-stone-400 tracking-tight drop-shadow-sm mb-3">
-              Intelligent Incident Reporting
+              {t('intelligentIncidentReporting', 'Intelligent Incident Reporting')}
             </h1>
             <p className="text-sm sm:text-base text-stone-400 font-medium leading-relaxed">
-              Snap a photo or upload an image. Urban EYE will automatically pinpoint the location, analyze the infrastructure defect with AI, and dispatch work orders directly to municipal departments.
+              {t('reportPageSubtitle', 'Snap a photo or upload an image. Urban EYE will automatically pinpoint the location, analyze the infrastructure defect with AI, and dispatch work orders directly to municipal departments.')}
             </p>
           </div>
 
@@ -363,7 +365,7 @@ export default function CitizenReportPage() {
               className="px-5 py-2.5 rounded-2xl text-xs font-bold text-stone-300 bg-stone-900/90 hover:bg-stone-800 border border-stone-700/80 transition-all shadow-lg flex items-center space-x-2"
             >
               <FileText className="w-4 h-4 text-cyan-400" />
-              <span>Track Past Reports</span>
+              <span>{t('trackPastReports', 'Track Past Reports')}</span>
             </button>
           </div>
         </div>
@@ -392,10 +394,10 @@ export default function CitizenReportPage() {
               </div>
               <div>
                 <h4 className="text-lg font-black tracking-wide text-emerald-400 uppercase">
-                  Incident Dispatched Successfully!
+                  {t('incidentDispatched', 'Incident Dispatched Successfully!')}
                 </h4>
                 <p className="text-xs text-stone-400">
-                  Municipal authority has been notified with high-priority assignment.
+                  {t('incidentDispatchedDesc', 'Municipal authority has been notified with high-priority assignment.')}
                 </p>
               </div>
             </div>
@@ -406,20 +408,20 @@ export default function CitizenReportPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono relative z-10">
             <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 shadow-inner">
-              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">CATEGORY</span>
+              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">{t('categoryLabel', 'CATEGORY')}</span>
               <span className="font-bold text-amber-400 text-sm uppercase">{resultDetection.type}</span>
             </div>
             <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 shadow-inner">
-              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">SEVERITY</span>
+              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">{t('severityLabel', 'SEVERITY')}</span>
               <span className="font-bold text-rose-400 text-sm uppercase">{resultDetection.severity}</span>
             </div>
             <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 shadow-inner">
-              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">ASSIGNED DEPT</span>
+              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">{t('assignedDept', 'ASSIGNED DEPT')}</span>
               <span className="font-bold text-stone-200 text-sm truncate block">{resultDetection.assignedDepartment}</span>
             </div>
             <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 shadow-inner">
-              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">CITIZEN REPORTS</span>
-              <span className="font-bold text-stone-200 text-sm">{resultDetection.reportCount || 1} reported</span>
+              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">{t('citizenReportsCount', 'CITIZEN REPORTS')}</span>
+              <span className="font-bold text-stone-200 text-sm">{resultDetection.reportCount || 1} {t('reportsCount', 'reported')}</span>
             </div>
           </div>
 
@@ -429,7 +431,7 @@ export default function CitizenReportPage() {
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-cyan-400" />
                 <span className="text-xs font-bold text-stone-200 uppercase tracking-wider">
-                  Generated Formal Municipal Grievance Letter
+                  {t('generatedComplaintLetter', 'Generated Formal Municipal Grievance Letter')}
                 </span>
               </div>
 
@@ -437,7 +439,7 @@ export default function CitizenReportPage() {
                 {saveLetterSuccess && (
                   <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Saved
+                    {t('saved', 'Saved')}
                   </span>
                 )}
 
@@ -448,7 +450,7 @@ export default function CitizenReportPage() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
-                    <span>Edit Letter</span>
+                    <span>{t('editLetter', 'Edit Letter')}</span>
                   </button>
                 ) : (
                   <>
@@ -460,7 +462,7 @@ export default function CitizenReportPage() {
                       }}
                       className="px-3 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-white bg-stone-900 border border-stone-800 transition-colors"
                     >
-                      Cancel
+                      {t('cancel', 'Cancel')}
                     </button>
                     <button
                       type="button"
@@ -469,7 +471,7 @@ export default function CitizenReportPage() {
                       className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold text-stone-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-md active:scale-95 disabled:opacity-50"
                     >
                       <Save className="w-3.5 h-3.5" />
-                      <span>{savingLetter ? 'Saving...' : 'Save Updates'}</span>
+                      <span>{savingLetter ? t('saving', 'Saving...') : t('saveUpdates', 'Save Updates')}</span>
                     </button>
                   </>
                 )}
@@ -508,7 +510,7 @@ export default function CitizenReportPage() {
               ) : (
                 <Download className="w-4 h-4 text-cyan-200" />
               )}
-              <span>{downloadingPdf ? 'Generating PDF...' : 'Download PDF Report'}</span>
+              <span>{downloadingPdf ? t('generatingPdf', 'Generating PDF...') : t('downloadPdfReport', 'Download PDF Report')}</span>
             </button>
             <button
               type="button"
@@ -516,7 +518,7 @@ export default function CitizenReportPage() {
               className="px-6 py-3 rounded-2xl text-sm font-bold text-stone-950 bg-amber-500 hover:bg-amber-400 shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
             >
               <Eye className="w-4 h-4" />
-              <span>Inspect AI Details</span>
+              <span>{t('inspectAiDetails', 'Inspect AI Details')}</span>
             </button>
             <button
               type="button"
@@ -524,7 +526,7 @@ export default function CitizenReportPage() {
               className="px-6 py-3 rounded-2xl text-sm font-bold text-stone-300 bg-stone-800 hover:bg-stone-700 border border-stone-700 transition-colors shadow-lg flex items-center justify-center space-x-2"
             >
               <FileText className="w-4 h-4 text-stone-400" />
-              <span>View in My Reports</span>
+              <span>{t('viewInMyReports', 'View in My Reports')}</span>
             </button>
             <button
               type="button"
@@ -532,7 +534,7 @@ export default function CitizenReportPage() {
               className="px-6 py-3 rounded-2xl text-sm font-bold text-stone-300 bg-stone-900 hover:bg-stone-800 border border-stone-700 transition-colors flex items-center justify-center space-x-2 ml-auto"
             >
               <RefreshCw className="w-4 h-4 text-cyan-400" />
-              <span>Report Another Incident</span>
+              <span>{t('reportAnotherIncident', 'Report Another Incident')}</span>
             </button>
           </div>
         </div>
@@ -551,7 +553,7 @@ export default function CitizenReportPage() {
             <div className="flex items-center justify-between mb-5 relative z-10">
               <label className="text-sm font-bold text-stone-200 uppercase tracking-wider flex items-center space-x-2.5">
                 <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">1</span>
-                <span>Upload Evidence Photo</span>
+                <span>{t('uploadEvidencePhoto', 'Upload Evidence Photo')}</span>
               </label>
               <span className="text-[11px] text-stone-400 font-medium">JPG, PNG, WEBP</span>
             </div>
@@ -567,7 +569,7 @@ export default function CitizenReportPage() {
                   {isSubmitting ? (
                     <div className="text-amber-400 font-bold flex items-center bg-stone-900/80 px-4 py-2 rounded-xl">
                       <div className="w-4 h-4 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin mr-2"></div>
-                      Analyzing...
+                      {t('analyzing', 'Analyzing...')}
                     </div>
                   ) : (
                     <>
@@ -576,14 +578,14 @@ export default function CitizenReportPage() {
                         onClick={() => fileInputRef.current?.click()}
                         className="px-5 py-2.5 rounded-xl text-xs font-bold bg-stone-800/90 text-white hover:bg-stone-700 border border-stone-600 transition-colors shadow-lg"
                       >
-                        Change Photo
+                        {t('changePhoto', 'Change Photo')}
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowWebcam(true)}
                         className="px-5 py-2.5 rounded-xl text-xs font-bold bg-amber-500 text-stone-950 hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/25"
                       >
-                        Take New Photo
+                        {t('takeNewPhoto', 'Take New Photo')}
                       </button>
                     </>
                   )}
@@ -600,10 +602,10 @@ export default function CitizenReportPage() {
                   <Upload className="w-8 h-8" />
                 </div>
                 <h4 className="text-base font-black text-stone-200">
-                  Tap to select or drop incident photo
+                  {t('tapToSelectPhoto', 'Tap to select or drop incident photo')}
                 </h4>
                 <p className="text-xs text-stone-400 mt-1.5 max-w-sm">
-                  Automatic GPS extraction & client-side compression enabled
+                  {t('gpsAutoExtraction', 'Automatic GPS extraction & client-side compression enabled')}
                 </p>
 
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-3 w-full" onClick={(e) => e.stopPropagation()}>
@@ -612,7 +614,7 @@ export default function CitizenReportPage() {
                     onClick={() => fileInputRef.current?.click()}
                     className="px-5 py-2.5 rounded-xl text-xs font-bold bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 transition-colors shadow-md"
                   >
-                    Browse Files
+                    {t('browseFiles', 'Browse Files')}
                   </button>
                   <button
                     type="button"
@@ -620,7 +622,7 @@ export default function CitizenReportPage() {
                     className="flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-rose-400 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <Camera className="w-4 h-4" />
-                    <span>Take Photo</span>
+                    <span>{t('takePhoto', 'Take Photo')}</span>
                   </button>
                 </div>
               </div>
@@ -644,17 +646,17 @@ export default function CitizenReportPage() {
             <div className="flex items-center justify-between">
               <label className="text-sm font-bold text-stone-200 uppercase tracking-wider flex items-center space-x-2.5">
                 <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">2</span>
-                <span>Select Defect Category</span>
+                <span>{t('selectDefectCategory', 'Select Defect Category')}</span>
               </label>
-              <span className="text-[11px] text-stone-500">Auto-classified if unsure</span>
+              <span className="text-[11px] text-stone-500">{t('autoClassifiedHint', 'Auto-classified if unsure')}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { id: 'pothole', name: 'Pothole & Road', dept: 'Roads & Works', emoji: '🚧' },
-                { id: 'garbage', name: 'Garbage Dump', dept: 'Sanitation', emoji: '🗑️' },
-                { id: 'water_leak', name: 'Water Pipe Leak', dept: 'Water Supply', emoji: '💧' },
-                { id: 'streetlight', name: 'Broken Streetlight', dept: 'Electrical Dept', emoji: '💡' },
+                { id: 'pothole', name: t('potholes', 'Pothole & Road'), dept: t('roadsAndWorks', 'Roads & Works'), emoji: '🚧' },
+                { id: 'garbage', name: t('wasteGarbage', 'Garbage Dump'), dept: t('sanitation', 'Sanitation'), emoji: '🗑️' },
+                { id: 'water_leak', name: t('waterLeaks', 'Water Pipe Leak'), dept: t('waterSupply', 'Water Supply'), emoji: '💧' },
+                { id: 'streetlight', name: t('streetlights', 'Broken Streetlight'), dept: t('electricalDept', 'Electrical Dept'), emoji: '💡' },
               ].map((cat) => {
                 const isSelected = typeHint === cat.id;
                 return (
@@ -696,17 +698,17 @@ export default function CitizenReportPage() {
               {isSubmitting ? (
                 <div className="flex items-center space-x-2.5">
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Running AI Triage & Dispatch...</span>
+                  <span>{t('runningAiTriage', 'Running AI Triage & Dispatch...')}</span>
                 </div>
               ) : (
                 <>
                   <Send className="w-5 h-5" />
-                  <span>Submit Incident Report</span>
+                  <span>{t('submitIncidentReport', 'Submit Incident Report')}</span>
                 </>
               )}
             </button>
             <p className="text-[11px] text-center text-stone-500 leading-relaxed">
-              Upon submission, our AI will cluster nearby reports within 50m to avoid duplicates, route to municipal engineers, and trigger verified email dispatches.
+              {t('submitNotice', 'Upon submission, our AI will cluster nearby reports within 50m to avoid duplicates, route to municipal engineers, and trigger verified email dispatches.')}
             </p>
           </div>
 
@@ -722,7 +724,7 @@ export default function CitizenReportPage() {
             <div className="flex flex-wrap items-center justify-between gap-2 relative z-10">
               <label className="text-sm font-bold text-stone-200 uppercase tracking-wider flex items-center space-x-2.5">
                 <span className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs font-bold">3</span>
-                <span>Pinpoint Exact Location</span>
+                <span>{t('pinpointLocation', 'Pinpoint Exact Location')}</span>
               </label>
               <span className="text-[11px] text-amber-400 font-mono font-bold bg-amber-950/50 border border-amber-500/30 px-3 py-1 rounded-xl shadow-inner">
                 {pinLocation.lat.toFixed(5)}, {pinLocation.lng.toFixed(5)}
@@ -732,9 +734,9 @@ export default function CitizenReportPage() {
             <div className="flex items-center justify-between text-xs text-stone-400 bg-stone-950/50 border border-stone-800 px-4 py-2.5 rounded-2xl relative z-10">
               <span className="flex items-center gap-1.5 text-stone-300">
                 <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span>Drag the pin or click on the map to position</span>
+                <span>{t('dragPinHint', 'Drag the pin or click on the map to position')}</span>
               </span>
-              <span className="text-[10px] text-stone-500 hidden sm:inline">Real-time address sync</span>
+              <span className="text-[10px] text-stone-500 hidden sm:inline">{t('realtimeAddressSync', 'Real-time address sync')}</span>
             </div>
 
             {/* Expansive, Prominent Map (480px Height) */}
@@ -753,8 +755,8 @@ export default function CitizenReportPage() {
             <div className="space-y-4 pt-1 relative z-10">
               <div>
                 <label className="block text-xs font-bold text-stone-400 mb-1.5 flex items-center justify-between">
-                  <span>Detected Landmark & Street Address</span>
-                  <span className="text-[10px] text-amber-500 font-normal">Auto-filled from pin</span>
+                  <span>{t('detectedLandmark', 'Detected Landmark & Street Address')}</span>
+                  <span className="text-[10px] text-amber-500 font-normal">{t('autoFilledFromPin', 'Auto-filled from pin')}</span>
                 </label>
                 <div className="relative">
                   <input
@@ -770,7 +772,7 @@ export default function CitizenReportPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">
-                    Latitude
+                    {t('latitude', 'Latitude')}
                   </label>
                   <input
                     type="number"
@@ -782,7 +784,7 @@ export default function CitizenReportPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">
-                    Longitude
+                    {t('longitude', 'Longitude')}
                   </label>
                   <input
                     type="number"

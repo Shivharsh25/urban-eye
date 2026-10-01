@@ -3,13 +3,153 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-size: 16.75px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  @media (min-width: 1024px) {
+    html {
+      font-size: 17px;
+    }
+  }
   html, body, #root {
     max-width: 100vw;
     overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
   body {
     @apply bg-stone-950 text-stone-100;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+}
+
+/* Slightly boost micro-typography for superior legibility across all views */
+.text-\[9px\], [class*="text-[9px]"] {
+  font-size: 10.5px !important;
+  letter-spacing: 0.02em;
+}
+
+.text-\[10px\], [class*="text-[10px]"] {
+  font-size: 11.5px !important;
+  letter-spacing: 0.015em;
+}
+
+.text-\[11px\], [class*="text-[11px]"] {
+  font-size: 12.5px !important;
+}
+
+/* Glass UI Component Enhancements */
+.glass-panel {
+  background: rgba(10, 15, 29, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(10, 15, 29, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(6, 182, 212, 0.35);
+  box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.65), 0 0 25px -4px rgba(6, 182, 212, 0.15);
+}
+
+/* Polished Interactive Focus States */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25), 0 0 25px -3px rgba(6, 182, 212, 0.2) !important;
+  border-color: rgba(6, 182, 212, 0.75) !important;
+}
+
+/* ======================================================== */
+/* Light Mode Theme Overrides (Applied when html has .light) */
+/* ======================================================== */
+html.light {
+  color-scheme: light;
+}
+
+html.light body,
+html.light #root {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Invert all dark background utilities seamlessly */
+html.light [class*="bg-[#090d16]"],
+html.light [class*="bg-[#070b14]"],
+html.light [class*="bg-[#05080f]"],
+html.light [class*="bg-[#0a0f1d]"],
+html.light [class*="bg-stone-950"],
+html.light [class*="bg-slate-950"] {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html.light [class*="bg-slate-900"],
+html.light [class*="bg-stone-900"] {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+html.light [class*="bg-slate-800"],
+html.light [class*="bg-stone-800"] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light [class*="text-white"],
+html.light [class*="text-slate-100"],
+html.light [class*="text-slate-200"] {
+  color: #0f172a !important;
+}
+
+html.light [class*="text-slate-300"],
+html.light [class*="text-slate-400"] {
+  color: #475569 !important;
+}
+
+html.light [class*="border-slate-800"],
+html.light [class*="border-slate-700"],
+html.light [class*="border-stone-800"] {
+  border-color: #e2e8f0 !important;
+}
+
+html.light header,
+html.light aside {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .glass-card {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -18,31 +158,6 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* Custom Glassmorphism styling - Softer & Modern */
-.glass-panel {
-  background: rgba(28, 25, 23, 0.4); /* stone-900 */
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  border-radius: 1.5rem; /* 24px */
-}
-
-.glass-card {
-  background: rgba(41, 37, 36, 0.5); /* stone-800 */
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem; /* 16px */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 /* Custom Scrollbar - Sleek */

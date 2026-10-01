@@ -11,8 +11,10 @@ import {
   Download
 } from 'lucide-react';
 import { generateReportPDF } from '../utils/pdfGenerator';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function DetectionCard({ detection, onInspect, showReporterCount = true }) {
+  const { t } = useLanguage();
   if (!detection) return null;
 
   const severityStyles = {
@@ -28,11 +30,14 @@ export default function DetectionCard({ detection, onInspect, showReporterCount 
   };
 
   const typeLabels = {
-    pothole: 'Road Pothole',
-    garbage: 'Garbage Dumping',
-    water_leak: 'Water Leakage',
-    streetlight: 'Faulty Streetlight'
+    pothole: t('pothole'),
+    garbage: t('garbage'),
+    water_leak: t('waterLeak'),
+    streetlight: t('streetlight')
   };
+
+  const severityKey = (detection.severity || 'medium').toLowerCase();
+  const statusKey = (detection.status || 'reported').toLowerCase();
 
   return (
     <div 
@@ -50,21 +55,21 @@ export default function DetectionCard({ detection, onInspect, showReporterCount 
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-slate-600 font-mono text-xs">
-              NO IMAGE CAPTURED
+              {t('noImageCaptured')}
             </div>
           )}
 
           {/* Severity Badge overlay */}
           <div className="absolute top-2.5 right-2.5">
             <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase font-mono tracking-wider border shadow-md ${severityStyles[detection.severity] || severityStyles.medium}`}>
-              {detection.severity}
+              {t(severityKey, detection.severity)}
             </span>
           </div>
 
           {/* Status Badge overlay */}
           <div className="absolute bottom-2.5 left-2.5">
             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md ${statusStyles[detection.status] || statusStyles.new}`}>
-              {detection.status}
+              {t(statusKey, detection.status)}
             </span>
           </div>
         </div>
@@ -95,7 +100,9 @@ export default function DetectionCard({ detection, onInspect, showReporterCount 
             <div className="flex items-center space-x-1 text-slate-300 font-mono">
               <Users className="w-3.5 h-3.5 text-cyan-400" />
               <span className="font-bold">{detection.reportCount || 1}</span>
-              <span className="text-[10px] text-slate-400">report{detection.reportCount > 1 ? 's' : ''}</span>
+              <span className="text-[10px] text-slate-400">
+                {detection.reportCount > 1 ? t('reportsCount') : t('reportSingle')}
+              </span>
             </div>
           )}
 
@@ -121,7 +128,7 @@ export default function DetectionCard({ detection, onInspect, showReporterCount 
             type="button"
             className="text-xs font-semibold text-cyan-400 group-hover:text-cyan-300 flex items-center space-x-1"
           >
-            <span>View</span>
+            <span>{t('viewCard')}</span>
             <ExternalLink className="w-3 h-3" />
           </button>
         </div>

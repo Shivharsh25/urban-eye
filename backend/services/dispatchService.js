@@ -265,9 +265,65 @@ async function sendResolutionNotifications({ detection }) {
   return results;
 }
 
+/**
+ * Send an Email Verification OTP to verify a user's Google email address
+ */
+async function sendVerificationOtpEmail(toEmail, otp, name = 'Citizen') {
+  const mailer = await getTransporter();
+  const mailOptions = {
+    from: '"Urban EYE Smart City" <no-reply@urbaneye.city>',
+    to: toEmail,
+    subject: `Urban EYE — Your Verification Code: ${otp}`,
+    text: `Hello ${name},\n\nYour 6-digit Google email verification code is: ${otp}\n\nThis code will expire in 10 minutes.\n\n— Urban EYE Team`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0b0f19; color: #f1f5f9; padding: 40px 20px; text-align: center;">
+        <div style="max-width: 480px; margin: 0 auto; background: #111827; border: 1px solid #1f2937; border-radius: 20px; padding: 36px 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+          
+          <div style="display: inline-block; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 16px; padding: 12px; margin-bottom: 20px;">
+            <span style="font-size: 28px;">👁️</span>
+          </div>
+
+          <h2 style="color: #ffffff; font-size: 22px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: -0.5px;">Urban EYE Email Verification</h2>
+          <p style="color: #94a3b8; font-size: 14px; margin: 0 0 24px 0; line-height: 1.5;">
+            Hello <strong>${name}</strong>,<br/>
+            Please enter the 6-digit verification code below to verify your Google email address and complete your citizen account registration:
+          </p>
+
+          <div style="background: #030712; border: 1px dashed #06b6d4; border-radius: 14px; padding: 18px 24px; margin: 24px 0;">
+            <span style="font-family: 'Courier New', monospace; font-size: 34px; font-weight: 900; letter-spacing: 8px; color: #22d3ee; display: block;">
+              ${otp}
+            </span>
+          </div>
+
+          <p style="color: #64748b; font-size: 12px; margin: 16px 0 0 0;">
+            ⏱️ This code will expire in <strong>10 minutes</strong>.<br/>
+            If you did not request this verification, please safely disregard this email.
+          </p>
+
+          <hr style="border: none; border-top: 1px solid #1e293b; margin: 28px 0 20px 0;" />
+          <p style="color: #475569; font-size: 11px; margin: 0;">
+            Urban EYE Municipal Infrastructure & Civic Incident Grid • Powered by AI
+          </p>
+        </div>
+      </div>
+    `
+  };
+
+  let info;
+  if (process.env.RESEND_API_KEY) {
+    info = await sendViaResend(mailOptions);
+  } else {
+    info = await mailer.sendMail(mailOptions);
+  }
+
+  const previewUrl = nodemailer.getTestMessageUrl(info) || null;
+  return { messageId: info?.messageId, previewUrl };
+}
+
 module.exports = {
   dispatchIncidentReport,
   dispatchEscalationAlert,
   sendResolutionNotifications,
+  sendVerificationOtpEmail,
   getTransporter
 };

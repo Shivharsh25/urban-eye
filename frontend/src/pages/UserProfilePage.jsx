@@ -13,9 +13,11 @@ import client from '../api/client';
 import DetectionModal from '../components/DetectionModal';
 import { generateReportPDF } from '../utils/pdfGenerator';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function UserProfilePage() {
   const { user, isAdmin, logout, updateUser } = useAuth();
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   
   // Profile editing state
@@ -244,50 +246,50 @@ export default function UserProfilePage() {
     const score = userStats.civicScore;
     if (score >= 95) {
       return {
-        name: 'Platinum Ambassador',
+        name: t('platinumTier', 'Platinum Ambassador'),
         color: 'from-cyan-300 via-sky-400 to-indigo-500',
         textGradient: 'from-cyan-400 to-blue-400',
         threshold: 95,
         next: 100,
-        perk: 'Direct municipal department head escalation priority'
+        perk: t('platinumPerk', 'Direct municipal department head escalation priority')
       };
     }
     if (score >= 90) {
       return {
-        name: 'Gold Guardian',
+        name: t('goldTier', 'Gold Guardian'),
         color: 'from-amber-300 via-amber-400 to-orange-500',
         textGradient: 'from-amber-400 to-orange-400',
         threshold: 90,
         next: 95,
-        perk: 'Priority dispatch & verified reporter badge'
+        perk: t('goldPerk', 'Priority dispatch & verified reporter badge')
       };
     }
     if (score >= 80) {
       return {
-        name: 'Silver Sentinel',
+        name: t('silverTier', 'Silver Sentinel'),
         color: 'from-slate-200 via-slate-300 to-slate-400',
         textGradient: 'from-slate-200 to-slate-400',
         threshold: 80,
         next: 90,
-        perk: 'Expedited AI incident triage and auto-routing'
+        perk: t('silverPerk', 'Expedited AI incident triage and auto-routing')
       };
     }
     return {
-      name: 'Bronze Contributor',
+      name: t('bronzeTier', 'Bronze Contributor'),
       color: 'from-orange-400 to-amber-600',
       textGradient: 'from-orange-400 to-amber-500',
       threshold: 0,
       next: 80,
-      perk: 'Standard community reporting and live GPS dispatch'
+      perk: t('bronzePerk', 'Standard community reporting and live GPS dispatch')
     };
-  }, [userStats.civicScore]);
+  }, [userStats.civicScore, lang]);
 
   // Civic Achievements definition with live progress
   const achievements = [
     { 
       id: 1, 
-      name: 'First Responder', 
-      desc: 'Submit your first verified incident report',
+      name: t('firstResponder', 'First Responder'), 
+      desc: t('firstResponderDesc', 'Submit your first verified incident report'),
       icon: Camera, 
       color: 'text-emerald-400', 
       bg: 'bg-emerald-500/10',
@@ -297,8 +299,8 @@ export default function UserProfilePage() {
     },
     { 
       id: 2, 
-      name: 'Pothole Hunter', 
-      desc: 'Report 3 or more road surface hazards',
+      name: t('potholeHunter', 'Pothole Hunter'), 
+      desc: t('potholeHunterDesc', 'Report 3 or more road surface hazards'),
       icon: AlertTriangle, 
       color: 'text-amber-400', 
       bg: 'bg-amber-500/10',
@@ -308,41 +310,41 @@ export default function UserProfilePage() {
     },
     { 
       id: 3, 
-      name: 'Waste Buster', 
-      desc: 'Report illegal dumping or uncollected garbage',
+      name: t('wasteBuster', 'Waste Buster'), 
+      desc: t('wasteBusterDesc', 'Report illegal dumping or uncollected garbage'),
       icon: Trash2, 
       color: 'text-emerald-400', 
       bg: 'bg-emerald-500/10',
       border: 'border-emerald-500/30',
       unlocked: contributions.some(c => (c.type || '').includes('garbage') || (c.type || '').includes('waste')),
-      progress: contributions.some(c => (c.type || '').includes('garbage') || (c.type || '').includes('waste')) ? 'Unlocked' : '0/1'
+      progress: contributions.some(c => (c.type || '').includes('garbage') || (c.type || '').includes('waste')) ? t('unlocked', 'Unlocked') : '0/1'
     },
     { 
       id: 4, 
-      name: 'Aqua Sentinel', 
-      desc: 'Report water main breaks or sewage leaks',
+      name: t('aquaSentinel', 'Aqua Sentinel'), 
+      desc: t('aquaSentinelDesc', 'Report water main breaks or sewage leaks'),
       icon: Droplets, 
       color: 'text-cyan-400', 
       bg: 'bg-cyan-500/10',
       border: 'border-cyan-500/30',
       unlocked: contributions.some(c => (c.type || '').includes('water') || (c.type || '').includes('leak')),
-      progress: contributions.some(c => (c.type || '').includes('water') || (c.type || '').includes('leak')) ? 'Unlocked' : '0/1'
+      progress: contributions.some(c => (c.type || '').includes('water') || (c.type || '').includes('leak')) ? t('unlocked', 'Unlocked') : '0/1'
     },
     { 
       id: 5, 
-      name: 'Night Watch', 
-      desc: 'Report faulty streetlights to improve safety',
+      name: t('nightWatch', 'Night Watch'), 
+      desc: t('nightWatchDesc', 'Report faulty streetlights to improve safety'),
       icon: Zap, 
       color: 'text-yellow-400', 
       bg: 'bg-yellow-500/10',
       border: 'border-yellow-500/30',
       unlocked: contributions.some(c => (c.type || '').includes('light') || (c.type || '').includes('lamp')),
-      progress: contributions.some(c => (c.type || '').includes('light') || (c.type || '').includes('lamp')) ? 'Unlocked' : '0/1'
+      progress: contributions.some(c => (c.type || '').includes('light') || (c.type || '').includes('lamp')) ? t('unlocked', 'Unlocked') : '0/1'
     },
     { 
       id: 6, 
-      name: 'Civic Pillar', 
-      desc: 'Reach a civic trust score of 90 or higher',
+      name: t('civicPillar', 'Civic Pillar'), 
+      desc: t('civicPillarDesc', 'Reach a civic trust score of 90 or higher'),
       icon: Star, 
       color: 'text-purple-400', 
       bg: 'bg-purple-500/10',
@@ -370,7 +372,7 @@ export default function UserProfilePage() {
       {saveSuccess && (
         <div className="fixed top-5 right-5 z-50 flex items-center gap-2 bg-emerald-500/90 text-white px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-md animate-fade-in border border-emerald-400/50">
           <CheckCircle2 className="w-5 h-5 text-white" />
-          <span className="text-sm font-bold">Profile updated successfully!</span>
+          <span className="text-sm font-bold">{t('profileUpdated', 'Profile updated successfully!')}</span>
         </div>
       )}
 
@@ -382,8 +384,8 @@ export default function UserProfilePage() {
               <User className="w-5 h-5 text-cyan-400" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">Citizen Profile</h1>
-              <p className="text-xs sm:text-sm text-slate-400">Manage identity, track civic score, and view dispatch history</p>
+              <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">{t('citizenProfile', 'Citizen Profile')}</h1>
+              <p className="text-xs sm:text-sm text-slate-400">{t('profileSubtitle', 'Manage identity, track civic score, and view dispatch history')}</p>
             </div>
           </div>
         </div>
@@ -395,7 +397,7 @@ export default function UserProfilePage() {
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition-all active:scale-95 shadow-md"
             >
               <Edit3 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Edit Profile</span>
+              <span>{t('editProfile', 'Edit Profile')}</span>
             </button>
           ) : (
             <div className="flex items-center gap-2">
@@ -403,7 +405,7 @@ export default function UserProfilePage() {
                 onClick={() => setIsEditing(false)}
                 className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 transition-all"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button 
                 onClick={handleSaveProfile}
@@ -411,7 +413,7 @@ export default function UserProfilePage() {
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white shadow-lg shadow-cyan-500/25 transition-all active:scale-95 disabled:opacity-50"
               >
                 <Save className="w-3.5 h-3.5" />
-                <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
+                <span>{isSaving ? t('saving', 'Saving...') : t('saveChanges', 'Save Changes')}</span>
               </button>
             </div>
           )}
@@ -422,7 +424,7 @@ export default function UserProfilePage() {
             title="Download your full civic portfolio in JSON"
           >
             <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Export Record</span>
+            <span className="hidden sm:inline">{t('exportRecord', 'Export Record')}</span>
           </button>
         </div>
       </div>
@@ -487,7 +489,7 @@ export default function UserProfilePage() {
               {isEditing ? (
                 <div className="space-y-3 w-full text-left">
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Full Name</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('fullName', 'Full Name')}</label>
                     <input 
                       type="text" 
                       value={profileData.name}
@@ -498,7 +500,7 @@ export default function UserProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Contact Phone</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('contactPhone', 'Contact Phone')}</label>
                     <input 
                       type="tel" 
                       value={profileData.phone}
@@ -509,7 +511,7 @@ export default function UserProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Municipal Ward / Neighborhood</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('wardNeighborhood', 'Municipal Ward / Neighborhood')}</label>
                     <input 
                       type="text" 
                       value={profileData.neighborhood}
@@ -543,7 +545,7 @@ export default function UserProfilePage() {
 
                     <span className="flex items-center gap-1.5 text-slate-500 mt-1 font-mono text-[11px] uppercase tracking-wider">
                       <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
-                      Active since {userStats.joinDate}
+                      {t('activeSince', 'Active since')} {userStats.joinDate}
                     </span>
                   </div>
                 </>
@@ -552,7 +554,7 @@ export default function UserProfilePage() {
 
             {/* About / Civic Statement */}
             <div className="mt-5 w-full pt-4 border-t border-slate-800/70 text-left">
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Civic Statement</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('civicStatement', 'Civic Statement')}</h3>
               {isEditing ? (
                 <textarea 
                   value={profileData.about}
@@ -571,16 +573,16 @@ export default function UserProfilePage() {
             {/* Role & Verification Badge */}
             {!isEditing && (
               <div className="mt-5 w-full pt-4 border-t border-slate-800/70 flex items-center justify-between text-xs">
-                <span className="text-slate-400 text-[11px]">System Status:</span>
+                <span className="text-slate-400 text-[11px]">{t('systemStatus', 'System Status')}:</span>
                 {isAdmin ? (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25">
                     <Shield className="w-3.5 h-3.5" />
-                    Admin Command
+                    {t('adminCommand', 'Admin Command')}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/25">
                     <CheckCircle className="w-3.5 h-3.5" />
-                    Verified Citizen
+                    {t('verifiedCitizen', 'Verified Citizen')}
                   </span>
                 )}
               </div>
@@ -592,7 +594,7 @@ export default function UserProfilePage() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <Award className="w-4 h-4 text-amber-400" />
-                <span>Civic Tier Rank</span>
+                <span>{t('civicTierRank', 'Civic Tier Rank')}</span>
               </h3>
               <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300`}>
                 {tierInfo.name}
@@ -605,7 +607,7 @@ export default function UserProfilePage() {
                 <span className={`text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r ${tierInfo.textGradient}`}>
                   {userStats.civicScore}
                 </span>
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Score</span>
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{t('pointsShort', 'Score')}</span>
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold text-white">{tierInfo.name}</p>
@@ -616,8 +618,8 @@ export default function UserProfilePage() {
             {/* Progress Bar */}
             <div className="mt-4 pt-3 border-t border-slate-800/70">
               <div className="flex justify-between text-[11px] font-medium text-slate-400 mb-1.5">
-                <span>Tier Milestone</span>
-                <span className="text-amber-400 font-bold">{Math.max(0, tierInfo.next - userStats.civicScore)} pts to Level Up</span>
+                <span>{t('tierMilestone', 'Tier Milestone')}</span>
+                <span className="text-amber-400 font-bold">{Math.max(0, tierInfo.next - userStats.civicScore)} {t('ptsToLevelUp', 'pts to Level Up')}</span>
               </div>
               <div className="h-2 w-full bg-slate-800/80 rounded-full overflow-hidden">
                 <div 
@@ -632,14 +634,14 @@ export default function UserProfilePage() {
           <div className="glass-card p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800/80 bg-slate-900/50 w-full min-w-0">
             <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-cyan-400" />
-              <span>Citizen Preferences</span>
+              <span>{t('citizenPreferences', 'Citizen Preferences')}</span>
             </h3>
 
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <div>
-                  <span className="font-semibold text-slate-200 block">Email Report Updates</span>
-                  <span className="text-[10px] text-slate-500">Alerts when city resolves issues</span>
+                  <span className="font-semibold text-slate-200 block">{t('emailReportUpdates', 'Email Report Updates')}</span>
+                  <span className="text-[10px] text-slate-500">{t('emailUpdatesDesc', 'Alerts when city resolves issues')}</span>
                 </div>
                 <button
                   type="button"
@@ -652,8 +654,8 @@ export default function UserProfilePage() {
 
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <div>
-                  <span className="font-semibold text-slate-200 block">Critical SMS Alerts</span>
-                  <span className="text-[10px] text-slate-500">High-priority road & flood hazard alerts</span>
+                  <span className="font-semibold text-slate-200 block">{t('criticalSmsAlerts', 'Critical SMS Alerts')}</span>
+                  <span className="text-[10px] text-slate-500">{t('smsAlertsDesc', 'High-priority road & flood hazard alerts')}</span>
                 </div>
                 <button
                   type="button"
@@ -666,8 +668,8 @@ export default function UserProfilePage() {
 
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
                 <div>
-                  <span className="font-semibold text-slate-200 block">Location Auto-Tag</span>
-                  <span className="text-[10px] text-slate-500">Auto-fill street name on photo upload</span>
+                  <span className="font-semibold text-slate-200 block">{t('locationAutoTag', 'Location Auto-Tag')}</span>
+                  <span className="text-[10px] text-slate-500">{t('locationAutoTagDesc', 'Auto-fill street name on photo upload')}</span>
                 </div>
                 <button
                   type="button"
@@ -689,40 +691,40 @@ export default function UserProfilePage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full min-w-0">
             <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 min-w-0 w-full">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Total Reports</span>
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('totalReports', 'Total Reports')}</span>
                 <Camera className="w-4 h-4 text-cyan-400 shrink-0" />
               </div>
               <p className="text-2xl sm:text-3xl font-black text-white">{userStats.totalReports}</p>
-              <p className="text-[10px] text-slate-500 mt-1 truncate">Submitted by you</p>
+              <p className="text-[10px] text-slate-500 mt-1 truncate">{t('submittedByYou', 'Submitted by you')}</p>
             </div>
 
             <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 min-w-0 w-full">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Resolved</span>
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('resolved', 'Resolved')}</span>
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               </div>
               <p className="text-2xl sm:text-3xl font-black text-emerald-400">{userStats.resolvedReports}</p>
-              <p className="text-[10px] text-emerald-500/80 mt-1 truncate">{resolutionRate}% fix rate</p>
+              <p className="text-[10px] text-emerald-500/80 mt-1 truncate">{resolutionRate}% {t('fixRate', 'fix rate')}</p>
             </div>
 
             <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 min-w-0 w-full">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Trust Score</span>
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('trustScoreLabel', 'Trust Score')}</span>
                 <Award className="w-4 h-4 text-amber-400 shrink-0" />
               </div>
               <p className="text-2xl sm:text-3xl font-black text-amber-400">{userStats.civicScore}</p>
-              <p className="text-[10px] text-amber-500/80 mt-1 truncate">Reliability rating</p>
+              <p className="text-[10px] text-amber-500/80 mt-1 truncate">{t('reliabilityRating', 'Reliability rating')}</p>
             </div>
 
             <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 min-w-0 w-full">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Endorsements</span>
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('endorsements', 'Endorsements')}</span>
                 <ThumbsUp className="w-4 h-4 text-sky-400 shrink-0" />
               </div>
               <p className="text-2xl sm:text-3xl font-black text-sky-400">
                 {contributions.reduce((sum, c) => sum + (c.reportCount || 1), 0)}
               </p>
-              <p className="text-[10px] text-sky-500/80 mt-1 truncate">Community confirmations</p>
+              <p className="text-[10px] text-sky-500/80 mt-1 truncate">{t('communityConfirmations', 'Community confirmations')}</p>
             </div>
           </div>
 
@@ -731,10 +733,10 @@ export default function UserProfilePage() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <Medal className="w-4 h-4 text-amber-400" />
-                <span>Civic Achievements & Badges</span>
+                <span>{t('civicAchievementsBadges', 'Civic Achievements & Badges')}</span>
               </h3>
               <span className="text-xs font-mono text-cyan-400 font-bold">
-                {achievements.filter(a => a.unlocked).length} / {achievements.length} Unlocked
+                {achievements.filter(a => a.unlocked).length} / {achievements.length} {t('unlocked', 'Unlocked')}
               </span>
             </div>
 
@@ -755,7 +757,7 @@ export default function UserProfilePage() {
                     <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${
                       badge.unlocked ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-500'
                     }`}>
-                      {badge.unlocked ? 'Unlocked' : badge.progress}
+                      {badge.unlocked ? t('unlocked', 'Unlocked') : badge.progress}
                     </span>
                   </div>
 
@@ -776,24 +778,29 @@ export default function UserProfilePage() {
               <div>
                 <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                   <FileText className="w-4 h-4 text-cyan-400" />
-                  <span>My Reported Incidents</span>
+                  <span>{t('myReportedIncidents', 'My Reported Incidents')}</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Track resolution status and download official municipal PDFs</p>
+                <p className="text-xs text-slate-400 mt-0.5">{t('trackResolutionDesc', 'Track resolution status and download official municipal PDFs')}</p>
               </div>
 
               {/* Status Tabs */}
               <div className="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800 text-xs font-semibold overflow-x-auto max-w-full no-scrollbar shrink-0">
-                {['ALL', 'RESOLVED', 'IN_PROGRESS', 'REPORTED'].map(tab => (
+                {[
+                  { key: 'ALL', label: t('all', 'All') },
+                  { key: 'RESOLVED', label: t('resolved', 'Resolved') },
+                  { key: 'IN_PROGRESS', label: t('inProgress', 'Active') },
+                  { key: 'REPORTED', label: t('reported', 'Reported') }
+                ].map(tab => (
                   <button
-                    key={tab}
-                    onClick={() => setContributionFilter(tab)}
+                    key={tab.key}
+                    onClick={() => setContributionFilter(tab.key)}
                     className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
-                      contributionFilter === tab 
+                      contributionFilter === tab.key 
                         ? 'bg-cyan-500/20 text-cyan-300 font-bold shadow-sm' 
                         : 'text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    {tab === 'IN_PROGRESS' ? 'Active' : tab.charAt(0) + tab.slice(1).toLowerCase()}
+                    {tab.label}
                   </button>
                 ))}
               </div>
@@ -803,7 +810,7 @@ export default function UserProfilePage() {
             {loading ? (
               <div className="flex flex-col items-center justify-center py-10 space-y-2">
                 <div className="w-6 h-6 border-2 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
-                <p className="text-xs text-slate-400">Loading civic history...</p>
+                <p className="text-xs text-slate-400">{t('loadingCivicHistory', 'Loading civic history...')}</p>
               </div>
             ) : filteredContributions.length > 0 ? (
               <div className="space-y-3 w-full min-w-0">
@@ -842,7 +849,7 @@ export default function UserProfilePage() {
                                   ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' 
                                   : 'bg-sky-500/15 text-sky-400 border border-sky-500/30'
                             }`}>
-                              {item.status || 'Reported'}
+                              {isResolved ? t('resolved', 'Resolved') : isInProgress ? t('inProgress', 'Active') : t('reported', 'Reported')}
                             </span>
                           </div>
 
@@ -879,7 +886,7 @@ export default function UserProfilePage() {
                           className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition-all"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                          <span>Inspect</span>
+                          <span>{t('inspect', 'Inspect')}</span>
                         </button>
                       </div>
                     </div>
@@ -889,13 +896,13 @@ export default function UserProfilePage() {
             ) : (
               <div className="p-8 text-center text-slate-400 border border-slate-800/60 border-dashed rounded-2xl bg-slate-950/40">
                 <MapPin className="w-8 h-8 mx-auto text-slate-600 mb-2" />
-                <p className="text-sm font-semibold text-slate-300">No incident reports under this filter.</p>
-                <p className="text-xs text-slate-500 mt-1">Found a road hazard, streetlight outage, or water leak in your neighborhood?</p>
+                <p className="text-sm font-semibold text-slate-300">{t('noIncidentsFound', 'No incident reports under this filter.')}</p>
+                <p className="text-xs text-slate-500 mt-1">{t('foundHazardQuestion', 'Found a road hazard, streetlight outage, or water leak in your neighborhood?')}</p>
                 <button
                   onClick={() => navigate('/report')}
                   className="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
                 >
-                  Report an Issue
+                  {t('reportAnIssue', 'Report an Issue')}
                 </button>
               </div>
             )}
@@ -912,8 +919,8 @@ export default function UserProfilePage() {
                   <Compass className="w-4 h-4 text-cyan-400" />
                 </div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">Explore Live Community Map</h4>
-                  <p className="text-[11px] text-slate-400">View real-time pins and municipal response teams</p>
+                  <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">{t('exploreLiveMap', 'Explore Live Community Map')}</h4>
+                  <p className="text-[11px] text-slate-400">{t('exploreMapDesc', 'View real-time pins and municipal response teams')}</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 group-hover:text-cyan-400 transition-all shrink-0" />
@@ -928,8 +935,8 @@ export default function UserProfilePage() {
                   <Camera className="w-4 h-4 text-emerald-400" />
                 </div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">Submit New Road Hazard</h4>
-                  <p className="text-[11px] text-slate-400">Instant AI triage, geolocation, and dispatch</p>
+                  <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">{t('submitRoadHazard', 'Submit New Road Hazard')}</h4>
+                  <p className="text-[11px] text-slate-400">{t('submitHazardDesc', 'Instant AI triage, geolocation, and dispatch')}</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 group-hover:text-emerald-400 transition-all shrink-0" />

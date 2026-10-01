@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Map, Marker, InfoWindow, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { Layers, MapPin, Navigation, Map as MapIcon, Flame, ChevronDown, ChevronUp } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyC3XzCS017KU681EYAZ1E3j5BwRV49ETHU';
 
@@ -32,6 +33,7 @@ const HeatmapLayer = () => {
 
 // Custom Marker component
 const IncidentMarker = ({ detection, onSelect }) => {
+  const { t } = useLanguage();
   const [infoWindowShown, setInfoWindowShown] = useState(false);
 
   const handleMarkerClick = useCallback(() => {
@@ -82,7 +84,7 @@ const IncidentMarker = ({ detection, onSelect }) => {
               onClick={() => { onSelect(detection); handleClose(); }} 
               style={{ width: '100%', marginTop: '8px', padding: '6px 10px', background: '#0284c7', color: '#fff', fontSize: '11px', fontWeight: 700, border: 'none', borderRadius: '4px', cursor: 'pointer' }}
             >
-              Inspect Incident Details
+              {t('inspectIncidentDetails', 'Inspect Incident Details')}
             </button>
           </div>
         </InfoWindow>
@@ -104,6 +106,7 @@ export default function MapView({
   showFilters = true,
   showLegend = true
 }) {
+  const { t } = useLanguage();
   const [selectedType, setSelectedType] = useState('all');
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [showHeatmap, setShowHeatmap] = useState(false);
@@ -271,11 +274,11 @@ export default function MapView({
                 onChange={(e) => setSelectedType(e.target.value)}
                 className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-900/90 text-slate-200 border border-slate-700/60 backdrop-blur-xl shadow-lg outline-none cursor-pointer focus:border-cyan-500 transition-colors"
               >
-                <option value="all">All Categories</option>
-                <option value="pothole">Potholes</option>
-                <option value="garbage">Garbage / Dumping</option>
-                <option value="water_leak">Water Leaks</option>
-                <option value="streetlight">Streetlights</option>
+                <option value="all">{t('allCategories', 'All Categories')}</option>
+                <option value="pothole">{t('potholes', 'Potholes')}</option>
+                <option value="garbage">{t('wasteGarbage', 'Garbage / Dumping')}</option>
+                <option value="water_leak">{t('waterLeaks', 'Water Leaks')}</option>
+                <option value="streetlight">{t('streetlights', 'Streetlights')}</option>
               </select>
 
               <select
@@ -283,10 +286,10 @@ export default function MapView({
                 onChange={(e) => setSelectedSeverity(e.target.value)}
                 className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-900/90 text-slate-200 border border-slate-700/60 backdrop-blur-xl shadow-lg outline-none cursor-pointer focus:border-cyan-500 transition-colors"
               >
-                <option value="all">All Severities</option>
-                <option value="high">High Severity</option>
-                <option value="medium">Medium Severity</option>
-                <option value="low">Low Severity</option>
+                <option value="all">{t('allSeverities', 'All Severities')}</option>
+                <option value="high">{t('highSeverity', 'High Severity')}</option>
+                <option value="medium">{t('mediumSeverity', 'Medium Severity')}</option>
+                <option value="low">{t('lowSeverity', 'Low Severity')}</option>
               </select>
             </>
           )}
@@ -303,14 +306,14 @@ export default function MapView({
               }`}
             >
               {showHeatmap ? <MapIcon className="w-4 h-4" /> : <Flame className="w-4 h-4 text-rose-400" />}
-              <span>{showHeatmap ? 'VIEW PINS' : 'HEATMAP'}</span>
+              <span>{showHeatmap ? t('viewPins', 'VIEW PINS') : t('heatmap', 'HEATMAP')}</span>
             </button>
           )}
           
           {allowPinDrop && (
             <div className="px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold backdrop-blur-xl shadow-lg flex items-center space-x-2 pointer-events-none">
               <MapPin className="w-3.5 h-3.5 animate-bounce" />
-              <span>Click map to pin</span>
+              <span>{t('clickMapToPin', 'Click map to pin')}</span>
             </div>
           )}
         </div>
@@ -326,23 +329,23 @@ export default function MapView({
             title="Expand Severity Legend"
           >
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-            <span>SEVERITY</span>
+            <span>{t('severityTitle', 'SEVERITY')}</span>
             <ChevronUp className="w-3 h-3 text-slate-400 group-hover:text-cyan-400" />
           </button>
         ) : (
           <div className="absolute bottom-4 left-4 z-[400] px-3.5 py-2 rounded-2xl bg-slate-950/85 border border-slate-800/80 backdrop-blur-xl text-[11px] font-bold flex items-center space-x-3.5 shadow-xl pointer-events-auto transition-all">
-            <span className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">SEVERITY:</span>
+            <span className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">{t('severityTitle', 'SEVERITY')}:</span>
             <div className="flex items-center space-x-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-              <span className="text-slate-300 text-[11px]">High</span>
+              <span className="text-slate-300 text-[11px]">{t('high', 'High')}</span>
             </div>
             <div className="flex items-center space-x-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-              <span className="text-slate-300 text-[11px]">Medium</span>
+              <span className="text-slate-300 text-[11px]">{t('medium', 'Medium')}</span>
             </div>
             <div className="flex items-center space-x-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span className="text-slate-300 text-[11px]">Low</span>
+              <span className="text-slate-300 text-[11px]">{t('low', 'Low')}</span>
             </div>
             <button
               type="button"
