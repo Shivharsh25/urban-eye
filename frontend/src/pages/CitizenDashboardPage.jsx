@@ -28,7 +28,6 @@ import {
   RefreshCw, 
   ShieldCheck, 
   Compass, 
-  Locate, 
   X, 
   ExternalLink, 
   Download, 
@@ -40,7 +39,6 @@ import {
   Phone
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import MapView from '../components/MapView';
 import DetectionModal from '../components/DetectionModal';
 import api from '../api/client';
 import { subscribeToDetections } from '../api/socket';
@@ -64,9 +62,6 @@ export default function CitizenDashboardPage() {
   const [selectedDetection, setSelectedDetection] = useState(null);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   
-  // Map positioning state
-  const [customMapCenter, setCustomMapCenter] = useState(null);
-  const [isLocating, setIsLocating] = useState(false);
   const [upvotedIds, setUpvotedIds] = useState(new Set());
 
   const [userStats, setUserStats] = useState({
@@ -151,47 +146,6 @@ export default function CitizenDashboardPage() {
       unsubscribe();
     };
   }, [user]);
-
-  // Compute smart map center: custom pin/GPS -> latest valid report -> NCR default
-  const mapCenter = useMemo(() => {
-    if (customMapCenter) return customMapCenter;
-    if (recentReports && recentReports.length > 0) {
-      const firstValid = recentReports.find(r => r.lat && r.lng && !isNaN(r.lat) && !isNaN(r.lng));
-      if (firstValid) {
-        return { lat: Number(firstValid.lat), lng: Number(firstValid.lng) };
-      }
-    }
-    // Default to Greater Noida / NCR civic hub
-    return { lat: 28.4744, lng: 77.5040 };
-  }, [customMapCenter, recentReports]);
-
-  // Handle GPS location trigger
-  const handleLocateMe = () => {
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
-      return;
-    }
-    setIsLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setCustomMapCenter({
-          lat: Number(pos.coords.latitude.toFixed(6)),
-          lng: Number(pos.coords.longitude.toFixed(6))
-        });
-        setIsLocating(false);
-      },
-      (err) => {
-        console.error('Location error:', err);
-        setIsLocating(false);
-        alert('Could not determine current location. Please check browser location permissions.');
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
-
-  const handleResetMapCenter = () => {
-    setCustomMapCenter(null);
-  };
 
   // Upvote / Support issue handler
   const handleToggleUpvote = (reportId) => {
@@ -492,70 +446,11 @@ export default function CitizenDashboardPage() {
         </button>
       </div>
 
-      {/* Main Grid: Left (Map & Local Activity) + Right (Civic Score & Alerts) */}
+      {/* Main Grid: Left (Local Activity) + Right (Civic Score & Alerts) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 w-full min-w-0">
         
         {/* Left 2 Columns */}
         <div className="lg:col-span-2 space-y-5 sm:space-y-6 w-full min-w-0">
-          
-          {/* Enhanced Community Impact Map Card */}
-          <div className="glass-card rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-800/80 flex flex-col h-[340px] sm:h-[460px] shadow-2xl relative bg-slate-950 w-full min-w-0">
-            
-            {/* Map Header Bar */}
-            <div className="px-3.5 sm:px-5 py-3 border-b border-slate-800/70 flex items-center justify-between gap-2 bg-slate-900/80 backdrop-blur-xl z-10 w-full min-w-0">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-7 h-7 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center shrink-0">
-                  <MapPin className="w-4 h-4 text-sky-400" />
-                </div>
-                <h2 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 truncate">
-                  <span>{t('communityMap')}</span>
-                  <span className="text-[10px] sm:text-[11px] font-mono font-normal text-slate-400">
-                    ({recentReports.length} {t('pins')})
-                  </span>
-                </h2>
-              </div>
-
-              {/* Map View Toolbar */}
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <button
-                  onClick={handleLocateMe}
-                  disabled={isLocating}
-                  className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-all shadow-sm active:scale-95 disabled:opacity-50"
-                  title="Locate my GPS coordinates"
-                >
-                  <Locate className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
-                  <span>{isLocating ? t('locating') : t('myGps')}</span>
-                </button>
-
-                {customMapCenter && (
-                  <button
-                    onClick={handleResetMapCenter}
-                    className="px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all"
-                    title="Recenter map"
-                  >
-                    <span>{t('reset')}</span>
-                  </button>
-                )}
-
-                <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 sm:px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  {t('live')}
-                </span>
-              </div>
-            </div>
-
-            {/* Google Map Container with Connected Detections */}
-            <div className="flex-1 relative w-full h-full bg-slate-900 min-w-0">
-              <MapView 
-                detections={recentReports}
-                center={mapCenter}
-                zoom={13}
-                height="100%"
-                onSelectDetection={(detection) => setSelectedDetection(detection)}
-                showFilters={false}
-              />
-            </div>
-          </div>
 
           {/* Local Activity Feed */}
           <div className="glass-card rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border border-slate-800/80 bg-slate-900/40 w-full min-w-0 overflow-hidden">
