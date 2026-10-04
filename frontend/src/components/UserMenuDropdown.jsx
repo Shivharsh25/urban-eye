@@ -180,6 +180,33 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
       desc: 'Get live status updates via WebSockets as municipal crews verify, assign, and resolve your reports. Earn verified citizen karma points for improving your city.',
       icon: Activity,
       color: 'from-indigo-500 to-purple-600'
+    },
+    {
+      title: t('proTipsTitle', 'Pro Tips for Faster Resolution'),
+      subtitle: 'Best Practices for Citizen Incident Reporting',
+      desc: 'Follow these 3 essential tips to help municipal dispatch and road maintenance teams quickly locate and resolve reported hazards:',
+      icon: Sparkles,
+      color: 'from-amber-400 to-cyan-500',
+      tips: [
+        {
+          num: 1,
+          color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
+          title: t('tip1Title', 'Capture Wide Angle:'),
+          desc: t('tip1Desc', 'Include road dividers or nearby storefronts to help field teams locate the issue.')
+        },
+        {
+          num: 2,
+          color: 'bg-sky-500/10 text-sky-400 border-sky-500/30',
+          title: t('tip2Title', 'Verify Map Pin:'),
+          desc: t('tip2Desc', 'Fine-tune the GPS pin on the map preview if reporting after leaving the site.')
+        },
+        {
+          num: 3,
+          color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
+          title: t('tip3Title', 'Download Official PDF:'),
+          desc: t('tip3Desc', 'Use the generated PDF dispatch report if escalating to your local RWA or ward councillor.')
+        }
+      ]
     }
   ];
 
@@ -357,9 +384,9 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
             </div>
 
             {/* Current Step Content */}
-            <div className="py-6">
+            <div className="py-5 sm:py-6">
               {React.createElement(tourSteps[tourStep].icon, {
-                className: "w-12 h-12 text-cyan-400 mb-4 p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/20"
+                className: "w-12 h-12 text-cyan-400 mb-3.5 p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 shadow-md"
               })}
               <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-1">
                 {tourSteps[tourStep].title}
@@ -370,6 +397,23 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
               <p className="text-sm text-slate-300 leading-relaxed">
                 {tourSteps[tourStep].desc}
               </p>
+
+              {/* Render Pro Tips list if available on this step */}
+              {tourSteps[tourStep].tips && (
+                <div className="mt-4 space-y-2.5 pt-3 border-t border-slate-800">
+                  {tourSteps[tourStep].tips.map((tip) => (
+                    <div key={tip.num} className="flex items-start gap-3 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 shadow-inner">
+                      <span className={`w-5 h-5 rounded-md flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 border ${tip.color}`}>
+                        {tip.num}
+                      </span>
+                      <div className="text-xs leading-relaxed">
+                        <strong className="text-white mr-1">{tip.title}</strong>
+                        <span className="text-slate-300">{tip.desc}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Step Progress Indicators */}

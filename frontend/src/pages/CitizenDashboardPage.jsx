@@ -19,7 +19,6 @@ import {
   Filter, 
   Info, 
   BellRing, 
-  Sparkles, 
   TrendingUp, 
   Clock, 
   FileText, 
@@ -825,28 +824,6 @@ export default function CitizenDashboardPage() {
                   </Link>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Civic Reporting Quick Tips */}
-          <div className="glass-card rounded-3xl p-5 border border-slate-800/80 bg-slate-900/30">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-cyan-400" />
-              {t('proTipsTitle')}
-            </h3>
-            <div className="space-y-2.5 text-xs text-slate-400">
-              <div className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-md bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
-                <span><strong>{t('tip1Title')} </strong>{t('tip1Desc')}</span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-md bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
-                <span><strong>{t('tip2Title')} </strong>{t('tip2Desc')}</span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-md bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
-                <span><strong>{t('tip3Title')} </strong>{t('tip3Desc')}</span>
-              </div>
             </div>
           </div>
 
