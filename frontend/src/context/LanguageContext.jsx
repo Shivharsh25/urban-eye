@@ -3,10 +3,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const LanguageContext = createContext(null);
 
 export const SUPPORTED_LANGUAGES = [
-  { code: 'en', label: 'English', native: 'English', flag: '🌐' },
-  { code: 'hi', label: 'Hindi', native: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'mr', label: 'Marathi', native: 'मराठी', flag: '🇮🇳' },
-  { code: 'ta', label: 'Tamil', native: 'தமிழ்', flag: '🇮🇳' }
+  { code: 'en', label: 'English', native: 'English', flag: '🇬🇧' },
+  { code: 'hi', label: 'Hindi', native: 'हिन्दी', flag: '🇮🇳' }
 ];
 
 export const TRANSLATIONS = {
@@ -432,7 +430,25 @@ export const TRANSLATIONS = {
     invalidOtp: 'Invalid or expired OTP code. Please check and try again.',
     verifyingOtp: 'Verifying code...',
     didNotReceiveCode: "Didn't receive the code?",
-    resendIn: 'Resend in'
+    resendIn: 'Resend in',
+    allAlerts: 'All Alerts',
+    criticalEmergency: 'Critical / Emergency',
+    civicAdvisories: 'Civic Advisories',
+    serviceRestored: 'Service Restored',
+    publicNotices: 'Public Notices',
+    searchAlertsPlaceholder: 'Search alerts by keyword, ward or topic...',
+    listenAlert: 'Listen',
+    listening: 'Playing...',
+    stopListening: 'Stop',
+    shareAlert: 'Share',
+    alertCopied: 'Alert details copied to clipboard!',
+    staySafeAcknowledged: 'Acknowledged',
+    acknowledgedBy: 'citizens acknowledged',
+    affectedArea: 'Affected Area',
+    emergencyHotline: 'Emergency Hotline',
+    clearAllNotifs: 'Clear all',
+    noNotifications: 'No new civic notifications',
+    allCaughtUpDesc: 'You are up-to-date with all community notices.'
   },
   hi: {
     appTitle: 'अर्बन आई (Urban EYE)',
@@ -857,7 +873,25 @@ export const TRANSLATIONS = {
     invalidOtp: 'अमान्य या समाप्त हो चुका ओटीपी कोड। कृपया पुनः प्रयास करें।',
     verifyingOtp: 'सत्यापन किया जा रहा है...',
     didNotReceiveCode: 'कोड नहीं मिला?',
-    resendIn: 'पुनः भेजें'
+    resendIn: 'पुनः भेजें',
+    allAlerts: 'सभी अलर्ट',
+    criticalEmergency: 'अति आवश्यक / आपातकालीन',
+    civicAdvisories: 'नागरिक परामर्श',
+    serviceRestored: 'सेवा बहाल',
+    publicNotices: 'सार्वजनिक सूचना',
+    searchAlertsPlaceholder: 'कीवर्ड, वार्ड या विषय से अलर्ट खोजें...',
+    listenAlert: 'सुने',
+    listening: 'ऑडियो चल रहा है...',
+    stopListening: 'रोकें',
+    shareAlert: 'साझा करें',
+    alertCopied: 'अलर्ट विवरण कॉपी हो गया!',
+    staySafeAcknowledged: 'पुष्टि की गई',
+    acknowledgedBy: 'नागरिकों ने पुष्टि की',
+    affectedArea: 'प्रभावित क्षेत्र',
+    emergencyHotline: 'आपातकालीन हेल्पलाइन',
+    clearAllNotifs: 'सभी हटाएं',
+    noNotifications: 'कोई नई नागरिक सूचना नहीं है',
+    allCaughtUpDesc: 'आप सभी सामुदायिक सूचनाओं से पूरी तरह अपडेट हैं।'
   },
   mr: {
     appTitle: 'अर्बन आय (Urban EYE)',
@@ -1715,11 +1749,9 @@ export function LanguageProvider({ children }) {
   const [lang, setLang] = useState(() => {
     try {
       const stored = localStorage.getItem('urban_eye_lang');
-      if (stored && TRANSLATIONS[stored]) return stored;
+      if (stored === 'hi' || stored === 'en') return stored;
       const navLang = (navigator.language || '').toLowerCase();
       if (navLang.startsWith('hi')) return 'hi';
-      if (navLang.startsWith('mr')) return 'mr';
-      if (navLang.startsWith('ta')) return 'ta';
       return 'en';
     } catch {
       return 'en';
@@ -1727,7 +1759,7 @@ export function LanguageProvider({ children }) {
   });
 
   const changeLanguage = (newLang) => {
-    if (TRANSLATIONS[newLang]) {
+    if (newLang === 'en' || newLang === 'hi') {
       setLang(newLang);
       try {
         localStorage.setItem('urban_eye_lang', newLang);

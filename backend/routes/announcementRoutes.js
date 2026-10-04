@@ -9,7 +9,31 @@ const { emitAnnouncement } = require('../services/socketService');
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const announcements = await db.Announcement.find({ active: true });
+    let announcements = await db.Announcement.find({ active: true });
+    if (!announcements || announcements.length === 0) {
+      const defaultAnnouncements = [
+        {
+          title: 'Major Road Closure: Main St.',
+          message: 'Main St closed from 4th Ave to 8th Ave for emergency water main repairs. Please follow alternate routes.',
+          type: 'error',
+          active: true
+        },
+        {
+          title: 'Monsoon Storm Drainage Advisory',
+          message: 'Heavy precipitation predicted over next 24 hours. Municipal PWD rapid pumps dispatched to low-lying zones.',
+          type: 'warning',
+          active: true
+        },
+        {
+          title: 'Power Outage Resolved in North District',
+          message: 'Substation transformer repairs completed. All municipal streetlights and power grids are restored to normal.',
+          type: 'success',
+          active: true
+        }
+      ];
+      await db.Announcement.insertMany(defaultAnnouncements);
+      announcements = await db.Announcement.find({ active: true });
+    }
     // Sort by newest first
     announcements.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(announcements);

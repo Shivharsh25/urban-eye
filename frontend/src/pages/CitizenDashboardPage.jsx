@@ -36,7 +36,9 @@ import {
   Droplets, 
   Zap, 
   Trash2,
-  Phone
+  Phone,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import DetectionModal from '../components/DetectionModal';
@@ -63,6 +65,7 @@ export default function CitizenDashboardPage() {
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   
   const [upvotedIds, setUpvotedIds] = useState(new Set());
+  const [playingAlertId, setPlayingAlertId] = useState(null);
 
   const [userStats, setUserStats] = useState({
     totalReports: 0,
@@ -84,8 +87,30 @@ export default function CitizenDashboardPage() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     };
   }, [showEmergencyModal]);
+
+  const handlePlayAlertAudio = (ann) => {
+    if (!('speechSynthesis' in window)) return;
+    const annId = ann._id || ann.id;
+    if (playingAlertId === annId) {
+      window.speechSynthesis.cancel();
+      setPlayingAlertId(null);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const textToSpeak = `${ann.title}. ${ann.message}`;
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.lang = lang === 'hi' ? 'hi-IN' : 'en-US';
+    utterance.rate = 0.95;
+    utterance.onend = () => setPlayingAlertId(null);
+    utterance.onerror = () => setPlayingAlertId(null);
+    setPlayingAlertId(annId);
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Fetch community data
   const fetchData = async (isManualRefresh = false) => {
@@ -711,17 +736,25 @@ export default function CitizenDashboardPage() {
           </div>
 
           {/* Active Municipal Announcements Card */}
-          <div className="glass-card rounded-3xl p-6 border border-slate-800/80 bg-slate-900/50 flex flex-col">
+          <div className="glass-card rounded-3xl p-5 sm:p-6 border border-slate-800/80 bg-slate-900/50 flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <BellRing className="w-5 h-5 text-rose-400" />
-                {t('activeAlerts')}
+                <span>{t('activeAlerts')}</span>
               </h2>
-              {announcements.length > 0 && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30">
-                  {announcements.length} {t('alertsCount')}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {announcements.length > 0 && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                    {announcements.length} {t('alertsCount')}
+                  </span>
+                )}
+                <Link
+                  to="/alerts"
+                  className="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 transition-colors"
+                >
+                  {t('viewAll', 'View All')} →
+                </Link>
+              </div>
             </div>
 
             <div className="space-y-3 flex-1">
@@ -729,7 +762,7 @@ export default function CitizenDashboardPage() {
                 announcements.map(ann => {
                   let colorClasses = 'bg-cyan-500/10 border-cyan-500/25 text-cyan-200';
                   let dotClass = 'bg-cyan-400';
-                  if (ann.type === 'error') {
+                  if (ann.type === 'error' || ann.type === 'critical') {
                     colorClasses = 'bg-rose-500/10 border-rose-500/25 text-rose-200';
                     dotClass = 'bg-rose-500 animate-pulse';
                   } else if (ann.type === 'warning') {
@@ -740,15 +773,41 @@ export default function CitizenDashboardPage() {
                     dotClass = 'bg-emerald-400';
                   }
 
+                  const isPlaying = playingAlertId === (ann._id || ann.id);
+
                   return (
-                    <div key={ann._id} className={`p-3.5 rounded-xl border ${colorClasses} flex gap-3 shadow-sm`}>
-                      <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${dotClass}`} />
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold">{ann.title}</p>
-                        <p className="text-[11px] opacity-80 mt-0.5 leading-relaxed">{ann.message}</p>
-                        <span className="text-[9px] font-mono opacity-50 block mt-1">
+                    <div key={ann._id || ann.id} className={`p-3.5 rounded-xl border ${colorClasses} flex flex-col gap-2 shadow-sm`}>
+                      <div className="flex items-start gap-2.5">
+                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${dotClass}`} />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-bold leading-snug">{ann.title}</p>
+                          <p className="text-[11px] opacity-80 mt-0.5 leading-relaxed">{ann.message}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1 border-t border-white/10 text-[10px]">
+                        <span className="font-mono opacity-50">
                           {new Date(ann.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
+                        
+                        <button
+                          type="button"
+                          onClick={() => handlePlayAlertAudio(ann)}
+                          className="px-2 py-0.5 rounded-lg bg-black/40 hover:bg-black/60 text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                          title="Listen to broadcast"
+                        >
+                          {isPlaying ? (
+                            <>
+                              <VolumeX className="w-3 h-3 text-cyan-400" />
+                              <span>{t('stopListening', 'Stop')}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Volume2 className="w-3 h-3 text-cyan-400" />
+                              <span>{t('listenAlert', 'Listen')}</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
                   );
@@ -758,6 +817,12 @@ export default function CitizenDashboardPage() {
                   <ShieldCheck className="w-8 h-8 text-emerald-400/80 mb-2" />
                   <p className="text-xs font-bold text-slate-300">{t('allClearSector')}</p>
                   <p className="text-[11px] text-slate-500 mt-0.5">{t('allClearDesc')}</p>
+                  <Link
+                    to="/alerts"
+                    className="mt-3 text-[11px] font-bold text-cyan-400 hover:text-cyan-300"
+                  >
+                    {t('viewAllAlerts', 'View All Community Alerts')} →
+                  </Link>
                 </div>
               )}
             </div>
