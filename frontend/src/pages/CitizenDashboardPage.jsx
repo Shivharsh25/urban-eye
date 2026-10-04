@@ -37,7 +37,8 @@ import {
   Trash2,
   Phone,
   Volume2,
-  VolumeX
+  VolumeX,
+  Sparkles
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import DetectionModal from '../components/DetectionModal';
