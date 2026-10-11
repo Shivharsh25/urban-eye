@@ -25,8 +25,11 @@ export default function UploadStepper({ currentStage, progressData, error }) {
     return STAGES.findIndex((s) => s.id === stageId);
   };
 
+  const isNoIssue = currentStage === 'no_issue' || 
+    progressData?.details?.detected === false || 
+    Boolean(progressData?.message?.toLowerCase().includes('no municipal issue'));
   const activeIndex = currentStage ? getStageIndex(currentStage) : 0;
-  const isComplete = currentStage === 'dispatched' || currentStage === 'completed';
+  const isComplete = currentStage === 'dispatched' || currentStage === 'completed' || isNoIssue;
 
   return (
     <div className="w-full bg-stone-900/80 border border-stone-800 rounded-3xl p-6 sm:p-7 shadow-2xl glass-panel relative overflow-hidden backdrop-blur-xl">
@@ -44,17 +47,25 @@ export default function UploadStepper({ currentStage, progressData, error }) {
           </div>
           <div>
             <h4 className="text-base font-bold text-stone-100 flex items-center gap-2">
-              <span>{isComplete ? 'Report Dispatched & Confirmed' : 'Processing Your Report...'}</span>
+              <span>
+                {isNoIssue
+                  ? 'AI Scan Complete: No Issue Found'
+                  : isComplete 
+                  ? 'Report Dispatched & Confirmed' 
+                  : 'Processing Your Report...'}
+              </span>
             </h4>
             <p className="text-xs text-stone-400 mt-0.5">
-              Automated multi-stage AI triage, geospatial clustering & municipal routing
+              {isNoIssue 
+                ? 'Image analyzed. Carriageways and public areas verified clear.'
+                : 'Automated multi-stage AI triage, geospatial clustering & municipal routing'}
             </p>
           </div>
         </div>
         {progressData && (
           <div className="px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold font-mono flex items-center space-x-2 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-            <span>Step {Math.min(6, (progressData.step || 1))} of 6</span>
+            <span className={`w-2 h-2 rounded-full ${isComplete ? 'bg-emerald-400' : 'bg-cyan-400 animate-pulse'}`}></span>
+            <span>{isNoIssue ? 'Verified Clear' : `Step ${Math.min(6, (progressData.step || 1))} of 6`}</span>
           </div>
         )}
       </div>
@@ -133,7 +144,7 @@ export default function UploadStepper({ currentStage, progressData, error }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold font-mono text-cyan-300">
-                  {isComplete ? 'DISPATCH CONFIRMED' : 'EXECUTING PHASE'}
+                  {isNoIssue ? 'ANALYSIS COMPLETE' : isComplete ? 'DISPATCH CONFIRMED' : 'EXECUTING PHASE'}
                 </p>
                 {progressData?.timestamp && (
                   <span className="text-[10px] text-stone-500 font-mono">
@@ -142,7 +153,7 @@ export default function UploadStepper({ currentStage, progressData, error }) {
                 )}
               </div>
               <p className="text-xs text-stone-300 mt-0.5 font-medium truncate">
-                {progressData?.message || 'Processing input stream...'}
+                {progressData?.message || (isNoIssue ? 'No municipal issue detected in this image.' : 'Processing input stream...')}
               </p>
             </div>
           </>

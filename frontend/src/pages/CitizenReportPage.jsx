@@ -48,6 +48,8 @@ export default function CitizenReportPage() {
   const [progressData, setProgressData] = useState(null);
   const [pipelineError, setPipelineError] = useState(null);
   const [resultDetection, setResultDetection] = useState(null);
+  const [noIssueDetected, setNoIssueDetected] = useState(false);
+  const [noIssueMessage, setNoIssueMessage] = useState('');
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [isEditingLetter, setIsEditingLetter] = useState(false);
@@ -114,7 +116,13 @@ export default function CitizenReportPage() {
 
     const unsubscribe = subscribeToJob(currentJobId, (data) => {
       console.log('[Pipeline WS Progress]:', data);
-      setCurrentStage(data.stage);
+      if (data.details?.detected === false || data.message?.toLowerCase().includes('no municipal issue')) {
+        setCurrentStage('no_issue');
+        setNoIssueDetected(true);
+        setNoIssueMessage(data.message || 'No municipal issue detected in this image.');
+      } else {
+        setCurrentStage(data.stage);
+      }
       setProgressData(data);
     });
 
@@ -174,6 +182,8 @@ export default function CitizenReportPage() {
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
     setResultDetection(null);
+    setNoIssueDetected(false);
+    setNoIssueMessage('');
     setPipelineError(null);
 
     try {
@@ -253,8 +263,15 @@ export default function CitizenReportPage() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      setResultDetection(res.data.detection);
-      setCurrentStage('completed');
+      if (res.data.detected === false || (!res.data.detection && (!res.data.detections || res.data.detections.length === 0))) {
+        setNoIssueDetected(true);
+        setNoIssueMessage(res.data.message || 'No municipal issue detected in this image.');
+        setCurrentStage('no_issue');
+      } else {
+        setNoIssueDetected(false);
+        setResultDetection(res.data.detection);
+        setCurrentStage('completed');
+      }
     } catch (err) {
       console.error('[Upload Error]:', err);
       const errMsg = err.response?.data?.error || err.message || 'Detection failed.';
@@ -311,8 +328,15 @@ export default function CitizenReportPage() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      setResultDetection(res.data.detection);
-      setCurrentStage('completed');
+      if (res.data.detected === false || (!res.data.detection && (!res.data.detections || res.data.detections.length === 0))) {
+        setNoIssueDetected(true);
+        setNoIssueMessage(res.data.message || 'No municipal issue detected in this image.');
+        setCurrentStage('no_issue');
+      } else {
+        setNoIssueDetected(false);
+        setResultDetection(res.data.detection);
+        setCurrentStage('completed');
+      }
     } catch (err) {
       console.error('[Upload Error]:', err);
       const errMsg = err.response?.data?.error || err.message || 'Detection failed.';
@@ -327,6 +351,8 @@ export default function CitizenReportPage() {
     setSelectedFile(null);
     setPreviewUrl(null);
     setResultDetection(null);
+    setNoIssueDetected(false);
+    setNoIssueMessage('');
     setCurrentJobId(null);
     setCurrentStage(null);
     setProgressData(null);
@@ -372,13 +398,44 @@ export default function CitizenReportPage() {
       </div>
 
       {/* Active Pipeline Stepper - Spans Full Width so all 6 stages have plenty of room */}
-      {(isSubmitting || currentStage || resultDetection) && (
+      {(isSubmitting || currentStage || resultDetection || noIssueDetected) && (
         <div className="mb-8 transition-all duration-500">
           <UploadStepper
             currentStage={currentStage}
             progressData={progressData}
             error={pipelineError}
           />
+        </div>
+      )}
+
+      {/* No Issue Detected Notification Card */}
+      {noIssueDetected && (
+        <div className="mb-8 p-6 sm:p-8 rounded-3xl bg-stone-900/95 border border-cyan-500/40 shadow-2xl space-y-4 relative overflow-hidden backdrop-blur-xl animate-in fade-in duration-300">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+            <div className="flex items-start sm:items-center space-x-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30 text-cyan-400 shrink-0">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="text-lg font-black tracking-wide text-cyan-300 uppercase">
+                  {t('noIssueDetectedTitle', 'Analysis Complete: No Municipal Issue Detected')}
+                </h4>
+                <p className="text-sm text-stone-300 mt-1 max-w-2xl">
+                  {noIssueMessage || t('noIssueDetectedDesc', 'The AI scan analyzed this image and detected no hazardous road potholes or illegal solid waste dumping. No municipal incident report was created.')}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={resetForm}
+              className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-stone-950 font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-cyan-500/20 shrink-0"
+            >
+              {t('uploadAnotherImage', 'Upload Another Image')}
+            </button>
+          </div>
         </div>
       )}
 
