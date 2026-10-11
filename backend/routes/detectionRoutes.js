@@ -22,6 +22,7 @@ const { processDuplicateCheck } = require('../services/clusteringService');
 const { getDepartmentForType, generateReportText, generateEscalationText } = require('../services/routingService');
 const { dispatchIncidentReport, dispatchEscalationAlert, sendResolutionNotifications } = require('../services/dispatchService');
 const { emitPipelineProgress, emitDetectionCreated, emitDetectionMerged, emitDetectionUpdated, emitDetectionDeleted } = require('../services/socketService');
+const { runYoloDetection, isModelAvailable } = require('../services/yoloInferenceService');
 
 // Multer in-memory storage for processing
 const upload = multer({
@@ -74,33 +75,49 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
     );
 
     // ----------------------------------------------------
-    // STAGE 2: AI DETECTION (Python FastAPI Microservice)
+    // STAGE 2: AI DETECTION (Embedded YOLO Engine / Microservice)
     // ----------------------------------------------------
+    const embeddedReady = isModelAvailable();
     emitPipelineProgress(jobId, {
       stage: 'detecting',
       step: 2,
       totalSteps: 6,
-      message: 'Running AI object detection on image...',
-      details: { serviceUrl: AI_SERVICE_URL }
+      message: embeddedReady 
+        ? 'Running embedded YOLOv8 AI object detection...' 
+        : 'Running AI object detection on image...',
+      details: { engine: embeddedReady ? 'embedded_onnx' : 'fastapi_microservice', serviceUrl: embeddedReady ? 'native' : AI_SERVICE_URL }
     });
 
     let detectedIssues = [];
-    try {
-      const formData = new FormData();
-      formData.append('image', req.file.buffer, {
-        filename: req.file.originalname || 'image.jpg',
-        contentType: req.file.mimetype || 'image/jpeg'
-      });
 
-      const aiResponse = await axios.post(`${AI_SERVICE_URL}/detect`, formData, {
-        headers: formData.getHeaders(),
-        timeout: 15000 // 15 seconds to allow PyTorch / YOLO model inference
-      });
+    // Attempt 1: Direct in-memory YOLOv8 ONNX execution (zero-latency, self-contained)
+    if (embeddedReady) {
+      try {
+        detectedIssues = await runYoloDetection(req.file.buffer, 0.15);
+      } catch (onnxErr) {
+        console.warn(`[Detection API] Embedded ONNX error (${onnxErr.message}), falling back to microservice.`);
+      }
+    }
 
-      detectedIssues = aiResponse.data.detections || [];
-    } catch (aiErr) {
-      console.warn(`[Detection API] AI service error or unavailable (${aiErr.message})`);
-      detectedIssues = [];
+    // Attempt 2: External Python FastAPI Microservice (if embedded is unavailable or failed)
+    if ((!detectedIssues || detectedIssues.length === 0) && !embeddedReady) {
+      try {
+        const formData = new FormData();
+        formData.append('image', req.file.buffer, {
+          filename: req.file.originalname || 'image.jpg',
+          contentType: req.file.mimetype || 'image/jpeg'
+        });
+
+        const aiResponse = await axios.post(`${AI_SERVICE_URL}/detect`, formData, {
+          headers: formData.getHeaders(),
+          timeout: 15000 // 15 seconds to allow PyTorch / YOLO model inference
+        });
+
+        detectedIssues = aiResponse.data.detections || [];
+      } catch (aiErr) {
+        console.warn(`[Detection API] AI service error or unavailable (${aiErr.message})`);
+        detectedIssues = [];
+      }
     }
 
     // If nothing detected by the AI model:
