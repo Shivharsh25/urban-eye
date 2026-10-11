@@ -50,22 +50,37 @@ app.use('/api', apiLimiter);
 // ----------------------------------------------------
 // Health Check
 // ----------------------------------------------------
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
   let yoloAvailable = false;
   let yoloError = null;
+  let sessionTest = null;
   try {
     const yolo = require('./services/yoloInferenceService');
     yoloAvailable = yolo.isModelAvailable();
+    if (req.query.test) {
+      const sharp = require('sharp');
+      const dummyBuffer = await sharp({
+        create: {
+          width: 640,
+          height: 640,
+          channels: 3,
+          background: { r: 128, g: 128, b: 128 }
+        }
+      }).jpeg().toBuffer();
+      const testDets = await yolo.runYoloDetection(dummyBuffer, 0.15);
+      sessionTest = { status: 'success', detectionsCount: testDets.length };
+    }
   } catch (err) {
-    yoloError = err.message;
+    yoloError = err.stack || err.message;
   }
   res.json({
     status: 'healthy',
     service: 'Urban EYE Backend API',
     timestamp: new Date().toISOString(),
-    version: '1.2.0-onnx',
+    version: '1.2.1-onnx',
     yoloAvailable,
-    yoloError
+    yoloError,
+    sessionTest
   });
 });
 

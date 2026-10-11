@@ -90,11 +90,13 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
 
     let detectedIssues = [];
 
+    let onnxDiagnosticError = null;
     // Attempt 1: Direct in-memory YOLOv8 ONNX execution (zero-latency, self-contained)
     if (embeddedReady) {
       try {
         detectedIssues = await runYoloDetection(req.file.buffer, 0.15);
       } catch (onnxErr) {
+        onnxDiagnosticError = onnxErr.message;
         console.warn(`[Detection API] Embedded ONNX error (${onnxErr.message}), falling back to microservice.`);
       }
     }
@@ -134,7 +136,12 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
         success: true,
         detected: false,
         message: 'No municipal issue detected in this image',
-        detections: []
+        detections: [],
+        debug: {
+          embeddedReady,
+          onnxDiagnosticError,
+          fileSize: req.file ? req.file.size : 0
+        }
       });
     }
 
