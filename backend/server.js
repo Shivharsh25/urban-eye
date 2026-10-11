@@ -51,11 +51,21 @@ app.use('/api', apiLimiter);
 // Health Check
 // ----------------------------------------------------
 app.get('/health', (req, res) => {
+  let yoloAvailable = false;
+  let yoloError = null;
+  try {
+    const yolo = require('./services/yoloInferenceService');
+    yoloAvailable = yolo.isModelAvailable();
+  } catch (err) {
+    yoloError = err.message;
+  }
   res.json({
     status: 'healthy',
     service: 'Urban EYE Backend API',
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: '1.2.0-onnx',
+    yoloAvailable,
+    yoloError
   });
 });
 
