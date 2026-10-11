@@ -16,10 +16,25 @@ const fs = require('fs');
 const sharp = require('sharp');
 let ort = null;
 
-try {
-  ort = require('onnxruntime-node');
-} catch (err) {
-  console.warn('[YOLO ONNX] onnxruntime-node not yet loaded:', err.message);
+function getOrt() {
+  if (ort) return ort;
+  // Try onnxruntime-web first (pure WASM, zero native .so / glibc dependencies, 100% portable on Render Linux containers)
+  try {
+    ort = require('onnxruntime-web');
+    return ort;
+  } catch (webErr) {
+    console.warn('[YOLO ONNX] onnxruntime-web not loaded:', webErr.message);
+  }
+
+  // Fallback to onnxruntime-node if available
+  try {
+    ort = require('onnxruntime-node');
+    return ort;
+  } catch (nodeErr) {
+    console.warn('[YOLO ONNX] onnxruntime-node not loaded:', nodeErr.message);
+  }
+
+  throw new Error('Neither onnxruntime-web nor onnxruntime-node could be loaded.');
 }
 
 const MODEL_PATH = path.join(__dirname, '../models/urban_eye_yolov8.onnx');
@@ -36,9 +51,7 @@ let sessionLoading = null;
  */
 async function getSession() {
   if (session) return session;
-  if (!ort) {
-    ort = require('onnxruntime-node');
-  }
+  const ortInstance = getOrt();
 
   if (sessionLoading) return sessionLoading;
 
@@ -48,10 +61,15 @@ async function getSession() {
     }
 
     console.log(`[YOLO ONNX] Initializing session from: ${MODEL_PATH}`);
-    session = await ort.InferenceSession.create(MODEL_PATH, {
-      executionProviders: ['cpu'],
-      graphOptimizationLevel: 'all'
-    });
+    const modelBuffer = fs.readFileSync(MODEL_PATH);
+    try {
+      session = await ortInstance.InferenceSession.create(modelBuffer, {
+        executionProviders: ['wasm', 'cpu']
+      });
+    } catch (createErr) {
+      // Fallback for native runtime if buffer signature differs
+      session = await ortInstance.InferenceSession.create(MODEL_PATH);
+    }
     console.log('[YOLO ONNX] Session loaded successfully!');
     return session;
   })();
@@ -133,7 +151,8 @@ async function runYoloDetection(imageBuffer, confThreshold = DEFAULT_CONF_THRESH
     float32Data[2 * numPixels + i] = rawPixelBuffer[i * 3 + 2] / 255.0;
   }
 
-  const tensor = new ort.Tensor('float32', float32Data, [1, 3, TARGET_SIZE, TARGET_SIZE]);
+  const ortInstance = getOrt();
+  const tensor = new ortInstance.Tensor('float32', float32Data, [1, 3, TARGET_SIZE, TARGET_SIZE]);
 
   // 3. Run Inference
   const inputName = modelSession.inputNames[0];
