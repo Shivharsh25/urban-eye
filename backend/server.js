@@ -77,7 +77,7 @@ app.get('/health', async (req, res) => {
     status: 'healthy',
     service: 'Urban EYE Backend API',
     timestamp: new Date().toISOString(),
-    version: '1.2.1-onnx',
+    version: '1.2.2-wasm',
     yoloAvailable,
     yoloError,
     sessionTest
