@@ -264,305 +264,304 @@ export default function CitizenAlertsPage() {
         return {
           icon: AlertTriangle,
           badge: lang === 'hi' ? 'अति आवश्यक' : 'EMERGENCY',
-          color: 'text-rose-700',
-          bg: 'bg-rose-50',
-          border: 'border-rose-200',
-          dot: 'bg-rose-600 animate-pulse',
-          strip: 'bg-rose-600'
+          color: 'text-rose-400',
+          bg: 'bg-rose-500/10',
+          border: 'border-rose-500/30',
+          dot: 'bg-rose-500 animate-pulse',
+          strip: 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]'
         };
       case 'warning':
         return {
           icon: Flame,
           badge: lang === 'hi' ? 'नागरिक परामर्श' : 'ADVISORY',
-          color: 'text-amber-800',
-          bg: 'bg-amber-50',
-          border: 'border-amber-200',
-          dot: 'bg-amber-600 animate-pulse',
-          strip: 'bg-amber-600'
+          color: 'text-amber-400',
+          bg: 'bg-amber-500/10',
+          border: 'border-amber-500/30',
+          dot: 'bg-amber-400 animate-pulse',
+          strip: 'bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]'
         };
       case 'success':
         return {
           icon: CheckCircle,
           badge: lang === 'hi' ? 'सेवा बहाल' : 'RESTORED',
-          color: 'text-emerald-800',
-          bg: 'bg-emerald-50',
-          border: 'border-emerald-200',
-          dot: 'bg-emerald-600',
-          strip: 'bg-emerald-600'
+          color: 'text-emerald-400',
+          bg: 'bg-emerald-500/10',
+          border: 'border-emerald-500/30',
+          dot: 'bg-emerald-400',
+          strip: 'bg-emerald-500'
         };
       default:
         return {
           icon: Info,
           badge: lang === 'hi' ? 'सार्वजनिक सूचना' : 'PUBLIC NOTICE',
-          color: 'text-sky-800',
-          bg: 'bg-sky-50',
-          border: 'border-sky-200',
-          dot: 'bg-sky-600',
-          strip: 'bg-sky-600'
+          color: 'text-cyan-400',
+          bg: 'bg-cyan-500/10',
+          border: 'border-cyan-500/30',
+          dot: 'bg-cyan-400',
+          strip: 'bg-cyan-500'
         };
     }
   };
 
   return (
-    <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 space-y-6 sm:space-y-7">
+    <div className="min-h-screen bg-[#05080f] p-4 sm:p-6 lg:p-10 relative overflow-hidden">
       
+      {/* Background aesthetics */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-900/10 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-900/10 rounded-full blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#06b6d4_0.75px,transparent_0.75px)] [background-size:20px_20px] opacity-[0.04]"></div>
+      </div>
+
       {/* Floating Feedback Toast */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-white border border-blue-600/30 text-blue-700 font-bold text-xs sm:text-sm rounded-2xl shadow-xl flex items-center gap-2 backdrop-blur-md animate-in fade-in slide-in-from-top-3">
-          <Check className="w-4 h-4 text-emerald-600" />
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-slate-900/95 border border-cyan-500/50 text-cyan-300 font-bold text-xs sm:text-sm rounded-2xl shadow-2xl flex items-center gap-2 backdrop-blur-md animate-in fade-in slide-in-from-top-3">
+          <Check className="w-4 h-4 text-cyan-400" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Bento Hero Header */}
-      <div className="civic-hero p-6 sm:p-8 relative overflow-hidden bg-white border border-slate-200 rounded-2xl shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
+      <div className="max-w-5xl mx-auto relative z-10 space-y-6">
+        
+        {/* Header Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
           <div>
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider flex items-center shadow-xs">
-                <Radio className="w-3.5 h-3.5 mr-1.5 text-blue-600 animate-pulse" />
-                {t('liveNetwork', 'LIVE CIVIC BROADCASTS')}
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
-              {t('communityAlertsTitle', 'Community Alerts & Broadcasts')}
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-3">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shrink-0 shadow-lg shadow-cyan-500/10">
+                <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400 animate-pulse" />
+              </div>
+              <span>{t('communityAlertsTitle', 'Community Alerts & Broadcasts')}</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-400 mt-1.5">
               {t('communityAlertsSubtitle', 'Stay informed with real-time city broadcasts, hazardous condition advisories, and emergency updates.')}
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
             <button
               onClick={() => fetchAlerts(true)}
               disabled={refreshing}
-              className="p-2.5 sm:px-3.5 sm:py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-1.5 text-xs font-bold shadow-xs cursor-pointer"
+              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5 text-xs font-semibold"
               title="Refresh alerts"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-blue-600' : 'text-blue-600'}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-cyan-400' : ''}`} />
               <span className="hidden sm:inline">{refreshing ? 'Syncing...' : 'Sync'}</span>
             </button>
 
-            <div className="flex items-center space-x-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 shadow-xs">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
-              <span className="text-[11px] font-mono font-bold text-emerald-700 uppercase tracking-widest">{t('liveNetwork', 'ONLINE')}</span>
+            <div className="flex items-center space-x-2 bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-2 shadow-inner">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></div>
+              <span className="text-[11px] font-mono font-bold text-emerald-400 uppercase tracking-widest">{t('liveNetwork', 'LIVE NETWORK')}</span>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Search & Category Filter Controls Bento Card */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xs">
-        
-        {/* Search Box */}
-        <div className="relative w-full">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input 
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t('searchAlertsPlaceholder', 'Search alerts by keyword, ward or topic...')}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-600 transition-all shadow-xs"
-          />
-          {searchQuery && (
-            <button 
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5 cursor-pointer"
-            >
-              ✕
-            </button>
-          )}
-        </div>
+        {/* Search & Category Filter Controls */}
+        <div className="glass-panel p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+          
+          {/* Search Box */}
+          <div className="relative w-full">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input 
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('searchAlertsPlaceholder', 'Search alerts by keyword, ward or topic...')}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white px-1.5 py-0.5"
+              >
+                ✕
+              </button>
+            )}
+          </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-semibold">
-          {[
-            { id: 'ALL', label: t('allAlerts', 'All Alerts'), count: alerts.length },
-            { id: 'CRITICAL', label: t('criticalEmergency', 'Critical / Emergency'), count: alerts.filter(a => a.type === 'critical').length, color: 'text-rose-600' },
-            { id: 'WARNING', label: t('civicAdvisories', 'Advisories'), count: alerts.filter(a => a.type === 'warning').length, color: 'text-amber-600' },
-            { id: 'SUCCESS', label: t('serviceRestored', 'Restored'), count: alerts.filter(a => a.type === 'success').length, color: 'text-emerald-600' },
-            { id: 'INFO', label: t('publicNotices', 'Notices'), count: alerts.filter(a => a.type === 'info').length, color: 'text-blue-600' },
-          ].map(tab => {
-            const isSelected = filter === tab.id;
-            return (
+          {/* Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-semibold">
+            {[
+              { id: 'ALL', label: t('allAlerts', 'All Alerts'), count: alerts.length },
+              { id: 'CRITICAL', label: t('criticalEmergency', 'Critical / Emergency'), count: alerts.filter(a => a.type === 'critical').length, color: 'text-rose-400' },
+              { id: 'WARNING', label: t('civicAdvisories', 'Advisories'), count: alerts.filter(a => a.type === 'warning').length, color: 'text-amber-400' },
+              { id: 'SUCCESS', label: t('serviceRestored', 'Restored'), count: alerts.filter(a => a.type === 'success').length, color: 'text-emerald-400' },
+              { id: 'INFO', label: t('publicNotices', 'Notices'), count: alerts.filter(a => a.type === 'info').length, color: 'text-cyan-400' },
+            ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setFilter(tab.id)}
-                className={`px-3.5 py-1.5 rounded-xl whitespace-nowrap transition-all border flex items-center gap-1.5 cursor-pointer ${
-                  isSelected
-                    ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-bold'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-100'
+                className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all border flex items-center gap-1.5 cursor-pointer ${
+                  filter === tab.id
+                    ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-sm font-bold'
+                    : 'bg-slate-950/40 text-slate-400 border-slate-800/80 hover:text-slate-200 hover:bg-slate-850'
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                  isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
-                }`}>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400">
                   {tab.count}
                 </span>
               </button>
-            );
-          })}
+            ))}
+          </div>
+
         </div>
+
+        {/* Alerts Feed */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center p-16 space-y-3">
+            <div className="w-9 h-9 border-3 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+            <p className="text-xs text-slate-400 font-medium">Scanning civic broadcast frequencies...</p>
+          </div>
+        ) : filteredAlerts.length > 0 ? (
+          <div className="space-y-4">
+            {filteredAlerts.map(alert => {
+              const visuals = getAlertVisuals(alert.type);
+              const Icon = visuals.icon;
+              const isPlaying = playingId === alert.id;
+              const isAck = !!acknowledgedMap[alert.id];
+              const totalAck = (alert.baseAck || 45) + (isAck ? 1 : 0);
+
+              return (
+                <div 
+                  key={alert.id} 
+                  className={`glass-panel group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-slate-900/60 border ${visuals.border} hover:border-slate-700 transition-all p-4 sm:p-6 shadow-xl`}
+                >
+                  {/* Left accent strip */}
+                  <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${visuals.strip}`}></div>
+
+                  <div className="flex flex-col sm:flex-row items-start gap-4 pl-1 sm:pl-2">
+                    
+                    {/* Icon Badge */}
+                    <div className={`w-11 h-11 sm:w-13 sm:h-13 rounded-2xl ${visuals.bg} border ${visuals.border} flex items-center justify-center shrink-0 shadow-md`}>
+                      <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${visuals.color}`} />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0 w-full">
+                      
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${visuals.bg} ${visuals.color} border ${visuals.border} flex items-center gap-1.5`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${visuals.dot}`} />
+                            {visuals.badge}
+                          </span>
+                          
+                          {alert.zone && (
+                            <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1 truncate">
+                              <MapPin className="w-3 h-3 text-cyan-400 shrink-0" />
+                              {alert.zone}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center space-x-1.5 text-slate-500 font-mono text-[11px]">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>
+                            {new Date(alert.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+
+                      <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-cyan-300 transition-colors mb-1.5 leading-snug">
+                        {alert.title}
+                      </h3>
+
+                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+                        {alert.desc}
+                      </p>
+
+                      {/* Interactive Actions Toolbar */}
+                      <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-slate-800/80">
+                        
+                        {/* Audio & Community Ack */}
+                        <div className="flex items-center gap-2">
+                          {/* Text-to-Speech Play Button */}
+                          <button
+                            onClick={() => handleToggleAudio(alert)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
+                              isPlaying
+                                ? 'bg-cyan-500 text-slate-950 border-cyan-400 animate-pulse'
+                                : 'bg-slate-950/60 text-slate-300 border-slate-800 hover:text-cyan-300 hover:bg-slate-800'
+                            }`}
+                            title="Listen to broadcast audio"
+                          >
+                            {isPlaying ? (
+                              <>
+                                <VolumeX className="w-3.5 h-3.5" />
+                                <span>{t('stopListening', 'Stop Audio')}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Volume2 className="w-3.5 h-3.5" />
+                                <span>{t('listenAlert', 'Listen Broadcast')}</span>
+                              </>
+                            )}
+                          </button>
+
+                          {/* Stay Safe / Acknowledged Reaction */}
+                          <button
+                            onClick={() => handleToggleAcknowledge(alert.id)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
+                              isAck
+                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
+                                : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-emerald-300 hover:bg-slate-800'
+                            }`}
+                            title="Confirm safe & acknowledged"
+                          >
+                            <ShieldCheck className={`w-3.5 h-3.5 ${isAck ? 'fill-emerald-400 text-emerald-400' : ''}`} />
+                            <span>{isAck ? t('staySafeAcknowledged', 'Acknowledged') : 'Stay Safe'}</span>
+                            <span className="font-mono text-[10px] text-slate-500">({totalAck})</span>
+                          </button>
+                        </div>
+
+                        {/* Share & Emergency Hotlines */}
+                        <div className="flex items-center gap-2">
+                          {alert.emergencyCall && (
+                            <a
+                              href={`tel:${alert.emergencyCall}`}
+                              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/40 transition-all flex items-center gap-1.5"
+                            >
+                              <PhoneCall className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                              <span>SOS {alert.emergencyCall}</span>
+                            </a>
+                          )}
+
+                          <button
+                            onClick={() => handleShare(alert)}
+                            className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-xs font-semibold bg-slate-950/60 text-slate-400 hover:text-cyan-300 border border-slate-800 hover:border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer"
+                            title="Share alert with neighbors"
+                          >
+                            <Share2 className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">{t('shareAlert', 'Share')}</span>
+                          </button>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="p-12 text-center text-slate-400 border border-slate-800/60 border-dashed rounded-3xl bg-slate-900/30 space-y-3">
+            <ShieldCheck className="w-10 h-10 mx-auto text-emerald-400/80 mb-1" />
+            <h3 className="text-base font-bold text-white">No alerts matching your filter</h3>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              All sectors currently operational without active emergency broadcast notices for this category.
+            </p>
+            <button
+              onClick={() => { setFilter('ALL'); setSearchQuery(''); }}
+              className="mt-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors"
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
 
       </div>
-
-      {/* Alerts Feed */}
-      {loading ? (
-        <div className="bg-white border border-slate-200 rounded-2xl flex flex-col items-center justify-center p-16 space-y-3 shadow-xs">
-          <div className="w-8 h-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-xs text-slate-500 font-medium">Scanning civic broadcast frequencies...</p>
-        </div>
-      ) : filteredAlerts.length > 0 ? (
-        <div className="space-y-4">
-          {filteredAlerts.map(alert => {
-            const visuals = getAlertVisuals(alert.type);
-            const Icon = visuals.icon;
-            const isPlaying = playingId === alert.id;
-            const isAck = !!acknowledgedMap[alert.id];
-            const totalAck = (alert.baseAck || 45) + (isAck ? 1 : 0);
-
-            return (
-              <div 
-                key={alert.id} 
-                className="bg-white border border-slate-200 rounded-2xl relative overflow-hidden p-5 sm:p-6 transition-all hover:border-slate-300 duration-200 group shadow-xs"
-              >
-                {/* Left accent strip */}
-                <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${visuals.strip}`}></div>
-
-                <div className="flex flex-col sm:flex-row items-start gap-4 pl-1 sm:pl-2">
-                  
-                  {/* Icon Badge */}
-                  <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl ${visuals.bg} border ${visuals.border} flex items-center justify-center shrink-0 shadow-xs`}>
-                    <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${visuals.color}`} />
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1 min-w-0 w-full">
-                    
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${visuals.bg} ${visuals.color} border ${visuals.border} flex items-center gap-1.5 shadow-2xs`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${visuals.dot}`} />
-                          {visuals.badge}
-                        </span>
-                        
-                        {alert.zone && (
-                          <span className="text-[11px] font-mono text-slate-500 flex items-center gap-1 truncate">
-                            <MapPin className="w-3 h-3 text-blue-600 shrink-0" />
-                            {alert.zone}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center space-x-1.5 text-slate-400 font-mono text-[11px]">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>
-                          {new Date(alert.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    </div>
-
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 font-display group-hover:text-blue-600 transition-colors mb-1.5 leading-snug">
-                      {alert.title}
-                    </h3>
-
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
-                      {alert.desc}
-                    </p>
-
-                    {/* Interactive Actions Toolbar */}
-                    <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-slate-100">
-                      
-                      {/* Audio & Community Ack */}
-                      <div className="flex items-center gap-2">
-                        {/* Text-to-Speech Play Button */}
-                        <button
-                          onClick={() => handleToggleAudio(alert)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
-                            isPlaying
-                              ? 'bg-blue-600 text-white border-blue-600 animate-pulse shadow-xs'
-                              : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                          }`}
-                          title="Listen to broadcast audio"
-                        >
-                          {isPlaying ? (
-                            <>
-                              <VolumeX className="w-3.5 h-3.5 text-white" />
-                              <span>{t('stopListening', 'Stop Audio')}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Volume2 className="w-3.5 h-3.5 text-blue-600" />
-                              <span>{t('listenAlert', 'Listen Broadcast')}</span>
-                            </>
-                          )}
-                        </button>
-
-                        {/* Stay Safe / Acknowledged Reaction */}
-                        <button
-                          onClick={() => handleToggleAcknowledge(alert.id)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
-                            isAck
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300 shadow-xs'
-                              : 'bg-slate-50 text-slate-600 border-slate-200 hover:text-emerald-700 hover:bg-slate-100'
-                          }`}
-                          title="Confirm safe & acknowledged"
-                        >
-                          <ShieldCheck className={`w-3.5 h-3.5 ${isAck ? 'fill-emerald-600 text-emerald-600' : ''}`} />
-                          <span>{isAck ? t('staySafeAcknowledged', 'Acknowledged') : 'Stay Safe'}</span>
-                          <span className="font-mono text-[10px] text-slate-400">({totalAck})</span>
-                        </button>
-                      </div>
-
-                      {/* Share & Emergency Hotlines */}
-                      <div className="flex items-center gap-2">
-                        {alert.emergencyCall && (
-                          <a
-                            href={`tel:${alert.emergencyCall}`}
-                            className="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-all flex items-center gap-1.5 shadow-xs"
-                          >
-                            <PhoneCall className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
-                            <span>SOS {alert.emergencyCall}</span>
-                          </a>
-                        )}
-
-                        <button
-                          onClick={() => handleShare(alert)}
-                          className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-100 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-                          title="Share alert with neighbors"
-                        >
-                          <Share2 className="w-3.5 h-3.5 text-blue-600" />
-                          <span className="hidden sm:inline">{t('shareAlert', 'Share')}</span>
-                        </button>
-                      </div>
-
-                    </div>
-
-                  </div>
-                </div>
-
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-500 space-y-3 shadow-xs">
-          <ShieldCheck className="w-10 h-10 mx-auto text-emerald-600 mb-1" />
-          <h3 className="text-base font-bold text-slate-900 font-display">No alerts matching your filter</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-            All sectors currently operational without active emergency broadcast notices for this category.
-          </p>
-          <button
-            onClick={() => { setFilter('ALL'); setSearchQuery(''); }}
-            className="mt-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
-          >
-            Reset Filters
-          </button>
-        </div>
-      )}
-
     </div>
   );
 }

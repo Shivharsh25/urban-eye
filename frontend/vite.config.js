@@ -9,19 +9,16 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false
+        changeOrigin: true
       },
       '/uploads': {
         target: process.env.VITE_API_URL || 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false
+        changeOrigin: true
       },
       '/socket.io': {
         target: process.env.VITE_API_URL || 'http://localhost:5000',
         ws: true,
-        changeOrigin: true,
-        secure: false
+        changeOrigin: true
       }
     }
   }

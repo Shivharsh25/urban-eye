@@ -277,6 +277,8 @@ export default function MapView({
                 <option value="all">{t('allCategories', 'All Categories')}</option>
                 <option value="pothole">{t('potholes', 'Potholes')}</option>
                 <option value="garbage">{t('wasteGarbage', 'Garbage / Dumping')}</option>
+                <option value="water_leak">{t('waterLeaks', 'Water Leaks')}</option>
+                <option value="streetlight">{t('streetlights', 'Streetlights')}</option>
               </select>
 
               <select

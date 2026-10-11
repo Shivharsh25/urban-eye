@@ -5,19 +5,17 @@ import {
   Upload, 
   MapPin, 
   CheckCircle2, 
+  AlertCircle, 
   Sparkles, 
   Send, 
   Eye, 
+  RefreshCw, 
   FileText,
   Download,
   Edit3,
+  Save,
   Check,
-  RefreshCw,
-  Construction,
-  Trash2,
-  Info,
-  ShieldCheck,
-  ArrowRight
+  RotateCcw
 } from 'lucide-react';
 import client from '../api/client';
 import { subscribeToJob } from '../api/socket';
@@ -40,23 +38,22 @@ export default function CitizenReportPage() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [showWebcam, setShowWebcam] = useState(false);
   const [address, setAddress] = useState('');
-  const [pinLocation, setPinLocation] = useState({ lat: 28.5355, lng: 77.3910 });
-  const [typeHint, setTypeHint] = useState('');
+  const [pinLocation, setPinLocation] = useState({ lat: 40.7128, lng: -74.0060 });
+  const [typeHint, setTypeHint] = useState('pothole'); // For debug/demo testing
 
-  // Pipeline state
+  // Pipeline execution state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentJobId, setCurrentJobId] = useState(null);
   const [currentStage, setCurrentStage] = useState(null);
   const [progressData, setProgressData] = useState(null);
   const [pipelineError, setPipelineError] = useState(null);
   const [resultDetection, setResultDetection] = useState(null);
-  const [noIssueMessage, setNoIssueMessage] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [isEditingLetter, setIsEditingLetter] = useState(false);
   const [editedLetterText, setEditedLetterText] = useState('');
   const [savingLetter, setSavingLetter] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveLetterSuccess, setSaveLetterSuccess] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -79,70 +76,22 @@ export default function CitizenReportPage() {
     }
   }, [resultDetection]);
 
-  // Handle GPS from EXIF
-  const handleFileSelect = async (file) => {
-    if (!file) return;
-    setSelectedFile(file);
-    const localUrl = URL.createObjectURL(file);
-    setPreviewUrl(localUrl);
-
+  const handleSaveLetterUpdates = async () => {
+    if (!resultDetection) return;
     try {
-      const output = await exifr.parse(file, { gps: true });
-      if (output && output.latitude && output.longitude) {
-        setPinLocation({ lat: output.latitude, lng: output.longitude });
-      }
-    } catch (err) {
-      console.warn('EXIF GPS parse failed:', err);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedFile) {
-      alert('Please upload photo evidence first.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setPipelineError(null);
-    setResultDetection(null);
-    setNoIssueMessage(null);
-
-    const jobId = `job_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    setCurrentJobId(jobId);
-    setCurrentStage('received');
-    setProgressData({ stage: 'received', step: 1, message: 'Compressing and preprocessing photo payload...' });
-
-    try {
-      const compressedImage = await compressImageClientSide(selectedFile);
-      const formData = new FormData();
-      formData.append('image', compressedImage);
-      formData.append('jobId', jobId);
-      formData.append('lat', pinLocation.lat);
-      formData.append('lng', pinLocation.lng);
-      formData.append('address', address.trim());
-      formData.append('typeHint', typeHint);
-
-      const res = await client.post('/api/detect', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      setSavingLetter(true);
+      const res = await client.patch(`/api/detections/${resultDetection.id || resultDetection._id}`, {
+        reportText: editedLetterText
       });
-
-      if (res.data.detected === false || !res.data.detection) {
-        setResultDetection(null);
-        setNoIssueMessage(res.data.message || 'No municipal issue detected in this image');
-        setCurrentStage('completed');
-        setProgressData({ stage: 'completed', step: 6, message: res.data.message || 'No municipal issue detected in this image' });
-        return;
-      }
-
       setResultDetection(res.data.detection);
-      setCurrentStage('completed');
+      setIsEditingLetter(false);
+      setSaveLetterSuccess(true);
+      setTimeout(() => setSaveLetterSuccess(false), 3000);
     } catch (err) {
-      console.error('[Upload Error]:', err);
-      setPipelineError(err.response?.data?.error || err.message || 'Detection failed.');
-      setCurrentStage('error');
+      console.error('Failed to update letter:', err);
+      alert('Could not save updates to formal report.');
     } finally {
-      setIsSubmitting(false);
+      setSavingLetter(false);
     }
   };
 
@@ -152,250 +101,528 @@ export default function CitizenReportPage() {
       setDownloadingPdf(true);
       await generateReportPDF(resultDetection, previewUrl);
     } catch (err) {
-      console.error('PDF generation error:', err);
-      alert('Could not download PDF.');
+      console.error('Failed to generate PDF:', err);
+      alert('Could not generate PDF report. Please try again.');
     } finally {
       setDownloadingPdf(false);
     }
   };
 
-  const handleSaveLetter = async () => {
-    if (!resultDetection) return;
+  // Subscribe to real-time pipeline events when jobId changes
+  useEffect(() => {
+    if (!currentJobId) return;
+
+    const unsubscribe = subscribeToJob(currentJobId, (data) => {
+      console.log('[Pipeline WS Progress]:', data);
+      setCurrentStage(data.stage);
+      setProgressData(data);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [currentJobId]);
+
+  // Reverse geocoding to automatically fill address when pinLocation changes
+  useEffect(() => {
+    const fetchAddress = async () => {
+      try {
+        // 1. Try Google Maps JS API Geocoder if loaded
+        if (window.google && window.google.maps && window.google.maps.Geocoder) {
+          const geocoder = new window.google.maps.Geocoder();
+          geocoder.geocode({ location: { lat: pinLocation.lat, lng: pinLocation.lng } }, async (results, status) => {
+            if (status === 'OK' && results[0]) {
+              setAddress(results[0].formatted_address);
+            } else {
+              await tryNominatimFallback();
+            }
+          });
+        } else {
+          // If Google Maps API is not ready, try Nominatim
+          await tryNominatimFallback();
+        }
+      } catch (err) {
+        console.error("Reverse geocoding failed:", err);
+      }
+    };
+    
+    const tryNominatimFallback = async () => {
+      try {
+        // 2. OpenStreetMap Nominatim fallback
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pinLocation.lat}&lon=${pinLocation.lng}`);
+        const data = await res.json();
+        if (data && data.display_name) {
+          setAddress(data.display_name);
+        } else {
+          // 3. Fallback to backend
+          const backendRes = await client.get(`/api/geocode?lat=${pinLocation.lat}&lng=${pinLocation.lng}`);
+          if (backendRes.data && backendRes.data.address) {
+            setAddress(backendRes.data.address);
+          }
+        }
+      } catch (err) {
+        console.error("Nominatim fallback failed:", err);
+      }
+    };
+
+    fetchAddress();
+  }, [pinLocation]);
+
+  const handleFileSelect = async (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setSelectedFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setResultDetection(null);
+    setPipelineError(null);
+
     try {
-      setSavingLetter(true);
-      const res = await client.patch(`/api/detections/${resultDetection.id || resultDetection._id}`, {
-        reportText: editedLetterText
-      });
-      setResultDetection(res.data.detection);
-      setIsEditingLetter(false);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      let lat = 40.7128;
+      let lng = -74.0060;
+      let locationFound = false;
+      const gps = await exifr.gps(file);
+      if (gps && gps.latitude && gps.longitude) {
+        setPinLocation({ lat: gps.latitude, lng: gps.longitude });
+        lat = gps.latitude;
+        lng = gps.longitude;
+        locationFound = true;
+      } else {
+        if ("geolocation" in navigator) {
+          try {
+            const position = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject);
+            });
+            setPinLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            });
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+            locationFound = true;
+          } catch(e) {
+            console.warn("Geolocation fallback failed", e);
+          }
+        }
+      }
+      
+      // Auto Submit Pipeline Trigger removed so user can review/edit location
     } catch (err) {
-      alert('Could not update grievance letter.');
-    } finally {
-      setSavingLetter(false);
+      console.warn("Could not extract EXIF data:", err);
+      let lat = 40.7128;
+      let lng = -74.0060;
+      if ("geolocation" in navigator) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+          });
+          setPinLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          lat = position.coords.latitude;
+          lng = position.coords.longitude;
+        } catch(e) {
+          console.warn("Geolocation fallback failed in catch block", e);
+        }
+      }
+      // Auto Submit Pipeline Trigger removed
     }
   };
 
-  return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 font-sans">
-      
-      {/* Header */}
-      <div className="civic-hero p-6 sm:p-8 bg-white border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-semibold mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>YOLOV8 COMPUTER VISION DISPATCH</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-display">
-            File Infrastructure Defect
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl">
-            Upload incident photo evidence. Our vision models automatically pinpoint coordinates, assess severity, and draft formal municipal grievances.
-          </p>
-        </div>
+  const triggerAutoSubmit = async (file, lat, lng) => {
+    setIsSubmitting(true);
+    setPipelineError(null);
+    setResultDetection(null);
 
-        <button
-          type="button"
-          onClick={() => navigate('/my-reports')}
-          className="civic-btn-secondary shrink-0 self-start sm:self-center"
-        >
-          <FileText className="w-4 h-4 text-blue-600" />
-          <span>My Reports</span>
-        </button>
+    const jobId = `job_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    setCurrentJobId(jobId);
+    setCurrentStage('received');
+    setProgressData({ stage: 'received', step: 1, message: 'Compressing image payload in browser...' });
+
+    try {
+      const compressedImage = await compressImageClientSide(file);
+      const formData = new FormData();
+      formData.append('image', compressedImage);
+      formData.append('jobId', jobId);
+      formData.append('lat', lat);
+      formData.append('lng', lng);
+      formData.append('address', address.trim()); 
+      formData.append('typeHint', typeHint);
+
+      const res = await client.post('/api/detect', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      setResultDetection(res.data.detection);
+      setCurrentStage('completed');
+    } catch (err) {
+      console.error('[Upload Error]:', err);
+      const errMsg = err.response?.data?.error || err.message || 'Detection failed.';
+      setPipelineError(errMsg);
+      setCurrentStage('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelect(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleCameraCapture = (file) => {
+    handleFileSelect(file);
+    setShowWebcam(false);
+  };
+
+  const handleSubmitReport = async (e) => {
+    e.preventDefault();
+    if (!selectedFile) {
+      alert('Please upload an image or capture a photo first.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setPipelineError(null);
+    setResultDetection(null);
+
+    const jobId = `job_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    setCurrentJobId(jobId);
+    setCurrentStage('received');
+    setProgressData({ stage: 'received', step: 1, message: 'Compressing image payload in browser...' });
+
+    try {
+      // 1. Client-Side Image Compression
+      const compressedImage = await compressImageClientSide(selectedFile);
+
+      // 2. Build FormData
+      const formData = new FormData();
+      formData.append('image', compressedImage);
+      formData.append('jobId', jobId);
+      formData.append('lat', pinLocation.lat);
+      formData.append('lng', pinLocation.lng);
+      formData.append('address', address.trim());
+      formData.append('typeHint', typeHint);
+
+      // 3. Post to full automated triage pipeline
+      const res = await client.post('/api/detect', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      setResultDetection(res.data.detection);
+      setCurrentStage('completed');
+    } catch (err) {
+      console.error('[Upload Error]:', err);
+      const errMsg = err.response?.data?.error || err.message || 'Detection failed.';
+      setPipelineError(errMsg);
+      setCurrentStage('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const resetForm = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setResultDetection(null);
+    setCurrentJobId(null);
+    setCurrentStage(null);
+    setProgressData(null);
+    setPipelineError(null);
+  };
+
+  return (
+    <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+      
+      {/* Hero / Page Header */}
+      <div className="relative mb-8 overflow-hidden rounded-3xl glass-card border border-stone-800 shadow-2xl z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/50 via-stone-900/90 to-stone-950"></div>
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/15 blur-[100px] rounded-full pointer-events-none"></div>
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+        
+        <div className="relative p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between z-10 gap-6">
+          <div className="max-w-2xl">
+            <div className="flex items-center space-x-3 mb-3">
+              <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest flex items-center shadow-inner">
+                <Sparkles className="w-3.5 h-3.5 mr-2" />
+                {t('aiDetection', 'Automated AI Triage & Dispatch')}
+              </span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-stone-200 to-stone-400 tracking-tight drop-shadow-sm mb-3">
+              {t('intelligentIncidentReporting', 'Intelligent Incident Reporting')}
+            </h1>
+            <p className="text-sm sm:text-base text-stone-400 font-medium leading-relaxed">
+              {t('reportPageSubtitle', 'Snap a photo or upload an image. Urban EYE will automatically pinpoint the location, analyze the infrastructure defect with AI, and dispatch work orders directly to municipal departments.')}
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => navigate('/my-reports')}
+              className="px-5 py-2.5 rounded-2xl text-xs font-bold text-stone-300 bg-stone-900/90 hover:bg-stone-800 border border-stone-700/80 transition-all shadow-lg flex items-center space-x-2"
+            >
+              <FileText className="w-4 h-4 text-cyan-400" />
+              <span>{t('trackPastReports', 'Track Past Reports')}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Upload Progress Stepper */}
-      {(isSubmitting || currentStage || resultDetection || noIssueMessage) && (
-        <UploadStepper
-          currentStage={currentStage}
-          progressData={progressData}
-          error={pipelineError}
-        />
-      )}
-
-      {/* No Issue Detected Notification */}
-      {noIssueMessage && (
-        <div className="civic-panel p-6 bg-amber-50/90 border-2 border-amber-300 text-amber-900 rounded-xl space-y-2 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
-              <Info className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-amber-900">
-                No Municipal Issue Detected in This Image
-              </h3>
-              <p className="text-xs text-amber-800 mt-0.5">
-                Our YOLOv8 AI model scanned this photo and did not detect any road potholes or garbage accumulation. No incident ticket was registered.
-              </p>
-            </div>
-          </div>
+      {/* Active Pipeline Stepper - Spans Full Width so all 6 stages have plenty of room */}
+      {(isSubmitting || currentStage || resultDetection) && (
+        <div className="mb-8 transition-all duration-500">
+          <UploadStepper
+            currentStage={currentStage}
+            progressData={progressData}
+            error={pipelineError}
+          />
         </div>
       )}
 
-      {/* Confirmation & Formal Grievance Letter */}
+      {/* Confirmation & Result Card - Displayed prominently upon completion */}
       {resultDetection && (
-        <div className="civic-panel p-6 sm:p-8 bg-white border-2 border-emerald-500/50 space-y-6 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
-                <CheckCircle2 className="w-5 h-5" />
+        <div className="mb-8 p-6 sm:p-8 rounded-3xl bg-stone-900/95 border border-emerald-500/40 shadow-2xl space-y-6 glow-emerald relative overflow-hidden backdrop-blur-xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="flex flex-wrap items-center justify-between gap-4 relative z-10">
+            <div className="flex items-center space-x-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 text-emerald-400 shrink-0">
+                <CheckCircle2 className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-emerald-800">
-                  Incident Dispatched to Municipal Authorities
-                </h3>
-                <p className="text-xs text-slate-500">Official work order generated and queued for zonal crew</p>
+                <h4 className="text-lg font-black tracking-wide text-emerald-400 uppercase">
+                  {t('incidentDispatched', 'Incident Dispatched Successfully!')}
+                </h4>
+                <p className="text-xs text-stone-400">
+                  {t('incidentDispatchedDesc', 'Municipal authority has been notified with high-priority assignment.')}
+                </p>
               </div>
             </div>
-            <span className="font-mono text-xs font-bold px-3 py-1 bg-slate-100 border border-slate-200 rounded-lg text-slate-800">
+            <span className="text-xs font-mono font-bold px-3.5 py-1.5 rounded-xl bg-stone-950 text-stone-300 border border-stone-800 shadow-inner">
               REF #{resultDetection.id || resultDetection._id}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-              <span className="text-[10px] text-slate-500 font-bold block uppercase">Category</span>
-              <span className="text-sm font-bold text-slate-900 uppercase">{resultDetection.type}</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono relative z-10">
+            <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 shadow-inner">
+              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">{t('categoryLabel', 'CATEGORY')}</span>
+              <span className="font-bold text-amber-400 text-sm uppercase">{resultDetection.type}</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-              <span className="text-[10px] text-slate-500 font-bold block uppercase">Severity</span>
-              <span className={`text-sm font-bold uppercase ${
-                parseInt(resultDetection.severity) >= 70 ? 'text-rose-700' :
-                parseInt(resultDetection.severity) >= 40 ? 'text-amber-700' : 'text-emerald-700'
-              }`}>
-                {resultDetection.severity || '50%'}
-              </span>
+            <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 shadow-inner">
+              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">{t('severityLabel', 'SEVERITY')}</span>
+              <span className="font-bold text-rose-400 text-sm uppercase">{resultDetection.severity}</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-              <span className="text-[10px] text-slate-500 font-bold block uppercase">Assigned Dept</span>
-              <span className="text-sm font-bold text-blue-700 truncate block">{resultDetection.assignedDepartment || 'Roads & Works'}</span>
+            <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 shadow-inner">
+              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">{t('assignedDept', 'ASSIGNED DEPT')}</span>
+              <span className="font-bold text-stone-200 text-sm truncate block">{resultDetection.assignedDepartment}</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-              <span className="text-[10px] text-slate-500 font-bold block uppercase">Reports Merged</span>
-              <span className="text-sm font-bold text-emerald-700">{resultDetection.reportCount || 1} verified</span>
+            <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 shadow-inner">
+              <span className="text-stone-500 block text-[10px] font-bold mb-1 tracking-wider">{t('citizenReportsCount', 'CITIZEN REPORTS')}</span>
+              <span className="font-bold text-stone-200 text-sm">{resultDetection.reportCount || 1} {t('reportsCount', 'reported')}</span>
             </div>
           </div>
 
-          {/* Grievance Preview Box */}
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-              <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5 uppercase tracking-wide">
-                <FileText className="w-4 h-4 text-blue-600" />
-                Formal Municipal Grievance Letter
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsEditingLetter(!isEditingLetter)}
-                className="text-xs font-bold text-blue-700 hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <Edit3 className="w-3.5 h-3.5" />
-                <span>{isEditingLetter ? 'Done Editing' : 'Edit Letter'}</span>
-              </button>
+          {/* Formal Municipal Grievance Complaint Letter Card */}
+          <div className="p-5 rounded-2xl bg-stone-950/70 border border-stone-800 space-y-3 relative z-10 shadow-inner">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-stone-800/80">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-cyan-400" />
+                <span className="text-xs font-bold text-stone-200 uppercase tracking-wider">
+                  {t('generatedComplaintLetter', 'Generated Formal Municipal Grievance Letter')}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {saveLetterSuccess && (
+                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    {t('saved', 'Saved')}
+                  </span>
+                )}
+
+                {!isEditingLetter ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingLetter(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>{t('editLetter', 'Edit Letter')}</span>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditedLetterText(resultDetection.reportText || '');
+                        setIsEditingLetter(false);
+                      }}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold text-stone-400 hover:text-white bg-stone-900 border border-stone-800 transition-colors"
+                    >
+                      {t('cancel', 'Cancel')}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={savingLetter}
+                      onClick={handleSaveLetterUpdates}
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold text-stone-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>{savingLetter ? t('saving', 'Saving...') : t('saveUpdates', 'Save Updates')}</span>
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
 
             {isEditingLetter ? (
-              <textarea
-                value={editedLetterText}
-                onChange={(e) => setEditedLetterText(e.target.value)}
-                rows={8}
-                className="w-full p-3 bg-white border border-slate-300 rounded-lg text-xs font-mono text-slate-800 focus:outline-none focus:border-blue-600"
-              />
+              <div className="space-y-2">
+                <p className="text-[11px] text-amber-400/90 font-medium">
+                  ✏️ You can edit any part of this formal complaint letter, add specific landmark notes, or adjust the problem description before exporting the PDF.
+                </p>
+                <textarea
+                  value={editedLetterText}
+                  onChange={(e) => setEditedLetterText(e.target.value)}
+                  rows={14}
+                  className="w-full p-4 rounded-xl bg-stone-900 border border-cyan-500/40 text-xs font-mono text-stone-200 focus:outline-none focus:ring-1 focus:ring-cyan-500 leading-relaxed custom-scrollbar shadow-inner"
+                  placeholder="Formal complaint letter..."
+                />
+              </div>
             ) : (
-              <pre className="p-3 bg-white border border-slate-200 rounded-lg text-xs font-mono text-slate-700 whitespace-pre-wrap leading-relaxed max-h-56 overflow-y-auto">
-                {editedLetterText}
+              <pre className="p-4 rounded-xl bg-stone-900/90 border border-stone-800 text-xs font-mono text-stone-300 overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-72 custom-scrollbar shadow-inner">
+                {resultDetection.reportText || editedLetterText}
               </pre>
-            )}
-
-            {isEditingLetter && (
-              <button
-                type="button"
-                onClick={handleSaveLetter}
-                disabled={savingLetter}
-                className="civic-btn-primary text-xs py-1.5 px-3"
-              >
-                {savingLetter ? 'Saving...' : 'Save Letter Changes'}
-              </button>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-3 pt-2 relative z-10">
             <button
               type="button"
-              onClick={handleDownloadPDF}
               disabled={downloadingPdf}
-              className="civic-btn-primary shadow-xs"
+              onClick={handleDownloadPDF}
+              className="px-6 py-3 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-lg shadow-cyan-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 disabled:opacity-60"
             >
-              <Download className="w-4 h-4" />
-              <span>{downloadingPdf ? 'Exporting PDF...' : 'Download Official PDF Report'}</span>
+              {downloadingPdf ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <Download className="w-4 h-4 text-cyan-200" />
+              )}
+              <span>{downloadingPdf ? t('generatingPdf', 'Generating PDF...') : t('downloadPdfReport', 'Download PDF Report')}</span>
             </button>
             <button
               type="button"
               onClick={() => setShowDetailModal(true)}
-              className="civic-btn-secondary shadow-xs"
+              className="px-6 py-3 rounded-2xl text-sm font-bold text-stone-950 bg-amber-500 hover:bg-amber-400 shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
             >
-              <Eye className="w-4 h-4 text-blue-600" />
-              <span>Inspect Raw Vision Telemetry</span>
+              <Eye className="w-4 h-4" />
+              <span>{t('inspectAiDetails', 'Inspect AI Details')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/my-reports')}
+              className="px-6 py-3 rounded-2xl text-sm font-bold text-stone-300 bg-stone-800 hover:bg-stone-700 border border-stone-700 transition-colors shadow-lg flex items-center justify-center space-x-2"
+            >
+              <FileText className="w-4 h-4 text-stone-400" />
+              <span>{t('viewInMyReports', 'View in My Reports')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="px-6 py-3 rounded-2xl text-sm font-bold text-stone-300 bg-stone-900 hover:bg-stone-800 border border-stone-700 transition-colors flex items-center justify-center space-x-2 ml-auto"
+            >
+              <RefreshCw className="w-4 h-4 text-cyan-400" />
+              <span>{t('reportAnotherIncident', 'Report Another Incident')}</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Main 2-Column Form */}
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Main 2-Column Balanced Grid: Left = Photo & Category, Right = Big Map & Location */}
+      <form onSubmit={handleSubmitReport} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left 6 Cols: Photo & Category Selection */}
-        <div className="lg:col-span-6 space-y-6">
+        {/* Left Column: Photo Evidence & Category & Submit */}
+        <div className="lg:col-span-6 space-y-6 flex flex-col">
           
-          {/* Photo Dropzone */}
-          <div className="civic-panel p-6 bg-white space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center text-xs font-bold">1</span>
-                <span>Visual Defect Evidence</span>
-              </h2>
-              <span className="text-[11px] text-slate-500 font-mono">JPG, PNG, WEBP</span>
+          {/* Card 1: Image Upload / Camera Dropzone */}
+          <div className="p-6 sm:p-8 rounded-3xl glass-card relative overflow-hidden group shadow-xl">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/20 transition-colors duration-700"></div>
+            
+            <div className="flex items-center justify-between mb-5 relative z-10">
+              <label className="text-sm font-bold text-stone-200 uppercase tracking-wider flex items-center space-x-2.5">
+                <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">1</span>
+                <span>{t('uploadEvidencePhoto', 'Upload Evidence Photo')}</span>
+              </label>
+              <span className="text-[11px] text-stone-400 font-medium">JPG, PNG, WEBP</span>
             </div>
 
             {previewUrl ? (
-              <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 group">
-                <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-3.5 py-1.5 rounded-lg bg-white text-slate-800 text-xs font-bold hover:bg-slate-100 shadow-md cursor-pointer"
-                  >
-                    Change Image
-                  </button>
+              <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-2xl group/preview z-10">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover/preview:scale-105"
+                />
+                <div className="absolute inset-0 bg-stone-950/60 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center space-x-3 backdrop-blur-sm">
+                  {isSubmitting ? (
+                    <div className="text-amber-400 font-bold flex items-center bg-stone-900/80 px-4 py-2 rounded-xl">
+                      <div className="w-4 h-4 border-2 border-amber-400/30 border-t-amber-400 rounded-full animate-spin mr-2"></div>
+                      {t('analyzing', 'Analyzing...')}
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-5 py-2.5 rounded-xl text-xs font-bold bg-stone-800/90 text-white hover:bg-stone-700 border border-stone-600 transition-colors shadow-lg"
+                      >
+                        {t('changePhoto', 'Change Photo')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowWebcam(true)}
+                        className="px-5 py-2.5 rounded-xl text-xs font-bold bg-amber-500 text-stone-950 hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/25"
+                      >
+                        {t('takeNewPhoto', 'Take New Photo')}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             ) : (
               <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+                className="border-2 border-dashed border-stone-700/60 hover:border-amber-500/80 rounded-2xl p-8 sm:p-10 flex flex-col items-center justify-center text-center transition-all bg-stone-950/40 hover:bg-stone-900/50 cursor-pointer shadow-inner relative z-10"
                 onClick={() => fileInputRef.current?.click()}
-                className="p-8 sm:p-10 border-2 border-dashed border-slate-300 hover:border-blue-600 rounded-xl bg-slate-50/70 hover:bg-blue-50/30 transition-all text-center cursor-pointer flex flex-col items-center justify-center"
               >
-                <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-blue-600 mb-3 shadow-2xs">
-                  <Upload className="w-6 h-6" />
+                <div className="w-16 h-16 rounded-2xl bg-stone-900 group-hover:bg-amber-950/50 text-stone-400 group-hover:text-amber-400 border border-stone-800 group-hover:border-amber-500/30 flex items-center justify-center mb-4 shadow-xl transition-all duration-300">
+                  <Upload className="w-8 h-8" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">Click to upload photo evidence</h4>
-                <p className="text-xs text-slate-500 mt-1">Automatic EXIF GPS extraction & client compression</p>
-                
-                <div className="mt-4 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <h4 className="text-base font-black text-stone-200">
+                  {t('tapToSelectPhoto', 'Tap to select or drop incident photo')}
+                </h4>
+                <p className="text-xs text-stone-400 mt-1.5 max-w-sm">
+                  {t('gpsAutoExtraction', 'Automatic GPS extraction & client-side compression enabled')}
+                </p>
+
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 w-full" onClick={(e) => e.stopPropagation()}>
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="civic-btn-secondary text-xs py-1.5 px-3"
+                    className="px-5 py-2.5 rounded-xl text-xs font-bold bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 transition-colors shadow-md"
                   >
-                    Browse Files
+                    {t('browseFiles', 'Browse Files')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowWebcam(true)}
-                    className="civic-btn-primary text-xs py-1.5 px-3"
+                    className="flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-rose-400 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <Camera className="w-3.5 h-3.5" />
-                    <span>Open Camera</span>
+                    <Camera className="w-4 h-4" />
+                    <span>{t('takePhoto', 'Take Photo')}</span>
                   </button>
                 </div>
               </div>
@@ -414,145 +641,177 @@ export default function CitizenReportPage() {
             />
           </div>
 
-          {/* Defect Category Grid */}
-          <div className="civic-panel p-6 bg-white space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center text-xs font-bold">2</span>
-                <span>Defect Classification</span>
-              </h2>
-              <span className="text-[11px] text-slate-500">Auto-refined by AI</span>
+          {/* Card 2: Issue Category Selector */}
+          <div className="p-6 sm:p-8 rounded-3xl glass-card relative overflow-hidden space-y-4 shadow-xl">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-bold text-stone-200 uppercase tracking-wider flex items-center space-x-2.5">
+                <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">2</span>
+                <span>{t('selectDefectCategory', 'Select Defect Category')}</span>
+              </label>
+              <span className="text-[11px] text-stone-500">{t('autoClassifiedHint', 'Auto-classified if unsure')}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2.5">
               {[
-                { id: 'pothole', name: 'Pothole & Road Hazard', dept: 'Roads & Works', icon: Construction, color: 'text-amber-700 bg-amber-50 border-amber-200' },
-                { id: 'garbage', name: 'Waste & Garbage Dump', dept: 'Sanitation', icon: Trash2, color: 'text-rose-700 bg-rose-50 border-rose-200' },
-              ].map(cat => {
-                const IconComponent = cat.icon;
+                { id: 'pothole', name: t('potholes', 'Pothole & Road'), dept: t('roadsAndWorks', 'Roads & Works'), emoji: '🚧' },
+                { id: 'garbage', name: t('wasteGarbage', 'Garbage Dump'), dept: t('sanitation', 'Sanitation'), emoji: '🗑️' },
+                { id: 'water_leak', name: t('waterLeaks', 'Water Pipe Leak'), dept: t('waterSupply', 'Water Supply'), emoji: '💧' },
+                { id: 'streetlight', name: t('streetlights', 'Broken Streetlight'), dept: t('electricalDept', 'Electrical Dept'), emoji: '💡' },
+              ].map((cat) => {
                 const isSelected = typeHint === cat.id;
-
                 return (
                   <button
                     key={cat.id}
                     type="button"
-                    onClick={() => setTypeHint(typeHint === cat.id ? '' : cat.id)}
-                    className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
-                      isSelected 
-                        ? 'bg-blue-50/70 border-blue-600 ring-1 ring-blue-600 shadow-2xs' 
-                        : 'bg-slate-50/60 border-slate-200 hover:bg-slate-100'
+                    onClick={() => setTypeHint(cat.id)}
+                    className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                      isSelected
+                        ? 'bg-amber-500/15 border-amber-500/50 shadow-md shadow-amber-500/10 ring-1 ring-amber-500/30'
+                        : 'bg-stone-950/40 border-stone-800/80 hover:bg-stone-900/60 text-stone-400'
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${cat.color}`}>
-                        <IconComponent className="w-4 h-4" />
-                      </div>
-                      <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-blue-600' : 'bg-slate-300'}`} />
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xl">{cat.emoji}</span>
+                      {isSelected && (
+                        <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                      )}
                     </div>
-                    <span className="text-xs font-bold text-slate-900">{cat.name}</span>
-                    <span className="text-[10px] text-slate-500 font-medium">{cat.dept}</span>
+                    <span className={`text-xs font-bold ${isSelected ? 'text-amber-400' : 'text-stone-200'}`}>
+                      {cat.name}
+                    </span>
+                    <span className="text-[10px] text-stone-500 mt-0.5 truncate">
+                      {cat.dept}
+                    </span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting || !selectedFile}
-            className="w-full civic-btn-primary py-3 text-sm justify-center disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>Executing Computer Vision Inference...</span>
-              </>
-            ) : (
-              <>
-                <Send className="w-4 h-4" />
-                <span>Submit & Dispatch Work Order</span>
-              </>
-            )}
-          </button>
+          {/* Card 3: Submit Action */}
+          <div className="p-6 rounded-3xl glass-card space-y-4 shadow-xl">
+            <button
+              type="submit"
+              disabled={isSubmitting || !selectedFile}
+              className="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-cyan-500 via-indigo-500 to-amber-500 hover:from-cyan-400 hover:via-indigo-400 hover:to-amber-400 shadow-xl shadow-cyan-500/25 flex items-center justify-center space-x-2.5 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>{t('runningAiTriage', 'Running AI Triage & Dispatch...')}</span>
+                </div>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  <span>{t('submitIncidentReport', 'Submit Incident Report')}</span>
+                </>
+              )}
+            </button>
+            <p className="text-[11px] text-center text-stone-500 leading-relaxed">
+              {t('submitNotice', 'Upon submission, our AI will cluster nearby reports within 50m to avoid duplicates, route to municipal engineers, and trigger verified email dispatches.')}
+            </p>
+          </div>
 
         </div>
 
-        {/* Right 6 Cols: Geospatial Mapping & Coordinates */}
-        <div className="lg:col-span-6 civic-panel p-6 bg-white space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center text-xs font-bold">3</span>
-              <span>Geospatial Pinpoint Location</span>
-            </h2>
-            <span className="text-[11px] font-mono font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
-              {pinLocation.lat.toFixed(4)}, {pinLocation.lng.toFixed(4)}
-            </span>
-          </div>
+        {/* Right Column: Prominent Large Interactive Map & Connected Location Inputs */}
+        <div className="lg:col-span-6 space-y-6 flex flex-col">
+          
+          <div className="p-6 sm:p-8 rounded-3xl glass-card relative overflow-hidden shadow-xl space-y-5">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="rounded-xl overflow-hidden border border-slate-200 shadow-2xs">
-            <MapView
-              center={[pinLocation.lat, pinLocation.lng]}
-              zoom={15}
-              height="380px"
-              allowPinDrop={true}
-              selectedLocation={pinLocation}
-              onLocationSelect={(loc) => setPinLocation(loc)}
-            />
-          </div>
-
-          <div className="space-y-3 pt-1">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Street Address / Landmark
+            {/* Header with GPS Status */}
+            <div className="flex flex-wrap items-center justify-between gap-2 relative z-10">
+              <label className="text-sm font-bold text-stone-200 uppercase tracking-wider flex items-center space-x-2.5">
+                <span className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs font-bold">3</span>
+                <span>{t('pinpointLocation', 'Pinpoint Exact Location')}</span>
               </label>
-              <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="e.g. Near City Center Metro Pillar 42, Sector 12"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-600"
+              <span className="text-[11px] text-amber-400 font-mono font-bold bg-amber-950/50 border border-amber-500/30 px-3 py-1 rounded-xl shadow-inner">
+                {pinLocation.lat.toFixed(5)}, {pinLocation.lng.toFixed(5)}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-stone-400 bg-stone-950/50 border border-stone-800 px-4 py-2.5 rounded-2xl relative z-10">
+              <span className="flex items-center gap-1.5 text-stone-300">
+                <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>{t('dragPinHint', 'Drag the pin or click on the map to position')}</span>
+              </span>
+              <span className="text-[10px] text-stone-500 hidden sm:inline">{t('realtimeAddressSync', 'Real-time address sync')}</span>
+            </div>
+
+            {/* Expansive, Prominent Map (480px Height) */}
+            <div className="rounded-2xl overflow-hidden border border-stone-700/80 shadow-2xl relative z-10">
+              <MapView
+                center={[pinLocation.lat, pinLocation.lng]}
+                zoom={15}
+                height="480px"
+                allowPinDrop={true}
+                selectedLocation={pinLocation}
+                onLocationSelect={(loc) => setPinLocation(loc)}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+            {/* Connected Location Inputs Directly Below the Map */}
+            <div className="space-y-4 pt-1 relative z-10">
               <div>
-                <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Latitude</label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  value={pinLocation.lat}
-                  onChange={(e) => setPinLocation({ ...pinLocation, lat: Number(e.target.value) })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-800"
-                />
+                <label className="block text-xs font-bold text-stone-400 mb-1.5 flex items-center justify-between">
+                  <span>{t('detectedLandmark', 'Detected Landmark & Street Address')}</span>
+                  <span className="text-[10px] text-amber-500 font-normal">{t('autoFilledFromPin', 'Auto-filled from pin')}</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="e.g. Near D-Mart, Sector 1, Greater Noida"
+                    className="w-full px-4 py-3.5 rounded-2xl bg-stone-950/70 border border-stone-700/80 text-stone-100 text-sm placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all shadow-inner"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Longitude</label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  value={pinLocation.lng}
-                  onChange={(e) => setPinLocation({ ...pinLocation, lng: Number(e.target.value) })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-800"
-                />
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">
+                    {t('latitude', 'Latitude')}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.000001"
+                    value={pinLocation.lat}
+                    onChange={(e) => setPinLocation({ ...pinLocation, lat: Number(e.target.value) })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950/70 border border-stone-800 text-stone-200 text-xs font-mono focus:outline-none focus:border-amber-500 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">
+                    {t('longitude', 'Longitude')}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.000001"
+                    value={pinLocation.lng}
+                    onChange={(e) => setPinLocation({ ...pinLocation, lng: Number(e.target.value) })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-stone-950/70 border border-stone-800 text-stone-200 text-xs font-mono focus:outline-none focus:border-amber-500 transition-all"
+                  />
+                </div>
               </div>
             </div>
+
           </div>
+
         </div>
 
       </form>
 
-      {/* Modals */}
+      {/* Camera Capture Modal */}
       {showWebcam && (
         <WebcamCapture
-          onCapture={(file) => {
-            handleFileSelect(file);
-            setShowWebcam(false);
-          }}
+          onCapture={handleCameraCapture}
           onClose={() => setShowWebcam(false)}
         />
       )}
 
+      {/* Detection Detail Inspector Modal */}
       {showDetailModal && resultDetection && (
         <DetectionModal
           detection={resultDetection}
@@ -563,3 +822,4 @@ export default function CitizenReportPage() {
     </div>
   );
 }
+

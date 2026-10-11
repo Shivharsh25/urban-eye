@@ -4,13 +4,15 @@ import {
   CheckCircle2, 
   Clock, 
   Layers, 
-  AlertTriangle,
+  TrendingUp, 
+  Zap, 
   Droplets, 
   Trash2, 
-  Zap,
+  Flame,
   ArrowUpRight,
   ShieldCheck,
-  Activity
+  Activity,
+  Cpu
 } from 'lucide-react';
 
 export default function StatsOverview({ stats }) {
@@ -28,97 +30,102 @@ export default function StatsOverview({ stats }) {
     ? Math.round(((statusCounts.resolved || 0) / totalReports) * 100) 
     : 0;
 
+  const clusterSavings = totalIncidents > totalReports 
+    ? Math.round(((totalIncidents - totalReports) / totalIncidents) * 100) 
+    : 18;
+
   const kpis = [
     {
-      title: 'Active Issues',
+      title: 'Total Active Issues',
       value: totalReports,
-      subtitle: `${totalIncidents} citizen reports logged`,
+      subtitle: `${totalIncidents} citizen submissions logged`,
       badge: 'LIVE TELEMETRY',
       icon: Layers,
-      textColor: 'text-blue-700',
-      badgeBg: 'bg-blue-50 text-blue-700 border-blue-200/80',
-      iconBg: 'bg-blue-50 border-blue-200/80 text-blue-600',
-      barColor: 'bg-blue-600',
-      progress: 100
+      color: 'text-cyan-400',
+      glow: 'bg-cyan-500/10 group-hover:bg-cyan-500/20',
+      border: 'border-cyan-500/30',
+      progress: 100,
+      progressColor: 'from-cyan-500 to-sky-400'
     },
     {
       title: 'Critical Severity',
       value: bySeverity.high || 0,
-      subtitle: 'Immediate dispatch required',
-      badge: `${totalReports > 0 ? Math.round(((bySeverity.high || 0) / totalReports) * 100) : 0}% OF TOTAL`,
-      icon: AlertTriangle,
-      textColor: 'text-rose-700',
-      badgeBg: 'bg-rose-50 text-rose-700 border-rose-200/80',
-      iconBg: 'bg-rose-50 border-rose-200/80 text-rose-600',
-      barColor: 'bg-rose-600',
-      progress: totalReports > 0 ? ((bySeverity.high || 0) / totalReports) * 100 : 0
+      subtitle: 'Immediate municipal dispatch required',
+      badge: `${totalReports > 0 ? Math.round(((bySeverity.high || 0) / totalReports) * 100) : 0}% of total`,
+      icon: Flame,
+      color: 'text-rose-400',
+      glow: 'bg-rose-500/10 group-hover:bg-rose-500/20',
+      border: 'border-rose-500/30',
+      progress: totalReports > 0 ? ((bySeverity.high || 0) / totalReports) * 100 : 0,
+      progressColor: 'from-rose-500 to-red-400'
     },
     {
       title: 'In Active Triage',
       value: statusCounts.assigned || 0,
-      subtitle: 'Field contractors en-route',
-      badge: `${totalReports > 0 ? Math.round(((statusCounts.assigned || 0) / totalReports) * 100) : 0}% ASSIGNED`,
+      subtitle: 'Field contractors assigned & en-route',
+      badge: `${totalReports > 0 ? Math.round(((statusCounts.assigned || 0) / totalReports) * 100) : 0}% active`,
       icon: Clock,
-      textColor: 'text-amber-700',
-      badgeBg: 'bg-amber-50 text-amber-700 border-amber-200/80',
-      iconBg: 'bg-amber-50 border-amber-200/80 text-amber-600',
-      barColor: 'bg-amber-500',
-      progress: totalReports > 0 ? ((statusCounts.assigned || 0) / totalReports) * 100 : 0
+      color: 'text-amber-400',
+      glow: 'bg-amber-500/10 group-hover:bg-amber-500/20',
+      border: 'border-amber-500/30',
+      progress: totalReports > 0 ? ((statusCounts.assigned || 0) / totalReports) * 100 : 0,
+      progressColor: 'from-amber-500 to-yellow-400'
     },
     {
       title: 'Resolved Defects',
       value: statusCounts.resolved || 0,
-      subtitle: 'Geo-verified by city crews',
-      badge: `${resolutionRate}% RATE`,
+      subtitle: 'Citizens notified & geo-verified',
+      badge: `${resolutionRate}% completed`,
       icon: CheckCircle2,
-      textColor: 'text-emerald-700',
-      badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
-      iconBg: 'bg-emerald-50 border-emerald-200/80 text-emerald-600',
-      barColor: 'bg-emerald-600',
-      progress: resolutionRate
+      color: 'text-emerald-400',
+      glow: 'bg-emerald-500/10 group-hover:bg-emerald-500/20',
+      border: 'border-emerald-500/30',
+      progress: resolutionRate,
+      progressColor: 'from-emerald-500 to-teal-400'
     }
   ];
 
   return (
-    <div className="space-y-4">
-      {/* Top 4 Precision Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="space-y-5">
+      {/* Top 4 Premium Metric KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {kpis.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div 
               key={index} 
-              className="bento-card p-5 relative overflow-hidden group flex flex-col justify-between"
+              className="relative p-5 sm:p-6 rounded-3xl glass-card border border-slate-800/80 overflow-hidden group transition-all duration-300 hover:border-slate-700 shadow-xl bg-slate-900/40"
             >
-              <div>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{stat.title}</span>
-                    <div className="mt-1.5">
-                      <h4 className="text-3xl font-extrabold text-slate-900 font-display tracking-tight tabular-nums">
-                        {stat.value}
-                      </h4>
-                    </div>
+              {/* Radial Blur Glow */}
+              <div className={`absolute -right-6 -top-6 w-36 h-36 ${stat.glow} rounded-full blur-3xl transition-all duration-500 pointer-events-none`}></div>
+              
+              <div className="relative flex items-start justify-between z-10">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{stat.title}</span>
                   </div>
-                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform ${stat.iconBg}`}>
-                    <Icon className="w-5 h-5" />
+                  <div className="mt-3 flex items-baseline space-x-2">
+                    <h4 className={`text-4xl font-black ${stat.color} tracking-tight drop-shadow-md`}>
+                      {stat.value}
+                    </h4>
                   </div>
+                </div>
+                <div className={`p-3 rounded-2xl bg-slate-900/90 border ${stat.border} shadow-lg shadow-black/40`}>
+                  <Icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
               </div>
 
-              {/* Progress & Badge */}
-              <div className="mt-4 pt-3 border-t border-slate-100">
-                <div className="flex items-center justify-between text-[11px] mb-2 font-medium">
-                  <span className="text-slate-500 truncate max-w-[170px]">{stat.subtitle}</span>
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${stat.badgeBg}`}>
-                    {stat.badge}
-                  </span>
+              {/* Progress Line Indicator */}
+              <div className="mt-4 pt-3 border-t border-slate-800/60 relative z-10">
+                <div className="flex items-center justify-between text-[11px] mb-1.5">
+                  <span className="text-slate-400 truncate max-w-[180px]">{stat.subtitle}</span>
+                  <span className={`font-mono font-bold ${stat.color}`}>{stat.badge}</span>
                 </div>
-                <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
                   <div 
-                    className={`${stat.barColor} h-full rounded-full transition-all duration-500`}
-                    style={{ width: `${Math.min(Math.max(stat.progress, 6), 100)}%` }}
-                  />
+                    className={`bg-gradient-to-r ${stat.progressColor} h-full rounded-full transition-all duration-1000`}
+                    style={{ width: `${Math.min(Math.max(stat.progress, 5), 100)}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -126,38 +133,70 @@ export default function StatsOverview({ stats }) {
         })}
       </div>
 
-      {/* Secondary Category Metrics Bar */}
-      <div className="grid grid-cols-2 gap-3.5">
+      {/* Secondary Category Metrics & Municipal Health Chips */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         
         {/* Potholes */}
-        <div className="bento-card p-3.5 sm:p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200/80 text-blue-600 flex items-center justify-center shrink-0">
-              <AlertCircle className="w-4.5 h-4.5" />
+        <div className="p-4 rounded-2xl glass-card border border-slate-800/80 bg-slate-900/30 flex items-center justify-between group hover:border-sky-500/40 transition-all">
+          <div className="flex items-center space-x-3.5">
+            <div className="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-400 group-hover:scale-105 transition-transform">
+              <AlertCircle className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Road Hazards</p>
-              <p className="text-lg font-extrabold text-slate-900 font-display tabular-nums">{byType.pothole || 0}</p>
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Road Hazards</p>
+              <p className="text-xl font-black text-white">{byType.pothole || 0}</p>
             </div>
           </div>
-          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200/80">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 border border-sky-500/20">
             Roads
           </span>
         </div>
 
         {/* Garbage */}
-        <div className="bento-card p-3.5 sm:p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-600 flex items-center justify-center shrink-0">
-              <Trash2 className="w-4.5 h-4.5" />
+        <div className="p-4 rounded-2xl glass-card border border-slate-800/80 bg-slate-900/30 flex items-center justify-between group hover:border-emerald-500/40 transition-all">
+          <div className="flex items-center space-x-3.5">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 group-hover:scale-105 transition-transform">
+              <Trash2 className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Sanitation</p>
-              <p className="text-lg font-extrabold text-slate-900 font-display tabular-nums">{byType.garbage || 0}</p>
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Sanitation</p>
+              <p className="text-xl font-black text-white">{byType.garbage || 0}</p>
             </div>
           </div>
-          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             Waste
+          </span>
+        </div>
+
+        {/* Water Leaks */}
+        <div className="p-4 rounded-2xl glass-card border border-slate-800/80 bg-slate-900/30 flex items-center justify-between group hover:border-blue-500/40 transition-all">
+          <div className="flex items-center space-x-3.5">
+            <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 group-hover:scale-105 transition-transform">
+              <Droplets className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Water / Leaks</p>
+              <p className="text-xl font-black text-white">{byType.water_leak || 0}</p>
+            </div>
+          </div>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            Utilities
+          </span>
+        </div>
+
+        {/* Streetlights */}
+        <div className="p-4 rounded-2xl glass-card border border-slate-800/80 bg-slate-900/30 flex items-center justify-between group hover:border-amber-500/40 transition-all">
+          <div className="flex items-center space-x-3.5">
+            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 group-hover:scale-105 transition-transform">
+              <Zap className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Lighting</p>
+              <p className="text-xl font-black text-white">{byType.streetlight || 0}</p>
+            </div>
+          </div>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            Electrical
           </span>
         </div>
 

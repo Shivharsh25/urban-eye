@@ -28,7 +28,7 @@ export default function SignOutModal({ isOpen, onClose, onConfirm }) {
 
   return createPortal(
     <div 
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
       style={{ minHeight: '100vh', width: '100vw' }}
       onClick={onClose}
       role="dialog"
@@ -36,14 +36,18 @@ export default function SignOutModal({ isOpen, onClose, onConfirm }) {
       aria-labelledby="signout-modal-title"
     >
       <div 
-        className="relative w-full max-w-md m-auto rounded-2xl bg-white border border-slate-200 p-6 sm:p-7 shadow-xl overflow-hidden text-slate-900 transition-all transform scale-100"
+        className="relative w-full max-w-md m-auto rounded-3xl bg-slate-900/98 border border-slate-700/80 p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden text-slate-100 transition-all transform scale-100"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Ambient Danger Glow */}
+        <div className="absolute -top-20 -right-20 w-48 h-48 bg-rose-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors z-10"
+          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors z-10"
           title="Close"
         >
           <X className="w-4 h-4" />
@@ -51,30 +55,34 @@ export default function SignOutModal({ isOpen, onClose, onConfirm }) {
 
         {/* Icon & Heading */}
         <div className="flex flex-col items-center text-center relative z-10">
-          <div className="mb-4">
-            <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
-              <LogOut className="w-5 h-5 stroke-[2.2]" />
+          <div className="relative mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center shadow-lg shadow-rose-500/10 text-rose-400">
+              <LogOut className="w-6 h-6 stroke-[2.2]" />
             </div>
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+            </span>
           </div>
 
           <h3 
             id="signout-modal-title"
-            className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight"
+            className="text-lg sm:text-xl font-black text-white tracking-tight"
           >
             {t('confirmSignOutTitle', 'Do you really want to sign out?')}
           </h3>
 
-          <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed max-w-sm">
+          <p className="text-xs sm:text-sm text-slate-300/90 mt-2 leading-relaxed max-w-sm">
             {t('confirmSignOutDesc', 'Are you sure you want to end your current session? You will need to sign in again to access your dashboard and reports.')}
           </p>
 
           {/* Active Account Pill */}
           {user && (
-            <div className="mt-4 px-3.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center space-x-2 text-xs text-slate-700">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <div className="mt-4 px-3.5 py-1.5 rounded-xl bg-slate-950/70 border border-slate-800/80 flex items-center space-x-2 text-xs text-slate-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
               <span className="font-semibold truncate max-w-[200px]">{user.name || user.email}</span>
               {user.role && (
-                <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-bold">
                   {user.role}
                 </span>
               )}
@@ -87,7 +95,7 @@ export default function SignOutModal({ isOpen, onClose, onConfirm }) {
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-all text-center shadow-xs"
+            className="w-full sm:flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-300 bg-slate-800/90 hover:bg-slate-700/90 hover:text-white border border-slate-700/70 transition-all active:scale-95 text-center shadow-md"
           >
             {t('noCancel', 'No, Keep Me In')}
           </button>
@@ -95,7 +103,7 @@ export default function SignOutModal({ isOpen, onClose, onConfirm }) {
           <button
             type="button"
             onClick={onConfirm}
-            className="w-full sm:flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 shadow-xs transition-all flex items-center justify-center space-x-2"
+            className="w-full sm:flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-rose-600 via-rose-500 to-red-600 hover:from-rose-500 hover:to-red-500 shadow-xl shadow-rose-600/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center space-x-2"
           >
             <LogOut className="w-4 h-4" />
             <span>{t('yesSignOut', 'Yes, Sign Out')}</span>

@@ -234,7 +234,7 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
           </div>
 
           {/* Green Checkmark Badge at Bottom-Right */}
-          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#16a34a] border-2 border-white flex items-center justify-center shadow-sm">
+          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#16a34a] border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-sm">
             <Check className="w-2.5 h-2.5 text-white stroke-[3.5]" />
           </div>
         </button>
@@ -349,31 +349,34 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
       )}
 
       {/* ========================================================================= */}
-      {/* 1. GET STARTED CIVIC TOUR MODAL */}
+      {/* 1. GET STARTED TOUR MODAL */}
       {/* ========================================================================= */}
       {showTourModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
           style={{ minHeight: '100vh', width: '100vw' }}
           onClick={() => setShowTourModal(false)}
           role="dialog"
           aria-modal="true"
         >
           <div 
-            className="relative w-full max-w-lg m-auto rounded-2xl bg-white border border-slate-200 p-6 sm:p-8 text-slate-900 shadow-xl overflow-hidden"
+            className="relative w-full max-w-lg m-auto rounded-3xl bg-slate-900 border border-slate-700/80 p-6 sm:p-8 text-white shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Ambient Background */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
             {/* Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center space-x-2">
-                <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
-                <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
                   Urban EYE Tour • Step {tourStep + 1} of {tourSteps.length}
                 </span>
               </div>
               <button
                 onClick={() => setShowTourModal(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
                 title="Close Tour"
               >
                 <X className="w-5 h-5" />
@@ -383,29 +386,29 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
             {/* Current Step Content */}
             <div className="py-5 sm:py-6">
               {React.createElement(tourSteps[tourStep].icon, {
-                className: "w-12 h-12 text-blue-600 mb-3.5 p-2.5 rounded-2xl bg-blue-50 border border-blue-200 shadow-xs"
+                className: "w-12 h-12 text-cyan-400 mb-3.5 p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 shadow-md"
               })}
-              <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mb-1">
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-1">
                 {tourSteps[tourStep].title}
               </h3>
-              <p className="text-xs text-blue-600 font-semibold mb-3">
+              <p className="text-xs font-mono text-cyan-300 font-semibold mb-3">
                 {tourSteps[tourStep].subtitle}
               </p>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <p className="text-sm text-slate-300 leading-relaxed">
                 {tourSteps[tourStep].desc}
               </p>
 
               {/* Render Pro Tips list if available on this step */}
               {tourSteps[tourStep].tips && (
-                <div className="mt-4 space-y-2.5 pt-3 border-t border-slate-100">
+                <div className="mt-4 space-y-2.5 pt-3 border-t border-slate-800">
                   {tourSteps[tourStep].tips.map((tip) => (
-                    <div key={tip.num} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
+                    <div key={tip.num} className="flex items-start gap-3 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 shadow-inner">
                       <span className={`w-5 h-5 rounded-md flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 border ${tip.color}`}>
                         {tip.num}
                       </span>
                       <div className="text-xs leading-relaxed">
-                        <strong className="text-slate-900 mr-1">{tip.title}</strong>
-                        <span className="text-slate-600">{tip.desc}</span>
+                        <strong className="text-white mr-1">{tip.title}</strong>
+                        <span className="text-slate-300">{tip.desc}</span>
                       </div>
                     </div>
                   ))}
@@ -420,7 +423,7 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
                   key={idx}
                   onClick={() => setTourStep(idx)}
                   className={`h-2 rounded-full transition-all ${
-                    idx === tourStep ? 'w-8 bg-blue-600' : 'w-2 bg-slate-200 hover:bg-slate-300'
+                    idx === tourStep ? 'w-8 bg-cyan-400' : 'w-2 bg-slate-700 hover:bg-slate-600'
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
@@ -428,13 +431,13 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
             </div>
 
             {/* Footer Buttons */}
-            <div className="flex items-center justify-between pt-5 border-t border-slate-100 mt-4">
+            <div className="flex items-center justify-between pt-6 border-t border-slate-800 mt-4">
               <button
                 type="button"
                 disabled={tourStep === 0}
                 onClick={() => setTourStep(prev => prev - 1)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
-                  tourStep === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                  tourStep === 0 ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                 }`}
               >
                 Previous
@@ -444,7 +447,7 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
                 <button
                   type="button"
                   onClick={() => setTourStep(prev => prev + 1)}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-1.5 shadow-xs transition-all"
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center space-x-1.5 shadow-lg shadow-cyan-500/20 transition-all hover:scale-105"
                 >
                   <span>Next Step</span>
                   <ChevronRight className="w-4 h-4" />
@@ -453,7 +456,7 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
                 <button
                   type="button"
                   onClick={() => setShowTourModal(false)}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center space-x-1.5 shadow-xs transition-all"
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center space-x-1.5 shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
                 >
                   <span>Finish Tour</span>
                   <Check className="w-4 h-4" />
@@ -470,71 +473,71 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
       {/* ========================================================================= */}
       {showPrivacyModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
           style={{ minHeight: '100vh', width: '100vw' }}
           onClick={() => setShowPrivacyModal(false)}
           role="dialog"
           aria-modal="true"
         >
           <div 
-            className="relative w-full max-w-lg m-auto rounded-2xl bg-white border border-slate-200 p-6 sm:p-8 text-slate-900 shadow-xl max-h-[85vh] flex flex-col"
+            className="relative w-full max-w-lg m-auto rounded-3xl bg-slate-900 border border-slate-700/80 p-6 sm:p-8 text-white shadow-2xl max-h-[85vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 shrink-0">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800 shrink-0">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                   <Lock className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Urban EYE Privacy Policy</h3>
-                  <span className="text-[10px] text-slate-500 font-medium">Civic Data Protection Charter</span>
+                  <h3 className="text-base font-bold text-white">Urban EYE Privacy Policy</h3>
+                  <span className="text-[10px] text-slate-400 font-mono">Civic Data Protection Charter</span>
                 </div>
               </div>
               <button
                 onClick={() => setShowPrivacyModal(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="py-5 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-600 custom-scrollbar pr-1">
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <h4 className="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-blue-600" />
+            <div className="py-5 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-300 custom-scrollbar pr-1">
+              <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
+                <h4 className="font-bold text-white mb-1 flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-cyan-400" />
                   <span>Geospatial & GPS Coordinates</span>
                 </h4>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-400">
                   Location data is recorded strictly to verify the municipal coordinates of the reported infrastructure issue. Personal device locations outside active reports are never stored or tracked.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <h4 className="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
-                  <Camera className="w-4 h-4 text-emerald-600" />
+              <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
+                <h4 className="font-bold text-white mb-1 flex items-center gap-1.5">
+                  <Camera className="w-4 h-4 text-emerald-400" />
                   <span>Image Sanitization & Facial Privacy</span>
                 </h4>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-400">
                   Uploaded road and civic issue photos pass through automated privacy filters. License plates and civilian faces detected in background frames are obscured before publishing to public city feeds.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <h4 className="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
-                  <Shield className="w-4 h-4 text-amber-600" />
+              <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
+                <h4 className="font-bold text-white mb-1 flex items-center gap-1.5">
+                  <Shield className="w-4 h-4 text-amber-400" />
                   <span>Anonymous Citizen Reporting</span>
                 </h4>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-400">
                   Citizens may flag any report as anonymous. In such cases, your name, telephone, and email remain hidden from public view and are accessible only to authorized municipal ward officers for status confirmation.
                 </p>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 shrink-0 flex justify-end">
+            <div className="pt-4 border-t border-slate-800 shrink-0 flex justify-end">
               <button
                 type="button"
                 onClick={() => setShowPrivacyModal(false)}
-                className="px-5 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white transition-colors"
               >
                 Understood & Close
               </button>
@@ -549,29 +552,29 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
       {/* ========================================================================= */}
       {showA11yModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
           style={{ minHeight: '100vh', width: '100vw' }}
           onClick={() => setShowA11yModal(false)}
           role="dialog"
           aria-modal="true"
         >
           <div 
-            className="relative w-full max-w-md m-auto rounded-2xl bg-white border border-slate-200 p-6 text-slate-900 shadow-xl"
+            className="relative w-full max-w-md m-auto rounded-3xl bg-slate-900 border border-slate-700/80 p-6 text-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
                   <Sliders className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Accessibility Options</h3>
-                  <span className="text-[10px] text-slate-500 font-medium">Customize View & Ergonomics</span>
+                  <h3 className="text-base font-bold text-white">Accessibility Options</h3>
+                  <span className="text-[10px] text-slate-400 font-mono">Customize View & Ergonomics</span>
                 </div>
               </div>
               <button
                 onClick={() => setShowA11yModal(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -579,23 +582,23 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
 
             <div className="py-5 space-y-4">
               {/* High Contrast Toggle */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
                 <div>
-                  <div className="text-xs sm:text-sm font-semibold text-slate-900">High Contrast Mode</div>
-                  <div className="text-[11px] text-slate-500">Increases text and border legibility</div>
+                  <div className="text-xs sm:text-sm font-bold text-white">High Contrast Mode</div>
+                  <div className="text-[11px] text-slate-400">Increases text and border legibility</div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setHighContrast(prev => !prev)}
-                  className={`w-12 h-6 rounded-full transition-colors relative ${highContrast ? 'bg-blue-600' : 'bg-slate-300'}`}
+                  className={`w-12 h-6 rounded-full transition-colors relative ${highContrast ? 'bg-cyan-500' : 'bg-slate-800'}`}
                 >
                   <span className={`block w-4 h-4 rounded-full bg-white transition-transform ${highContrast ? 'translate-x-7' : 'translate-x-1'}`} />
                 </button>
               </div>
 
               {/* Text Size Selector */}
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="text-xs sm:text-sm font-semibold text-slate-900 mb-2">Display Font Scaling</div>
+              <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
+                <div className="text-xs sm:text-sm font-bold text-white mb-2">Display Font Scaling</div>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { key: 'normal', label: 'Default' },
@@ -606,10 +609,10 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
                       key={item.key}
                       type="button"
                       onClick={() => setFontSize(item.key)}
-                      className={`py-2 px-2 text-xs font-semibold rounded-xl border transition-all ${
+                      className={`py-2 px-2 text-xs font-bold rounded-xl border transition-all ${
                         fontSize === item.key
-                          ? 'bg-blue-50 text-blue-700 border-blue-400'
-                          : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400'
+                          : 'bg-slate-900 text-slate-400 border-slate-800 hover:bg-slate-800'
                       }`}
                     >
                       {item.label}
@@ -619,26 +622,26 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
               </div>
 
               {/* Reduced Motion Toggle */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
                 <div>
-                  <div className="text-xs sm:text-sm font-semibold text-slate-900">Reduced Motion</div>
-                  <div className="text-[11px] text-slate-500">Minimizes animations and transitions</div>
+                  <div className="text-xs sm:text-sm font-bold text-white">Reduced Motion</div>
+                  <div className="text-[11px] text-slate-400">Minimizes pulsing and parallax effects</div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setReducedMotion(prev => !prev)}
-                  className={`w-12 h-6 rounded-full transition-colors relative ${reducedMotion ? 'bg-blue-600' : 'bg-slate-300'}`}
+                  className={`w-12 h-6 rounded-full transition-colors relative ${reducedMotion ? 'bg-cyan-500' : 'bg-slate-800'}`}
                 >
                   <span className={`block w-4 h-4 rounded-full bg-white transition-transform ${reducedMotion ? 'translate-x-7' : 'translate-x-1'}`} />
                 </button>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 flex justify-end">
+            <div className="pt-4 border-t border-slate-800 flex justify-end">
               <button
                 type="button"
                 onClick={() => setShowA11yModal(false)}
-                className="px-5 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition-colors"
               >
                 Apply & Close
               </button>

@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { Settings, Bell, Shield, Smartphone, Mail, Globe, Trash2, CheckCircle, Palette } from 'lucide-react';
+import { Settings, Bell, Shield, Smartphone, Mail, Moon, Globe, Trash2, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { useTheme } from '../context/ThemeContext';
 
 export default function CitizenSettingsPage() {
   const { lang, setLang, t } = useLanguage();
-  const { theme, setTheme } = useTheme();
 
   const [notifications, setNotifications] = useState({
     push: true,
@@ -26,19 +24,26 @@ export default function CitizenSettingsPage() {
   };
 
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-10 relative font-sans">
-      <div className="max-w-4xl mx-auto relative z-10 space-y-6">
+    <div className="min-h-full p-4 sm:p-6 lg:p-10 relative overflow-hidden">
+      
+      {/* Background aesthetics */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-indigo-900/10 rounded-full blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03]"></div>
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-10">
         
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0">
-                <Settings className="w-5 h-5 text-blue-600" />
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center space-x-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
+                <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-slate-300" />
               </div>
               <span>{t('preferences', 'Preferences')}</span>
             </h1>
-            <p className="text-slate-500 mt-1 text-xs sm:text-sm">
+            <p className="text-slate-400 mt-2 text-xs sm:text-sm">
               {t('settingsSubtitle', 'Manage your Urban EYE account settings and notifications.')}
             </p>
           </div>
@@ -46,11 +51,11 @@ export default function CitizenSettingsPage() {
           <button 
             type="button"
             onClick={handleSave}
-            className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-all shadow-xs w-full sm:w-auto shrink-0 cursor-pointer"
+            className="flex items-center justify-center space-x-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] w-full sm:w-auto shrink-0"
           >
             {saved ? (
               <>
-                <CheckCircle className="w-4 h-4 text-emerald-200" />
+                <CheckCircle className="w-4 h-4 text-emerald-300" />
                 <span>{t('saved', 'Saved!')}</span>
               </>
             ) : (
@@ -62,13 +67,13 @@ export default function CitizenSettingsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Notifications Card */}
-          <div className="bento-card p-6 sm:p-7 shadow-xs">
-            <h2 className="text-base font-bold text-slate-900 flex items-center space-x-2 mb-6">
-              <Bell className="w-5 h-5 text-blue-600" />
+          <div className="glass-panel p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80">
+            <h2 className="text-lg font-bold text-white flex items-center space-x-2 mb-6">
+              <Bell className="w-5 h-5 text-cyan-400" />
               <span>{t('notificationsTitle', 'Notifications')}</span>
             </h2>
             
-            <div className="space-y-5">
+            <div className="space-y-6">
               <ToggleRow 
                 icon={Smartphone} 
                 title={t('pushNotifications', 'Push Notifications')} 
@@ -87,13 +92,13 @@ export default function CitizenSettingsPage() {
           </div>
 
           {/* Privacy Card */}
-          <div className="bento-card p-6 sm:p-7 shadow-xs">
-            <h2 className="text-base font-bold text-slate-900 flex items-center space-x-2 mb-6">
-              <Shield className="w-5 h-5 text-emerald-600" />
+          <div className="glass-panel p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80">
+            <h2 className="text-lg font-bold text-white flex items-center space-x-2 mb-6">
+              <Shield className="w-5 h-5 text-emerald-400" />
               <span>{t('privacyAndData', 'Privacy & Data')}</span>
             </h2>
             
-            <div className="space-y-5">
+            <div className="space-y-6">
               <ToggleRow 
                 title={t('anonymousReporting', 'Anonymous Reporting')} 
                 desc={t('anonymousReportingDesc', 'Hide your name from public community reports.')}
@@ -110,67 +115,49 @@ export default function CitizenSettingsPage() {
           </div>
 
           {/* Preferences Card */}
-          <div className="bento-card p-6 sm:p-7 shadow-xs">
-            <h2 className="text-base font-bold text-slate-900 flex items-center space-x-2 mb-6">
-              <Palette className="w-5 h-5 text-blue-600" />
-              <span>{t('appPreferences', 'App Appearance & Language')}</span>
+          <div className="glass-panel p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80">
+            <h2 className="text-lg font-bold text-white flex items-center space-x-2 mb-6">
+              <Moon className="w-5 h-5 text-indigo-400" />
+              <span>{t('appPreferences', 'App Preferences')}</span>
             </h2>
             
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-2">{t('theme', 'Visual Theme')}</label>
-                <select 
-                  value={theme}
-                  onChange={(e) => setTheme(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-800 font-semibold focus:outline-none focus:border-blue-500 cursor-pointer"
-                >
-                  <option value="white">Pure White (Clean Municipal Canvas)</option>
-                  <option value="slate">Civic Slate (Bento Slate Framing)</option>
+                <label className="text-sm font-bold text-slate-300 block mb-2">{t('theme', 'Theme')}</label>
+                <select className="w-full bg-black/40 border border-slate-700 rounded-xl px-4 py-3 text-slate-300 focus:outline-none focus:border-cyan-500">
+                  <option>{t('systemDefaultDark', 'System Default (Dark)')}</option>
+                  <option>{t('highContrast', 'High Contrast')}</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-2 mt-4 flex items-center space-x-2">
-                  <Globe className="w-4 h-4 text-blue-600 inline" />
+                <label className="text-sm font-bold text-slate-300 block mb-2 mt-4 flex items-center space-x-2">
+                  <Globe className="w-4 h-4 text-cyan-400 inline" />
                   <span>{t('language', 'Language')}</span>
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setLang('en')}
-                    className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                      lang === 'en'
-                        ? 'bg-blue-50 text-blue-700 border-blue-300 shadow-xs'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    English
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLang('hi')}
-                    className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                      lang === 'hi'
-                        ? 'bg-blue-50 text-blue-700 border-blue-300 shadow-xs'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    हिन्दी (Hindi)
-                  </button>
-                </div>
+                <select 
+                  value={lang} 
+                  onChange={(e) => setLang(e.target.value)}
+                  className="w-full bg-black/40 border border-cyan-500/40 rounded-xl px-4 py-3 text-cyan-300 font-semibold focus:outline-none focus:border-cyan-400"
+                >
+                  <option value="en" className="bg-slate-900 text-white">English (US)</option>
+                  <option value="hi" className="bg-slate-900 text-white">हिन्दी (Hindi)</option>
+                  <option value="mr" className="bg-slate-900 text-white">मराठी (Marathi)</option>
+                  <option value="ta" className="bg-slate-900 text-white">தமிழ் (Tamil)</option>
+                </select>
               </div>
             </div>
           </div>
 
           {/* Danger Zone */}
-          <div className="bento-card p-6 sm:p-7 border border-rose-200 shadow-xs">
-            <h2 className="text-base font-bold text-rose-600 flex items-center space-x-2 mb-3">
+          <div className="glass-panel p-8 rounded-3xl bg-rose-950/20 border border-rose-900/30">
+            <h2 className="text-lg font-bold text-rose-400 flex items-center space-x-2 mb-4">
               <Trash2 className="w-5 h-5" />
               <span>{t('dangerZone', 'Danger Zone')}</span>
             </h2>
-            <p className="text-xs text-slate-500 mb-5 leading-relaxed">
+            <p className="text-sm text-slate-400 mb-6">
               {t('deleteAccountWarning', 'Permanently delete your account and all associated report history. This action cannot be undone.')}
             </p>
-            <button className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-semibold py-2.5 px-5 text-xs rounded-xl transition-all w-full sm:w-auto shadow-xs cursor-pointer">
+            <button className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold py-3 px-6 rounded-xl transition-all w-full sm:w-auto">
               {t('deleteAccount', 'Delete Account')}
             </button>
           </div>
@@ -186,13 +173,13 @@ function ToggleRow({ icon: Icon, title, desc, checked, onChange }) {
   return (
     <div className="flex items-start justify-between group cursor-pointer" onClick={onChange}>
       <div className="flex items-start space-x-3">
-        {Icon && <Icon className="w-5 h-5 text-slate-400 mt-0.5 group-hover:text-blue-600 transition-colors" />}
+        {Icon && <Icon className="w-5 h-5 text-slate-500 mt-0.5 group-hover:text-slate-300 transition-colors" />}
         <div>
-          <h3 className="text-xs sm:text-sm font-semibold text-slate-800">{title}</h3>
-          <p className="text-[11px] text-slate-500 mt-0.5">{desc}</p>
+          <h3 className="text-sm font-bold text-slate-200">{title}</h3>
+          <p className="text-xs text-slate-500 mt-1">{desc}</p>
         </div>
       </div>
-      <div className={`w-10 h-5 rounded-full flex items-center transition-colors px-0.5 shrink-0 ${checked ? 'bg-blue-600' : 'bg-slate-200'}`}>
+      <div className={`w-11 h-6 rounded-full flex items-center transition-colors px-1 ${checked ? 'bg-cyan-500' : 'bg-slate-700'}`}>
         <div className={`w-4 h-4 bg-white rounded-full transition-transform ${checked ? 'translate-x-5' : 'translate-x-0'}`}></div>
       </div>
     </div>

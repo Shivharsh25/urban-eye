@@ -7,52 +7,43 @@ import { useLanguage } from '../context/LanguageContext';
 
 export default function CitizenLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { lang, setLang } = useLanguage();
+  const { lang, setLang, supportedLanguages } = useLanguage();
+
+  const handleNextLang = () => {
+    const currentIndex = supportedLanguages.findIndex(l => l.code === lang);
+    const nextIndex = (currentIndex + 1) % supportedLanguages.length;
+    setLang(supportedLanguages[nextIndex].code);
+  };
 
   return (
-    <div className="h-screen h-[100dvh] bg-white app-shell-bg text-slate-800 flex flex-col lg:flex-row font-sans selection:bg-blue-600 selection:text-white relative overflow-hidden transition-colors duration-150">
+    <div className="h-screen h-[100dvh] bg-[#090d16] text-slate-100 flex flex-col lg:flex-row font-sans selection:bg-cyan-500 selection:text-white relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-5 pointer-events-none z-0"></div>
+      <div className="absolute top-0 right-0 w-[40%] h-[50%] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+      
       {/* Mobile Header with tap avatar dropdown */}
-      <header className="lg:hidden shrink-0 z-30 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between relative bg-white shadow-sm">
+      <header className="lg:hidden shrink-0 z-30 border-b border-slate-800/80 px-4 py-2.5 flex items-center justify-between relative bg-[#090d16]/95 backdrop-blur-md">
          <div className="flex items-center space-x-2">
             <button 
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-              className="text-slate-600 p-2 rounded-xl hover:bg-slate-100 active:scale-95 transition-all mr-0.5"
+              className="text-slate-300 p-1.5 rounded-lg hover:bg-slate-800 transition-colors mr-1"
               aria-label="Toggle Navigation Menu"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5 text-rose-500" /> : <Menu className="w-5 h-5" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-slate-900 text-base tracking-tight">URBAN</span>
-              <span className="font-bold text-xs px-1.5 py-0.5 rounded-md bg-blue-600 text-white tracking-wider">EYE</span>
-            </div>
+            <span className="font-bold text-white text-base tracking-tight">URBAN <span className="text-cyan-400">EYE</span></span>
          </div>
          <div className="flex items-center space-x-2">
-           {/* Side-by-Side Clean Language Pill */}
-           <div className="flex items-center p-0.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold shadow-inner">
-             <button
-               type="button"
-               onClick={() => setLang('en')}
-               className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all ${
-                 lang === 'en'
-                   ? 'bg-blue-600 text-white shadow-sm'
-                   : 'text-slate-600 hover:text-slate-900'
-               }`}
-             >
-               EN
-             </button>
-             <button
-               type="button"
-               onClick={() => setLang('hi')}
-               className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all ${
-                 lang === 'hi'
-                   ? 'bg-blue-600 text-white shadow-sm'
-                   : 'text-slate-600 hover:text-slate-900'
-               }`}
-             >
-               HI
-             </button>
-           </div>
+           <button
+             type="button"
+             onClick={handleNextLang}
+             title="Switch Language"
+             className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-cyan-300 text-xs font-mono font-bold flex items-center space-x-1 active:scale-95"
+           >
+             <span className="text-xs">अ/A</span>
+             <span className="text-[10px] text-cyan-400 font-bold uppercase">{lang}</span>
+           </button>
            <UserMenuDropdown />
          </div>
       </header>
@@ -62,7 +53,7 @@ export default function CitizenLayout({ children }) {
       {/* Mobile Backdrop */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-40 lg:hidden animate-fade-in"
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
@@ -74,7 +65,7 @@ export default function CitizenLayout({ children }) {
           <TopHeader />
         </div>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative flex flex-col min-h-0 w-full max-w-full app-shell-bg transition-colors duration-150">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative flex flex-col min-h-0 w-full max-w-full">
           <div className="flex-1 flex flex-col min-h-0 w-full max-w-full">
             {children}
           </div>

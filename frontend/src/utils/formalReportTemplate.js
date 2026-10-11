@@ -19,6 +19,20 @@ export const PROBLEM_METADATA = {
     department: 'Department of Public Health & Sanitation',
     hazard: 'The uncontrolled accumulation of solid waste and decomposing garbage is producing pervasive foul odors, attracting stray animals, and creating an active breeding ground for disease-carrying pests and pathogens, presenting severe public health risks to nearby residents.',
     actionRequested: 'Urgently deploy municipal solid waste compactor vehicles and sanitation personnel to clear the dump site and apply disinfectant powder.'
+  },
+  water_leak: {
+    title: 'Municipal Water Supply Pipeline Rupture & Leakage',
+    subject: 'Emergency repair of potable water distribution pipeline rupture',
+    department: 'Department of Water Supply & Sewerage',
+    hazard: 'A severe rupture in the subterranean distribution pipeline is causing continuous wastage of thousands of liters of potable municipal water, sub-surface soil erosion, localized road waterlogging, and contamination risks to the surrounding potable supply.',
+    actionRequested: 'Isolate the affected pipeline sector immediately, deploy repair technicians to replace the ruptured conduit, and restore normal drinking water supply.'
+  },
+  streetlight: {
+    title: 'Defective & Inoperative Streetlight Luminaire',
+    subject: 'Urgent restoration and repair of defunct public street lighting infrastructure',
+    department: 'Department of Electrical & Public Street Lighting',
+    hazard: 'The persistent failure of street illumination has plunged this active stretch into total darkness after dusk, severely compromising nighttime pedestrian visibility, vehicle navigation safety, and local neighborhood security.',
+    actionRequested: 'Depute a technical maintenance unit to inspect the luminaire, replace faulty LED modules/chokes or repair underground feeder wiring.'
   }
 };
 

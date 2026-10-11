@@ -2,219 +2,257 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ======================================================== */
-/* URBAN EYE: Swiss & Minimalist Civic Intelligence Tokens  */
-/* Derived from ui-ux-pro-max standard                     */
-/* ======================================================== */
-:root {
-  --color-primary: #1e40af;       /* Deep Municipal Blue */
-  --color-primary-hover: #1d4ed8;
-  --color-secondary: #3b82f6;
-  --color-accent: #059669;        /* Verified Service Emerald */
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;    /* High Contrast Slate 900 */
-  --color-muted: #64748b;         /* Slate 500 */
-  --color-border: #e2e8f0;        /* 1px Structural Slate Hairline */
-  --color-border-subtle: #f1f5f9;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #f8fafc;
-  --color-danger: #dc2626;        /* High Urgency Critical Red */
-  --color-warning: #d97706;       /* Medium Advisory Amber */
-  --color-info: #0284c7;          /* Operational Dispatch Sky */
-
-  /* Swiss Structural Elevation */
-  --elevation-flat: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
-  --elevation-raised: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
-  --elevation-hover: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
-}
-
-/* Civic Slate Theme Overrides */
-html.theme-slate {
-  --color-background: #f1f5f9;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #f8fafc;
-  --color-border: #cbd5e1;
-}
-
 @layer base {
   html {
-    font-size: 16px;
+    font-size: 16.75px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-family: 'Plus Jakarta Sans', 'Atkinson Hyperlegible', system-ui, sans-serif;
   }
-
+  @media (min-width: 1024px) {
+    html {
+      font-size: 17px;
+    }
+  }
   html, body, #root {
     max-width: 100vw;
     overflow-x: hidden;
-    min-height: 100vh;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
-
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    letter-spacing: -0.011em;
+    @apply bg-stone-950 text-stone-100;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+}
 
-  h1, h2, h3, h4, .font-display {
-    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-    letter-spacing: -0.025em;
-    font-weight: 700;
-  }
+/* Slightly boost micro-typography for superior legibility across all views */
+.text-\[9px\], [class*="text-[9px]"] {
+  font-size: 10.5px !important;
+  letter-spacing: 0.02em;
+}
 
-  .font-mono, .tabular-nums {
-    font-family: 'JetBrains Mono', monospace;
-    font-feature-settings: 'tnum' on, 'zero' on;
-  }
+.text-\[10px\], [class*="text-[10px]"] {
+  font-size: 11.5px !important;
+  letter-spacing: 0.015em;
+}
+
+.text-\[11px\], [class*="text-[11px]"] {
+  font-size: 12.5px !important;
+}
+
+/* Glass UI Component Enhancements */
+.glass-panel {
+  background: rgba(10, 15, 29, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(10, 15, 29, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(6, 182, 212, 0.35);
+  box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.65), 0 0 25px -4px rgba(6, 182, 212, 0.15);
+}
+
+/* Polished Interactive Focus States */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25), 0 0 25px -3px rgba(6, 182, 212, 0.2) !important;
+  border-color: rgba(6, 182, 212, 0.75) !important;
 }
 
 /* ======================================================== */
-/* Core Swiss & Minimalist Structural UI Surfaces           */
+/* Light Mode Theme Overrides (Applied when html has .light) */
 /* ======================================================== */
-.civic-panel, .bento-card, .glass-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  box-shadow: var(--elevation-flat);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+html.light {
+  color-scheme: light;
 }
 
-.civic-panel:hover, .bento-card:hover, .glass-card:hover {
-  border-color: #94a3b8;
-  box-shadow: var(--elevation-hover);
+html.light body,
+html.light #root {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
 }
 
-.civic-hero, .bento-hero {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  box-shadow: var(--elevation-raised);
-  position: relative;
-  overflow: hidden;
+/* Invert all dark background utilities seamlessly */
+html.light [class*="bg-[#090d16]"],
+html.light [class*="bg-[#070b14]"],
+html.light [class*="bg-[#05080f]"],
+html.light [class*="bg-[#0a0f1d]"],
+html.light [class*="bg-stone-950"],
+html.light [class*="bg-slate-950"] {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
 }
 
-/* Precision Action Buttons */
-.btn-primary, .civic-btn-primary {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  letter-spacing: -0.01em;
-  padding: 0.625rem 1.125rem;
-  box-shadow: 0 1px 2px rgba(30, 64, 175, 0.15);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid transparent;
+html.light [class*="bg-slate-900"],
+html.light [class*="bg-stone-900"] {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
 }
 
-.btn-primary:hover, .civic-btn-primary:hover {
-  background-color: var(--color-primary-hover);
-  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.25);
-  transform: translateY(-0.5px);
+html.light [class*="bg-slate-800"],
+html.light [class*="bg-stone-800"] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
 }
 
-.btn-secondary, .civic-btn-secondary {
-  background-color: #ffffff;
-  color: #334155;
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  letter-spacing: -0.01em;
-  padding: 0.625rem 1.125rem;
-  box-shadow: var(--elevation-flat);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
+html.light [class*="text-white"],
+html.light [class*="text-slate-100"],
+html.light [class*="text-slate-200"] {
+  color: #0f172a !important;
 }
 
-.btn-secondary:hover, .civic-btn-secondary:hover {
-  background-color: #f8fafc;
-  color: #0f172a;
-  border-color: #cbd5e1;
+html.light [class*="text-slate-300"],
+html.light [class*="text-slate-400"] {
+  color: #475569 !important;
 }
 
-/* High-Contrast WCAG Status Badges */
-.badge-critical {
-  background-color: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 0.2rem 0.625rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
+html.light [class*="border-slate-800"],
+html.light [class*="border-slate-700"],
+html.light [class*="border-stone-800"] {
+  border-color: #e2e8f0 !important;
 }
 
-.badge-warning {
-  background-color: #fffbeb;
-  color: #b45309;
-  border: 1px solid #fde68a;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 0.2rem 0.625rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
+html.light header,
+html.light aside {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: #e2e8f0 !important;
 }
 
-.badge-success {
-  background-color: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 0.2rem 0.625rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
 }
 
-.badge-info {
-  background-color: #f0f9ff;
-  color: #0369a1;
-  border: 1px solid #bae6fd;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 0.2rem 0.625rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
+html.light .glass-card {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Micro Focus States for Accessible Keyboard Nav */
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
 }
 
-/* Hide scrollbar cleanly */
-.scrollbar-hide::-webkit-scrollbar {
+.no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-.scrollbar-hide {
+.no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Custom Scrollbar - Sleek */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(28, 25, 23, 0.1);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(68, 64, 60, 0.6); /* stone-700 */
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(87, 83, 78, 0.8); /* stone-600 */
+}
+
+/* Subtle Glow effects - Vibrant Accents */
+.glow-cyan {
+  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.25);
+}
+
+.glow-red {
+  box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.25);
+}
+
+.glow-amber {
+  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.25);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.25);
+}
+
+/* Leaflet dark map customization */
+.leaflet-container {
+  background-color: #0c0a09 !important; /* stone-950 */
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #1c1917 !important; /* stone-900 */
+  color: #f5f5f4 !important; /* stone-100 */
+  border: 1px solid #292524 !important; /* stone-800 */
+  border-radius: 12px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+.leaflet-popup-tip {
+  background: #1c1917 !important;
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes shimmer-text {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(1deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.35; filter: blur(12px); transform: scale(1); }
+  50% { opacity: 0.75; filter: blur(18px); transform: scale(1.08); }
+}
+
+@keyframes wave-bar {
+  0%, 100% { height: 4px; }
+  50% { height: 14px; }
+}
+
+.animate-shimmer-text {
+  background: linear-gradient(90deg, #fff 0%, #38bdf8 30%, #818cf8 50%, #fff 80%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer-text 5s linear infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+

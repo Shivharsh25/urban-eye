@@ -38,64 +38,70 @@ export default function CitizenSupportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6 lg:p-10 relative overflow-hidden">
+    <div className="min-h-screen bg-[#05080f] p-6 lg:p-10 relative overflow-hidden">
       
+      {/* Background aesthetics */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-cyan-900/10 rounded-full blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03]"></div>
+      </div>
+
       <div className="max-w-4xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left Column: Contact & Emergency */}
         <div className="lg:col-span-1 space-y-6">
           
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center space-x-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0">
-                <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+            <h1 className="text-3xl font-black text-white tracking-tight flex items-center space-x-3">
+              <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
+                <HelpCircle className="w-6 h-6 text-cyan-400" />
               </div>
               <span>{t('supportTitle', 'Help & Support')}</span>
             </h1>
           </div>
 
           {/* Emergency Card */}
-          <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 relative overflow-hidden group shadow-xs">
-            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <ShieldAlert className="w-32 h-32 text-rose-600" />
+          <div className="glass-panel p-6 rounded-3xl bg-rose-950/20 border border-rose-900/40 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <ShieldAlert className="w-32 h-32 text-rose-500" />
             </div>
-            <h3 className="text-xs font-bold text-rose-700 uppercase tracking-wider mb-4 flex items-center space-x-2 relative z-10">
+            <h3 className="text-sm font-bold text-rose-400 uppercase tracking-widest mb-4 flex items-center space-x-2 relative z-10">
               <PhoneCall className="w-4 h-4" />
               <span>{t('emergency', 'Emergency')}</span>
             </h3>
             <div className="relative z-10 space-y-4">
               <div>
-                <p className="text-xs text-slate-600 font-semibold mb-1">{t('policeFireMedical', 'Police / Fire / Medical')}</p>
-                <p className="text-2xl font-black text-rose-700">112 / 911</p>
+                <p className="text-xs text-slate-400 font-semibold mb-1">{t('policeFireMedical', 'Police / Fire / Medical')}</p>
+                <p className="text-2xl font-black text-white">112 / 911</p>
               </div>
               <div>
-                <p className="text-xs text-slate-600 font-semibold mb-1">{t('nonEmergencyPolice', 'Non-Emergency Police')}</p>
-                <p className="text-lg font-bold text-slate-900">100 / 311</p>
+                <p className="text-xs text-slate-400 font-semibold mb-1">{t('nonEmergencyPolice', 'Non-Emergency Police')}</p>
+                <p className="text-lg font-bold text-white">100 / 311</p>
               </div>
             </div>
           </div>
 
           {/* Contact Methods */}
-          <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-6 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('contactUs', 'Contact Us')}</h3>
+          <div className="glass-panel p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 space-y-6">
+            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-widest mb-2">{t('contactUs', 'Contact Us')}</h3>
             
             <a href="mailto:support@urbaneye.local" className="flex items-start space-x-4 group">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                <Mail className="w-4 h-4 text-blue-600" />
+              <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
+                <Mail className="w-4 h-4 text-cyan-400" />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{t('emailSupport', 'Email Support')}</p>
-                <p className="text-xs text-slate-500 mt-0.5">support@urbaneye.local</p>
+                <p className="text-sm font-bold text-slate-200">{t('emailSupport', 'Email Support')}</p>
+                <p className="text-xs text-slate-500 mt-1">support@urbaneye.local</p>
               </div>
             </a>
 
             <div className="flex items-start space-x-4 group cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-                <MessageSquare className="w-4 h-4 text-emerald-600" />
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                <MessageSquare className="w-4 h-4 text-blue-400" />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{t('liveChat', 'Live Chat')}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{t('liveChatHours', 'Available 9AM - 5PM')}</p>
+                <p className="text-sm font-bold text-slate-200">{t('liveChat', 'Live Chat')}</p>
+                <p className="text-xs text-slate-500 mt-1">{t('liveChatHours', 'Available 9AM - 5PM')}</p>
               </div>
             </div>
           </div>
@@ -106,28 +112,28 @@ export default function CitizenSupportPage() {
         <div className="lg:col-span-2 space-y-6 lg:mt-[72px]">
           
           {/* FAQ Accordion */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs">
-            <h2 className="text-lg font-bold text-slate-900 mb-6">{t('faqTitle', 'Frequently Asked Questions')}</h2>
+          <div className="glass-panel p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80">
+            <h2 className="text-xl font-bold text-white mb-6">{t('faqTitle', 'Frequently Asked Questions')}</h2>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               {faqs.map((faq, index) => (
-                <div key={index} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/60">
+                <div key={index} className="border border-slate-800 rounded-xl overflow-hidden bg-black/20">
                   <button 
                     onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
-                    className="w-full px-5 py-3.5 flex items-center justify-between text-left focus:outline-none cursor-pointer"
+                    className="w-full px-6 py-4 flex items-center justify-between text-left focus:outline-none"
                   >
-                    <span className="text-sm font-bold text-slate-800">{t(faq.qKey, faq.defaultQ)}</span>
+                    <span className="font-bold text-slate-200">{t(faq.qKey, faq.defaultQ)}</span>
                     {openFaq === index ? (
-                      <ChevronUp className="w-4 h-4 text-blue-600" />
+                      <ChevronUp className="w-5 h-5 text-cyan-400" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                      <ChevronDown className="w-5 h-5 text-slate-500" />
                     )}
                   </button>
                   
                   {openFaq === index && (
-                    <div className="px-5 pb-4">
-                      <div className="h-px w-full bg-slate-200 mb-3"></div>
-                      <p className="text-xs text-slate-600 leading-relaxed">{t(faq.aKey, faq.defaultA)}</p>
+                    <div className="px-6 pb-5">
+                      <div className="h-px w-full bg-slate-800 mb-4"></div>
+                      <p className="text-sm text-slate-400 leading-relaxed">{t(faq.aKey, faq.defaultA)}</p>
                     </div>
                   )}
                 </div>
@@ -136,31 +142,31 @@ export default function CitizenSupportPage() {
           </div>
 
           {/* Feedback Form */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs">
-            <h2 className="text-lg font-bold text-slate-900 mb-1">{t('sendFeedback', 'Send Feedback')}</h2>
-            <p className="text-xs text-slate-500 mb-6">{t('sendFeedbackSubtitle', 'Found a bug or have a suggestion? Let our developers know.')}</p>
+          <div className="glass-panel p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80">
+            <h2 className="text-xl font-bold text-white mb-2">{t('sendFeedback', 'Send Feedback')}</h2>
+            <p className="text-sm text-slate-400 mb-6">{t('sendFeedbackSubtitle', 'Found a bug or have a suggestion? Let our developers know.')}</p>
             
             {submittedFeedback ? (
-              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center space-x-3 text-emerald-700">
-                <CheckCircle className="w-5 h-5 shrink-0 text-emerald-600" />
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center space-x-3 text-emerald-400">
+                <CheckCircle className="w-5 h-5 shrink-0" />
                 <span className="text-sm font-medium">{t('saved', 'Thank you! Your feedback has been received.')}</span>
               </div>
             ) : (
               <form className="space-y-4" onSubmit={handleFeedbackSubmit}>
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2">{t('message', 'Message')}</label>
+                  <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">{t('message', 'Message')}</label>
                   <textarea 
                     rows="4" 
                     value={feedbackText}
                     onChange={(e) => setFeedbackText(e.target.value)}
                     placeholder={t('describeIssuePlaceholder', 'Describe your issue or suggestion...')}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-slate-700 text-slate-200 text-sm placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/50 transition-all resize-none"
                     required
                   ></textarea>
                 </div>
                 <button 
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-xs flex items-center justify-center space-x-2 cursor-pointer"
+                  className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] flex items-center justify-center space-x-2"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>{t('submitFeedback', 'Submit Feedback')}</span>

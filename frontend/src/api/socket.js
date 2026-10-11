@@ -5,10 +5,7 @@ let socket = null;
 
 export function getSocket() {
   if (!socket) {
-    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    const defaultUrl = isLocal ? 'http://localhost:5000' : 'https://urban-eye-wi2j.onrender.com';
-    const socketUrl = import.meta.env.VITE_API_URL || defaultUrl;
-    socket = io(socketUrl, {
+    socket = io('https://urban-eye-wi2j.onrender.com', {
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnectionAttempts: 10,
