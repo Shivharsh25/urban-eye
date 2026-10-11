@@ -53,16 +53,23 @@ const db = {
     const escalatedCount = detections.filter((d) => d.reportCount > 1).length;
 
     const bySeverity = {
-      low: detections.filter((d) => d.severity === 'low').length,
-      medium: detections.filter((d) => d.severity === 'medium').length,
-      high: detections.filter((d) => d.severity === 'high').length
+      low: detections.filter((d) => {
+        const num = parseInt(d.severity);
+        return !isNaN(num) ? num < 40 : d.severity === 'low';
+      }).length,
+      medium: detections.filter((d) => {
+        const num = parseInt(d.severity);
+        return !isNaN(num) ? (num >= 40 && num < 70) : d.severity === 'medium';
+      }).length,
+      high: detections.filter((d) => {
+        const num = parseInt(d.severity);
+        return !isNaN(num) ? num >= 70 : d.severity === 'high';
+      }).length
     };
 
     const byType = {
       pothole: detections.filter((d) => d.type === 'pothole').length,
-      garbage: detections.filter((d) => d.type === 'garbage').length,
-      water_leak: detections.filter((d) => d.type === 'water_leak').length,
-      streetlight: detections.filter((d) => d.type === 'streetlight').length
+      garbage: detections.filter((d) => d.type === 'garbage').length
     };
 
     const byDepartment = {};

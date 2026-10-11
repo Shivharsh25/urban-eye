@@ -25,7 +25,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - USE_STUB_DETECTOR=true
+      - USE_STUB_DETECTOR=false
       - MODEL_PATH=models/urban_eye_yolov8.pt
       - CLASS_NAMES_PATH=class_names.json
     volumes:

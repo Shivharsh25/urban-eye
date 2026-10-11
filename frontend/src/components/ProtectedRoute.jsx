@@ -8,10 +8,10 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#090d16]">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin"></div>
-          <p className="text-sm font-mono text-cyan-400">AUTHENTICATING SESSION...</p>
+          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <p className="text-xs font-bold text-slate-700 tracking-wider">AUTHENTICATING MUNICIPAL SESSION...</p>
         </div>
       </div>
     );

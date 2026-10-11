@@ -6,13 +6,5 @@
   "garbage": {
     "department": "Sanitation Dept",
     "email": "shivharshtiwari86017@gmail.com"
-  },
-  "water_leak": {
-    "department": "Water Dept",
-    "email": "shivharshtiwari86017@gmail.com"
-  },
-  "streetlight": {
-    "department": "Electrical Dept",
-    "email": "shivharshtiwari86017@gmail.com"
   }
 }

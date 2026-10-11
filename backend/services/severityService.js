@@ -1,103 +1,106 @@
 /**
- * Severity Classification Service
- * Rule-based downstream classifier evaluating:
- * - Detection confidence (0.0 - 1.0)
- * - Bounding box area / size
- * - Citizen report count (community urgency signal)
- * - Issue category base hazards
+ * Severity Classification Service (Percentage Form & Continuous Sizing)
+ * Calculates severity percentage (15% to 99%) based on:
+ * - Physical bounding box dimensions (width, height, area)
+ * - Category hazard multiplier (pothole vs garbage)
+ * - Citizen complaint repetition (community surge)
  * 
- * Returns 'low' | 'medium' | 'high'
+ * Returns percentage string format e.g. '85%', '54%', '24%'
  */
 
-// Tunable thresholds
 const SEVERITY_CONFIG = {
-  // Base weights by issue type
   typeWeights: {
-    water_leak: 1.25,   // Water leaks can flood and damage infrastructure quickly
-    pothole: 1.15,      // Vehicle and road safety hazard
-    streetlight: 1.10,  // Night visibility and public safety hazard
-    garbage: 1.00       // Sanitation and health hazard
-  },
-  // Bounding box area thresholds (assuming normalized or pixel dimensions)
-  bboxAreaMedium: 25000, // e.g. > ~160x160 pixels
-  bboxAreaLarge: 70000,  // e.g. > ~265x265 pixels
-  // Confidence thresholds
-  highConfidence: 0.85,
-  mediumConfidence: 0.65,
-  // Report count escalation triggers
-  escalateMediumReports: 2, // 2 or more citizen reports push to at least 'medium'
-  escalateHighReports: 4    // 4 or more citizen reports push to 'high'
+    pothole: 1.20,      // Direct vehicular accident and cyclist hazard
+    garbage: 1.05       // Sanitation, vermin, and public health hazard
+  }
 };
 
 /**
- * Calculates severity level for a detection
+ * Calculates severity percentage for a detection
  * @param {Object} params
- * @param {string} params.type - pothole | garbage | water_leak | streetlight
+ * @param {string} params.type - pothole | garbage
  * @param {number} params.confidence - detection confidence (0-1)
  * @param {Object} params.bbox - { x, y, width, height }
  * @param {number} params.reportCount - number of citizen reports (default 1)
- * @returns {'low' | 'medium' | 'high'}
+ * @returns {string} e.g. '85%'
  */
 function calculateSeverity({ type = 'pothole', confidence = 0.85, bbox = {}, reportCount = 1 }) {
-  const width = bbox.width || 100;
-  const height = bbox.height || 100;
+  const width = Number(bbox.width) || 120;
+  const height = Number(bbox.height) || 120;
   const area = width * height;
-  const typeWeight = SEVERITY_CONFIG.typeWeights[type] || 1.0;
+  const maxDim = Math.max(width, height);
+  const typeWeight = SEVERITY_CONFIG.typeWeights[type] || 1.10;
 
-  // Compute composite score (0 to 100)
-  let score = 0;
-
-  // 1. Confidence Contribution (up to 35 points)
-  if (confidence >= SEVERITY_CONFIG.highConfidence) {
-    score += 35;
-  } else if (confidence >= SEVERITY_CONFIG.mediumConfidence) {
-    score += 25;
+  // 1. Continuous physical footprint baseline (15% to 75%)
+  let physicalScore = 15;
+  if (area < 25000 && maxDim <= 180) {
+    physicalScore = 18 + (area / 25000) * 10; // 18% - 28%
+  } else if (area < 60000 && maxDim <= 300) {
+    physicalScore = 30 + ((area - 25000) / 35000) * 25; // 30% - 55%
+  } else if (area < 120000 && maxDim <= 400) {
+    physicalScore = 55 + ((area - 60000) / 60000) * 25; // 55% - 80%
   } else {
-    score += 15;
+    // Massive span / area (> 120,000 px²)
+    const excess = Math.min(1.0, (area - 120000) / 400000);
+    physicalScore = 80 + excess * 15; // 80% - 95%
   }
 
-  // 2. Physical Size / Bounding Box Area Contribution (up to 35 points)
-  if (area >= SEVERITY_CONFIG.bboxAreaLarge) {
-    score += 35;
-  } else if (area >= SEVERITY_CONFIG.bboxAreaMedium) {
-    score += 25;
-  } else {
-    score += 15;
+  // Dimension span booster (e.g. wide road cracks / elongated defects spanning >= 380 px)
+  if (maxDim >= 380 && physicalScore < 75) {
+    physicalScore = Math.max(physicalScore, 75);
   }
 
-  // Apply issue type urgency multiplier
-  score = score * typeWeight;
+  // 2. Apply Issue Category Multiplier
+  let score = physicalScore * typeWeight;
 
-  // 3. Citizen Report Count / Community Urgency Escalation (up to 30+ points)
-  if (reportCount >= SEVERITY_CONFIG.escalateHighReports) {
-    score += 35;
-  } else if (reportCount >= SEVERITY_CONFIG.escalateMediumReports) {
+  // 3. Citizen Community Urgency Escalation
+  if (reportCount >= 4) {
+    score += 30;
+  } else if (reportCount === 3) {
     score += 20;
+  } else if (reportCount === 2) {
+    score += 12;
   }
 
-  // Final classification thresholds
-  if (score >= 75 || reportCount >= SEVERITY_CONFIG.escalateHighReports) {
-    return 'high';
-  } else if (score >= 45 || reportCount >= SEVERITY_CONFIG.escalateMediumReports) {
-    return 'medium';
-  } else {
-    return 'low';
-  }
+  // Round and clamp between 15% and 99%
+  const finalPercentage = Math.min(99, Math.max(15, Math.round(score)));
+  return `${finalPercentage}%`;
+}
+
+/**
+ * Extracts numeric percentage integer (15 - 99)
+ */
+function getSeverityNumber(severity) {
+  const n = parseInt(severity);
+  if (!isNaN(n)) return n;
+  const s = String(severity || '').toLowerCase();
+  if (s === 'high' || s === 'critical') return 85;
+  if (s === 'medium') return 55;
+  if (s === 'low') return 25;
+  return 50;
+}
+
+/**
+ * Maps percentage to categorical tier for badge colors: 'low' | 'medium' | 'high'
+ */
+function getSeverityTier(severity) {
+  const num = getSeverityNumber(severity);
+  if (num >= 70) return 'high';
+  if (num >= 40) return 'medium';
+  return 'low';
 }
 
 /**
  * Compares two severity strings to check if escalation occurred
- * @returns {boolean} true if newSeverity is higher than oldSeverity
  */
 function isEscalated(oldSeverity, newSeverity) {
-  const levels = { low: 1, medium: 2, high: 3 };
-  const oldRank = levels[oldSeverity] || 1;
-  const newRank = levels[newSeverity] || 1;
-  return newRank > oldRank;
+  return getSeverityNumber(newSeverity) > getSeverityNumber(oldSeverity);
 }
 
 module.exports = {
   calculateSeverity,
+  getSeverityNumber,
+  getSeverityTier,
   isEscalated,
   SEVERITY_CONFIG
 };

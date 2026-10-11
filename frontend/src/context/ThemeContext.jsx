@@ -6,38 +6,41 @@ export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     try {
       const saved = localStorage.getItem('urban_eye_theme');
-      if (saved === 'light' || saved === 'dark') return saved;
-      return 'dark'; // Urban EYE default dark cyber-civic aesthetic
+      if (saved === 'slate') return 'slate';
+      return 'white'; // Clean Pure White by default
     } catch {
-      return 'dark';
+      return 'white';
     }
   });
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'light') {
-      root.classList.remove('dark');
-      root.classList.add('light');
+    // Always remove deprecated dark class
+    root.classList.remove('dark');
+    
+    if (theme === 'slate') {
+      root.classList.remove('theme-white');
+      root.classList.add('theme-slate');
       try {
-        localStorage.setItem('urban_eye_theme', 'light');
+        localStorage.setItem('urban_eye_theme', 'slate');
       } catch {}
     } else {
-      root.classList.remove('light');
-      root.classList.add('dark');
+      root.classList.remove('theme-slate');
+      root.classList.add('theme-white');
       try {
-        localStorage.setItem('urban_eye_theme', 'dark');
+        localStorage.setItem('urban_eye_theme', 'white');
       } catch {}
     }
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+    setTheme(prev => (prev === 'white' ? 'slate' : 'white'));
   };
 
-  const isDarkMode = theme === 'dark';
+  const isSlateMode = theme === 'slate';
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, isDarkMode }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, isSlateMode, isDarkMode: false }}>
       {children}
     </ThemeContext.Provider>
   );

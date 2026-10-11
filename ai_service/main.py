@@ -7,7 +7,7 @@ Exposes POST /detect endpoint to run object detection for municipal issues:
 - streetlight
 
 Supports a clear integration seam:
-- USE_STUB_DETECTOR=true (default): Returns realistic deterministic detections for full end-to-end testing.
+- USE_STUB_DETECTOR=true: Returns realistic deterministic detections for full end-to-end testing.
 - USE_STUB_DETECTOR=false: Loads YOLOv8 PyTorch model from MODEL_PATH using ultralytics and executes real inference.
 """
 
@@ -18,6 +18,7 @@ from typing import List, Optional
 import io
 from PIL import Image
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -27,18 +28,23 @@ from sample_stub_data import get_stub_detections
 # ==========================================
 # Configuration & Environment Variables
 # ==========================================
+BASE_DIR = Path(__file__).resolve().parent
+# Load .env file automatically
+load_dotenv(BASE_DIR / ".env")
+
 USE_STUB_DETECTOR_ENV = os.getenv("USE_STUB_DETECTOR", "true").lower() in ("true", "1", "yes")
 MODEL_PATH = os.getenv("MODEL_PATH", "models/urban_eye_yolov8.pt")
 CLASS_NAMES_PATH = os.getenv("CLASS_NAMES_PATH", "class_names.json")
 
 # Load Class Names
-BASE_DIR = Path(__file__).resolve().parent
 class_names_file = BASE_DIR / CLASS_NAMES_PATH
 if class_names_file.exists():
     with open(class_names_file, "r", encoding="utf-8") as f:
         CLASS_NAMES = json.load(f)
 else:
-    CLASS_NAMES = ["pothole", "garbage", "water_leak", "streetlight"]
+    CLASS_NAMES = ["pothole", "garbage"]
+
+CONF_THRESHOLD = float(os.getenv("CONF_THRESHOLD", "0.15"))
 
 # Global model holder for real YOLOv8 model
 yolo_model = None
@@ -50,7 +56,7 @@ if not USE_STUB_DETECTOR_ENV:
         if model_file_path.exists():
             print(f"[Urban EYE AI] Loading YOLOv8 weights from: {model_file_path}")
             yolo_model = YOLO(str(model_file_path))
-            print("[Urban EYE AI] Model successfully loaded.")
+            print(f"[Urban EYE AI] Model successfully loaded. Classes: {getattr(yolo_model, 'names', CLASS_NAMES)}")
         else:
             print(f"[Urban EYE AI WARNING] Model path {model_file_path} not found. Falling back to stub mode.")
     except ImportError:
@@ -68,7 +74,7 @@ class BoundingBox(BaseModel):
     height: float = Field(..., description="Bounding box height in pixels")
 
 class Detection(BaseModel):
-    type: str = Field(..., description="Issue type: pothole | garbage | water_leak | streetlight")
+    type: str = Field(..., description="Issue type: pothole | garbage")
     confidence: float = Field(..., description="Detection confidence score between 0.0 and 1.0")
     bbox: BoundingBox = Field(..., description="Bounding box coordinates")
 
@@ -97,9 +103,8 @@ def run_inference(image_bytes: bytes, filename: str = "") -> List[dict]:
     # 1. Load image from bytes
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     
-    # 2. Run prediction via Ultralytics YOLOv8
-    # conf=0.25 (confidence threshold), iou=0.45 (NMS threshold)
-    results = yolo_model.predict(source=image, conf=0.25, verbose=False)
+    # 2. Run prediction via Ultralytics YOLOv8 with configurable CONF_THRESHOLD
+    results = yolo_model.predict(source=image, conf=CONF_THRESHOLD, verbose=False)
     
     detections: List[dict] = []
     if results and len(results) > 0:
@@ -109,11 +114,17 @@ def run_inference(image_bytes: bytes, filename: str = "") -> List[dict]:
             for box in boxes:
                 cls_idx = int(box.cls[0].item())
                 conf = float(box.conf[0].item())
-                # Map class index to class name
-                if 0 <= cls_idx < len(CLASS_NAMES):
+                # Map class index to class name (dynamically from trained model or CLASS_NAMES)
+                if hasattr(result, "names") and isinstance(result.names, dict) and cls_idx in result.names:
+                    detected_type = str(result.names[cls_idx]).lower().replace(" ", "_")
+                elif 0 <= cls_idx < len(CLASS_NAMES):
                     detected_type = CLASS_NAMES[cls_idx]
                 else:
-                    detected_type = "pothole" # Default fallback
+                    detected_type = "pothole"
+
+                # Filter strictly to supported municipal classes (pothole, garbage)
+                if detected_type not in ("pothole", "garbage"):
+                    continue
                 
                 # Extract coordinates (xyxy -> xywh)
                 xyxy = box.xyxy[0].tolist() # [x1, y1, x2, y2]
@@ -132,7 +143,6 @@ def run_inference(image_bytes: bytes, filename: str = "") -> List[dict]:
                     }
                 })
 
-    # If model produced no detections above threshold, return empty list or fallback
     return detections
     # =========================================================================
 

@@ -6,7 +6,7 @@ Provides structured Detection objects matching the JSON contract when USE_STUB_D
 from typing import List, Dict, Any
 import hashlib
 
-VALID_TYPES = ["pothole", "garbage", "water_leak", "streetlight"]
+VALID_TYPES = ["pothole", "garbage"]
 
 # Realistic deterministic sample sets
 STUB_PROFILES: Dict[str, Dict[str, Any]] = {
@@ -19,16 +19,6 @@ STUB_PROFILES: Dict[str, Dict[str, Any]] = {
         "type": "garbage",
         "confidence": 0.89,
         "bbox": {"x": 200, "y": 320, "width": 310, "height": 220}
-    },
-    "water_leak": {
-        "type": "water_leak",
-        "confidence": 0.95,
-        "bbox": {"x": 180, "y": 240, "width": 240, "height": 190}
-    },
-    "streetlight": {
-        "type": "streetlight",
-        "confidence": 0.91,
-        "bbox": {"x": 320, "y": 80, "width": 120, "height": 300}
     }
 }
 
@@ -48,7 +38,6 @@ def get_stub_detections(filename: str = "", image_bytes: bytes = b"") -> List[Di
         digest = int(hashlib.md5(image_bytes[:256]).hexdigest(), 16)
         chosen_type = VALID_TYPES[digest % len(VALID_TYPES)]
         profile = dict(STUB_PROFILES[chosen_type])
-        # Add slight variation based on image length to make bboxes natural
         var = (len(image_bytes) % 20) - 10
         profile["bbox"] = {
             "x": max(10, profile["bbox"]["x"] + var),

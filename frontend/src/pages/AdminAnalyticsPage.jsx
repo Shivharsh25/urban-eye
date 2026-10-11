@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  AreaChart, Area, PieChart, Pie, Cell, Legend 
+  AreaChart, Area, PieChart, Pie, Cell 
 } from 'recharts';
 import { 
   Activity, 
@@ -10,29 +10,21 @@ import {
   CheckCircle2, 
   Clock, 
   Building2, 
-  Sparkles, 
   Cpu, 
-  Calendar, 
-  Download, 
   Layers, 
-  ShieldCheck, 
   ArrowUpRight, 
-  ArrowDownRight, 
   Zap, 
   RefreshCw,
   FileSpreadsheet,
-  PieChart as PieIcon,
-  BarChart3
+  PieChart as PieIcon
 } from 'lucide-react';
 import api from '../api/client';
 
 const SEVERITY_COLORS = {
-  high: '#f43f5e',   // Rose
-  medium: '#f59e0b', // Amber
-  low: '#10b981'     // Emerald
+  high: '#e11d48',   // Rose 600 (High contrast WCAG)
+  medium: '#d97706', // Amber 600
+  low: '#059669'     // Emerald 600
 };
-
-const CATEGORY_COLORS = ['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b'];
 
 export default function AdminAnalyticsPage() {
   const [loading, setLoading] = useState(true);
@@ -108,7 +100,6 @@ export default function AdminAnalyticsPage() {
       });
     }
 
-    // Ensure chart has visually engaging baseline if data is brand new
     const totalReported = result.reduce((acc, curr) => acc + curr.reported, 0);
     if (totalReported === 0 && detections.length > 0) {
       result[result.length - 1].reported = detections.length;
@@ -176,19 +167,19 @@ export default function AdminAnalyticsPage() {
     });
 
     return [
-      { range: '90-100%', count: tier90, fill: '#06b6d4' },
-      { range: '80-89%', count: tier80, fill: '#3b82f6' },
-      { range: '70-79%', count: tier70, fill: '#8b5cf6' },
+      { range: '90-100%', count: tier90, fill: '#0284c7' },
+      { range: '80-89%', count: tier80, fill: '#2563eb' },
+      { range: '70-79%', count: tier70, fill: '#7c3aed' },
       { range: '< 70%', count: tierBelow70, fill: '#64748b' }
     ];
   }, [filteredDetections]);
 
   // 5. Civic Peak Reporting Hours
   const peakHoursData = useMemo(() => {
-    let morning = 0; // 06:00 - 12:00
-    let midday = 0;  // 12:00 - 17:00
-    let evening = 0; // 17:00 - 21:00
-    let night = 0;   // 21:00 - 06:00
+    let morning = 0;
+    let midday = 0;
+    let evening = 0;
+    let night = 0;
 
     filteredDetections.forEach(d => {
       const date = new Date(d.createdAt || Date.now());
@@ -242,41 +233,41 @@ export default function AdminAnalyticsPage() {
   if (loading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[500px] space-y-4">
-        <div className="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
-        <p className="text-slate-400 font-mono text-xs tracking-wider animate-pulse">
-          AGGREGATING MUNICIPAL TELEMETRY...
+        <div className="w-10 h-10 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+        <p className="text-slate-500 font-medium text-xs tracking-wider">
+          Aggregating municipal telemetry...
         </p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-[1440px] mx-auto space-y-8 animate-fade-in font-sans relative z-10">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1440px] mx-auto space-y-6 animate-fade-in font-sans relative z-10">
       
       {/* Header & Controls Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-200">
         <div>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600/20 to-sky-500/20 border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10">
-              <Activity className="w-5 h-5 text-cyan-400" />
+          <div className="flex items-center space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center shadow-2xs">
+              <Activity className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
-                <span>Municipal Intelligence & Analytics</span>
-                <span className="px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-[10px] font-mono text-cyan-400 font-bold">
-                  AI INSIGHTS
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <span>Municipal Analytics & Insights</span>
+                <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[10px] font-bold text-blue-700">
+                  CITYWIDE
                 </span>
               </h1>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Citywide defect ingestion trends, department resolution velocity, and AI telemetry
+              <p className="text-xs text-slate-500 mt-0.5">
+                Defect ingestion trends, department resolution velocity, and operational performance
               </p>
             </div>
           </div>
         </div>
 
         {/* Timeframe Filter & Action Buttons */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center space-x-1 shadow-inner">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="p-1 rounded-xl bg-slate-100 border border-slate-200 flex items-center space-x-1 shadow-2xs">
             {[
               { id: '7d', label: '7 Days' },
               { id: '30d', label: '30 Days' },
@@ -285,10 +276,10 @@ export default function AdminAnalyticsPage() {
               <button
                 key={t.id}
                 onClick={() => setTimeframe(t.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   timeframe === t.id
-                    ? 'bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-md shadow-cyan-500/20'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'bg-white text-blue-700 shadow-2xs border border-slate-200/60 font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {t.label}
@@ -299,170 +290,162 @@ export default function AdminAnalyticsPage() {
           <button
             type="button"
             onClick={handleExportAnalytics}
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs font-bold transition-all shadow-sm group"
+            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-2xs group cursor-pointer"
             title="Download executive analytics CSV report"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span>Export Report</span>
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+            <span>Export CSV</span>
           </button>
 
           <button
             type="button"
             onClick={fetchData}
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs font-bold transition-all shadow-sm"
+            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-2xs cursor-pointer"
             title="Refresh analytics feeds"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-cyan-400 hover:rotate-180 transition-transform duration-500" />
+            <RefreshCw className="w-3.5 h-3.5 text-blue-600 hover:rotate-180 transition-transform duration-500" />
             <span>Refresh</span>
           </button>
         </div>
       </div>
 
-      {/* Top 4 Premium Glowing KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* Top 4 Clean Precision Metric Gauges */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Total Incidents */}
-        <div className="relative p-5 rounded-3xl glass-card border border-slate-800/80 overflow-hidden group hover:border-cyan-500/40 transition-all shadow-xl bg-slate-900/40">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all pointer-events-none"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Recorded</span>
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-              <Layers className="w-4 h-4 text-cyan-400" />
+        <div className="bento-card p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Recorded</span>
+            <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+              <Layers className="w-4 h-4 text-blue-600" />
             </div>
           </div>
-          <div className="mt-4 relative z-10">
-            <h3 className="text-3xl font-black text-white tracking-tight">{totalReportsCount}</h3>
-            <div className="mt-2 flex items-center justify-between text-[11px]">
-              <span className="text-slate-400">Timeframe: {timeframe.toUpperCase()}</span>
-              <span className="text-cyan-400 font-semibold flex items-center">
+          <div className="mt-3">
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight tabular-nums">{totalReportsCount}</h3>
+            <div className="mt-1.5 flex items-center justify-between text-xs">
+              <span className="text-slate-500">Window: {timeframe.toUpperCase()}</span>
+              <span className="text-blue-700 font-bold flex items-center">
                 <ArrowUpRight className="w-3.5 h-3.5 mr-0.5" /> 100% Ingested
               </span>
             </div>
           </div>
-          {/* Accent Line */}
-          <div className="w-full bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-gradient-to-r from-cyan-500 to-sky-400 h-full rounded-full w-full"></div>
+          <div className="w-full bg-slate-100 h-1.5 rounded-full mt-3.5 overflow-hidden">
+            <div className="bg-blue-600 h-full rounded-full w-full"></div>
           </div>
         </div>
 
         {/* Resolved Issues */}
-        <div className="relative p-5 rounded-3xl glass-card border border-slate-800/80 overflow-hidden group hover:border-emerald-500/40 transition-all shadow-xl bg-slate-900/40">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all pointer-events-none"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Resolved Issues</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+        <div className="bento-card p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Resolved Issues</span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>
           </div>
-          <div className="mt-4 relative z-10">
-            <h3 className="text-3xl font-black text-emerald-400 tracking-tight">{resolvedCount}</h3>
-            <div className="mt-2 flex items-center justify-between text-[11px]">
-              <span className="text-slate-400">Resolution Rate</span>
-              <span className="text-emerald-400 font-bold">{resolutionRate}%</span>
+          <div className="mt-3">
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-emerald-700 tracking-tight tabular-nums">{resolvedCount}</h3>
+            <div className="mt-1.5 flex items-center justify-between text-xs">
+              <span className="text-slate-500">Resolution Velocity</span>
+              <span className="text-emerald-700 font-bold">{resolutionRate}%</span>
             </div>
           </div>
-          {/* Accent Line */}
-          <div className="w-full bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-700" style={{ width: `${resolutionRate}%` }}></div>
+          <div className="w-full bg-slate-100 h-1.5 rounded-full mt-3.5 overflow-hidden">
+            <div className="bg-emerald-600 h-full rounded-full transition-all duration-700" style={{ width: `${resolutionRate}%` }}></div>
           </div>
         </div>
 
         {/* Active Under Triage */}
-        <div className="relative p-5 rounded-3xl glass-card border border-slate-800/80 overflow-hidden group hover:border-amber-500/40 transition-all shadow-xl bg-slate-900/40">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all pointer-events-none"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Triage</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-              <Clock className="w-4 h-4 text-amber-400" />
+        <div className="bento-card p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Triage</span>
+            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center">
+              <Clock className="w-4 h-4 text-amber-600" />
             </div>
           </div>
-          <div className="mt-4 relative z-10">
-            <h3 className="text-3xl font-black text-amber-400 tracking-tight">{activeCount}</h3>
-            <div className="mt-2 flex items-center justify-between text-[11px]">
-              <span className="text-slate-400">Pending Field Dispatch</span>
-              <span className="text-amber-400 font-semibold">{totalReportsCount > 0 ? Math.round((activeCount / totalReportsCount) * 100) : 0}%</span>
+          <div className="mt-3">
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-amber-700 tracking-tight tabular-nums">{activeCount}</h3>
+            <div className="mt-1.5 flex items-center justify-between text-xs">
+              <span className="text-slate-500">Pending Field Crew</span>
+              <span className="text-amber-700 font-bold">{totalReportsCount > 0 ? Math.round((activeCount / totalReportsCount) * 100) : 0}%</span>
             </div>
           </div>
-          {/* Accent Line */}
-          <div className="w-full bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-700" style={{ width: `${totalReportsCount > 0 ? (activeCount / totalReportsCount) * 100 : 0}%` }}></div>
+          <div className="w-full bg-slate-100 h-1.5 rounded-full mt-3.5 overflow-hidden">
+            <div className="bg-amber-500 h-full rounded-full transition-all duration-700" style={{ width: `${totalReportsCount > 0 ? (activeCount / totalReportsCount) * 100 : 0}%` }}></div>
           </div>
         </div>
 
         {/* Critical Priority */}
-        <div className="relative p-5 rounded-3xl glass-card border border-slate-800/80 overflow-hidden group hover:border-rose-500/40 transition-all shadow-xl bg-slate-900/40">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-3xl group-hover:bg-rose-500/20 transition-all pointer-events-none"></div>
-          <div className="flex items-center justify-between relative z-10">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Critical Priority</span>
-            <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4 text-rose-400" />
+        <div className="bento-card p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Critical Priority</span>
+            <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-rose-600" />
             </div>
           </div>
-          <div className="mt-4 relative z-10">
-            <h3 className="text-3xl font-black text-rose-400 tracking-tight">{criticalCount}</h3>
-            <div className="mt-2 flex items-center justify-between text-[11px]">
-              <span className="text-slate-400">Immediate Hazard Alert</span>
-              <span className="text-rose-400 font-semibold">{totalReportsCount > 0 ? Math.round((criticalCount / totalReportsCount) * 100) : 0}% of Total</span>
+          <div className="mt-3">
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-rose-700 tracking-tight tabular-nums">{criticalCount}</h3>
+            <div className="mt-1.5 flex items-center justify-between text-xs">
+              <span className="text-slate-500">Urgent Safety Alerts</span>
+              <span className="text-rose-700 font-bold">{totalReportsCount > 0 ? Math.round((criticalCount / totalReportsCount) * 100) : 0}% of Total</span>
             </div>
           </div>
-          {/* Accent Line */}
-          <div className="w-full bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-gradient-to-r from-rose-500 to-red-400 h-full rounded-full transition-all duration-700" style={{ width: `${totalReportsCount > 0 ? (criticalCount / totalReportsCount) * 100 : 0}%` }}></div>
+          <div className="w-full bg-slate-100 h-1.5 rounded-full mt-3.5 overflow-hidden">
+            <div className="bg-rose-600 h-full rounded-full transition-all duration-700" style={{ width: `${totalReportsCount > 0 ? (criticalCount / totalReportsCount) * 100 : 0}%` }}></div>
           </div>
         </div>
 
       </div>
 
-      {/* Row 1: Dual-Axis Ingestion & Resolution Trend + Severity Donut */}
+      {/* Row 1: Ingestion & Resolution Trend + Severity Donut */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Ingestion & Resolution Timeline (Spans 2 cols) */}
-        <div className="lg:col-span-2 rounded-3xl glass-card border border-slate-800/80 p-6 shadow-2xl bg-slate-900/40 flex flex-col justify-between">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800/60">
+        <div className="lg:col-span-2 bento-card p-5 sm:p-6 flex flex-col justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100">
             <div>
-              <h3 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-cyan-400" />
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-wide flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-blue-600" />
                 <span>Incident Ingestion & Resolution Velocity</span>
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Daily volumetric tracking comparing reported defects vs municipal completions
               </p>
             </div>
             <div className="flex items-center space-x-4 text-xs font-semibold">
               <div className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-cyan-400"></span>
-                <span className="text-slate-300">Reported</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                <span className="text-slate-700 font-bold">Reported</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-indigo-400"></span>
-                <span className="text-slate-300">Resolved</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span className="text-slate-700 font-bold">Resolved</span>
               </div>
             </div>
           </div>
 
-          <div className="h-[320px] w-full">
+          <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gradientReports" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.35}/>
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="gradientResolved" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#818cf8" stopOpacity={0.35}/>
-                    <stop offset="95%" stopColor="#818cf8" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#059669" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                 <XAxis 
                   dataKey="name" 
-                  stroke="#64748b" 
+                  stroke="#94a3b8" 
                   fontSize={11} 
                   tickLine={false} 
-                  axisLine={{ stroke: '#334155' }} 
+                  axisLine={{ stroke: '#e2e8f0' }} 
                 />
                 <YAxis 
-                  stroke="#64748b" 
+                  stroke="#94a3b8" 
                   fontSize={11} 
                   tickLine={false} 
                   axisLine={false} 
@@ -470,20 +453,20 @@ export default function AdminAnalyticsPage() {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#090d16', 
-                    borderColor: '#334155', 
+                    backgroundColor: '#ffffff', 
+                    borderColor: '#cbd5e1', 
                     borderRadius: '12px',
-                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)'
+                    boxShadow: '0 4px 12px -2px rgba(15, 23, 42, 0.08)'
                   }}
-                  labelStyle={{ color: '#94a3b8', fontWeight: 'bold', fontSize: '12px' }}
+                  labelStyle={{ color: '#0f172a', fontWeight: 'bold', fontSize: '12px' }}
                   itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="reported" 
                   name="Reported Defects" 
-                  stroke="#06b6d4" 
-                  strokeWidth={3} 
+                  stroke="#2563eb" 
+                  strokeWidth={2.5} 
                   fillOpacity={1} 
                   fill="url(#gradientReports)" 
                 />
@@ -491,8 +474,8 @@ export default function AdminAnalyticsPage() {
                   type="monotone" 
                   dataKey="resolved" 
                   name="Resolved" 
-                  stroke="#818cf8" 
-                  strokeWidth={3} 
+                  stroke="#059669" 
+                  strokeWidth={2.5} 
                   fillOpacity={1} 
                   fill="url(#gradientResolved)" 
                 />
@@ -502,27 +485,27 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Severity Impact Donut Chart */}
-        <div className="rounded-3xl glass-card border border-slate-800/80 p-6 shadow-2xl bg-slate-900/40 flex flex-col justify-between">
-          <div className="pb-4 border-b border-slate-800/60">
-            <h3 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
-              <PieIcon className="w-4 h-4 text-sky-400" />
+        <div className="bento-card p-5 sm:p-6 flex flex-col justify-between">
+          <div className="pb-4 border-b border-slate-100">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-wide flex items-center gap-2">
+              <PieIcon className="w-4 h-4 text-blue-600" />
               <span>Severity Breakdown</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Risk triage distribution
             </p>
           </div>
 
-          <div className="h-[250px] w-full relative flex items-center justify-center">
+          <div className="h-[230px] w-full relative flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={severityData.length ? severityData : [{ name: 'None', value: 1, color: '#334155' }]}
+                  data={severityData.length ? severityData : [{ name: 'None', value: 1, color: '#e2e8f0' }]}
                   cx="50%"
                   cy="50%"
-                  innerRadius={70}
-                  outerRadius={95}
-                  paddingAngle={6}
+                  innerRadius={65}
+                  outerRadius={90}
+                  paddingAngle={5}
                   dataKey="value"
                   stroke="none"
                 >
@@ -532,9 +515,10 @@ export default function AdminAnalyticsPage() {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#090d16', 
-                    borderColor: '#334155', 
-                    borderRadius: '12px'
+                    backgroundColor: '#ffffff', 
+                    borderColor: '#cbd5e1', 
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px -2px rgba(15, 23, 42, 0.08)'
                   }}
                   itemStyle={{ fontWeight: 'bold' }}
                 />
@@ -543,22 +527,22 @@ export default function AdminAnalyticsPage() {
             
             {/* Center Metric */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-black text-white">{criticalCount}</span>
-              <span className="text-[10px] uppercase font-bold text-rose-400 tracking-wider">Critical</span>
+              <span className="text-2xl font-bold text-slate-900 tabular-nums">{criticalCount}</span>
+              <span className="text-[10px] uppercase font-bold text-rose-700 tracking-wider">Critical</span>
             </div>
           </div>
 
           {/* Legend Items */}
-          <div className="space-y-2 mt-2 pt-4 border-t border-slate-800/60">
+          <div className="space-y-2 mt-2 pt-3 border-t border-slate-100">
             {severityData.map((s) => (
               <div key={s.name} className="flex items-center justify-between text-xs">
                 <div className="flex items-center space-x-2">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }}></span>
-                  <span className="text-slate-300 font-medium">{s.name}</span>
+                  <span className="text-slate-700 font-semibold">{s.name}</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-mono font-bold text-white">{s.value}</span>
-                  <span className="text-slate-500 font-mono text-[11px]">({s.pct}%)</span>
+                  <span className="font-bold text-slate-900 tabular-nums">{s.value}</span>
+                  <span className="text-slate-500 text-[11px]">({s.pct}%)</span>
                 </div>
               </div>
             ))}
@@ -571,42 +555,42 @@ export default function AdminAnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Department Workload & Resolution Comparison (Spans 2 cols) */}
-        <div className="lg:col-span-2 rounded-3xl glass-card border border-slate-800/80 p-6 shadow-2xl bg-slate-900/40 flex flex-col justify-between">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-800/60 mb-6">
+        <div className="lg:col-span-2 bento-card p-5 sm:p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
             <div>
-              <h3 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-indigo-400" />
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-wide flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-600" />
                 <span>Department Operational Load & Resolution Ratios</span>
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Active municipal dispatch load vs resolved issues across departments
               </p>
             </div>
             <div className="flex items-center space-x-4 text-xs font-semibold">
               <div className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-sky-500"></span>
-                <span className="text-slate-300">Active</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                <span className="text-slate-700 font-bold">Active</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-                <span className="text-slate-300">Resolved</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                <span className="text-slate-700 font-bold">Resolved</span>
               </div>
             </div>
           </div>
 
-          <div className="h-[280px] w-full">
+          <div className="h-[260px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={departmentData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                 <XAxis 
                   dataKey="department" 
-                  stroke="#64748b" 
+                  stroke="#94a3b8" 
                   fontSize={11} 
                   tickLine={false} 
-                  axisLine={{ stroke: '#334155' }} 
+                  axisLine={{ stroke: '#e2e8f0' }} 
                 />
                 <YAxis 
-                  stroke="#64748b" 
+                  stroke="#94a3b8" 
                   fontSize={11} 
                   tickLine={false} 
                   axisLine={false} 
@@ -614,47 +598,48 @@ export default function AdminAnalyticsPage() {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#090d16', 
-                    borderColor: '#334155', 
-                    borderRadius: '12px' 
+                    backgroundColor: '#ffffff', 
+                    borderColor: '#cbd5e1', 
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px -2px rgba(15, 23, 42, 0.08)'
                   }}
-                  cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }}
+                  cursor={{ fill: 'rgba(0, 0, 0, 0.02)' }}
                 />
-                <Bar dataKey="Active" fill="#0ea5e9" radius={[6, 6, 0, 0]} maxBarSize={36} />
-                <Bar dataKey="Resolved" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={36} />
+                <Bar dataKey="Active" fill="#2563eb" radius={[4, 4, 0, 0]} maxBarSize={32} />
+                <Bar dataKey="Resolved" fill="#059669" radius={[4, 4, 0, 0]} maxBarSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* AI YOLOv8 Model Telemetry & Confidence */}
-        <div className="rounded-3xl glass-card border border-slate-800/80 p-6 shadow-2xl bg-slate-900/40 flex flex-col justify-between">
-          <div className="pb-4 border-b border-slate-800/60">
+        {/* AI Model Telemetry & Confidence */}
+        <div className="bento-card p-5 sm:p-6 flex flex-col justify-between">
+          <div className="pb-4 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-cyan-400" />
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-wide flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-blue-600" />
                 <span>AI Vision Telemetry</span>
               </h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono text-emerald-400 font-bold">
-                YOLOv8 ONLINE
+              <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                ACTIVE
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Confidence score histogram on uploaded imagery
             </p>
           </div>
 
-          <div className="h-[200px] w-full my-3">
+          <div className="h-[180px] w-full my-3">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={aiConfidenceData} layout="vertical" margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
-                <XAxis type="number" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <YAxis dataKey="range" type="category" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+                <XAxis type="number" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
+                <YAxis dataKey="range" type="category" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#090d16', borderColor: '#334155', borderRadius: '12px' }}
-                  cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }}
+                  contentStyle={{ backgroundColor: '#ffffff', borderColor: '#cbd5e1', borderRadius: '12px', boxShadow: '0 4px 12px -2px rgba(15, 23, 42, 0.08)' }}
+                  cursor={{ fill: 'rgba(0, 0, 0, 0.02)' }}
                 />
-                <Bar dataKey="count" name="Detections" radius={[0, 6, 6, 0]} maxBarSize={22}>
+                <Bar dataKey="count" name="Detections" radius={[0, 4, 4, 0]} maxBarSize={20}>
                   {aiConfidenceData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
@@ -663,47 +648,47 @@ export default function AdminAnalyticsPage() {
             </ResponsiveContainer>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/60 flex items-center justify-between text-xs mt-2">
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 flex items-center justify-between text-xs mt-2">
             <div className="flex items-center space-x-2">
-              <Zap className="w-4 h-4 text-cyan-400" />
-              <span className="text-slate-300 font-semibold">Auto-Triage Precision</span>
+              <Zap className="w-4 h-4 text-blue-600" />
+              <span className="text-slate-700 font-bold">Auto-Triage Precision</span>
             </div>
-            <span className="font-mono font-bold text-cyan-400">98.2%</span>
+            <span className="font-extrabold text-blue-700 font-mono">98.2%</span>
           </div>
         </div>
 
       </div>
 
       {/* Row 3: Peak Civic Reporting Windows */}
-      <div className="rounded-3xl glass-card border border-slate-800/80 p-6 shadow-2xl bg-slate-900/40">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/60 mb-6">
+      <div className="bento-card p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-5">
           <div>
-            <h3 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
-              <Clock className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-wide flex items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-500" />
               <span>Civic Peak Reporting Heatmap (Time Windows)</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Identifies the primary hours citizens spot and submit municipal infrastructure defects
             </p>
           </div>
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-xs text-slate-500 font-medium">
             Analyzed across {totalReportsCount} submissions
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {peakHoursData.map((item, index) => (
-            <div key={item.window} className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/60 flex flex-col justify-between hover:border-slate-700 transition-colors">
-              <span className="text-xs text-slate-400 font-medium">{item.window}</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {peakHoursData.map((item) => (
+            <div key={item.window} className="p-4 rounded-xl bg-slate-50 border border-slate-200/90 flex flex-col justify-between hover:border-slate-300 transition-colors">
+              <span className="text-xs text-slate-700 font-semibold">{item.window}</span>
               <div className="mt-3 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-white">{item.reports}</span>
-                <span className="text-xs font-mono text-cyan-400 font-bold">
+                <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">{item.reports}</span>
+                <span className="text-xs font-bold text-blue-700">
                   {totalReportsCount > 0 ? Math.round((item.reports / totalReportsCount) * 100) : 0}%
                 </span>
               </div>
-              <div className="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div className="w-full bg-slate-200 h-1.5 rounded-full mt-3 overflow-hidden">
                 <div 
-                  className="bg-gradient-to-r from-cyan-500 to-amber-400 h-full rounded-full" 
+                  className="bg-blue-600 h-full rounded-full" 
                   style={{ width: `${totalReportsCount > 0 ? (item.reports / totalReportsCount) * 100 : 0}%` }}
                 ></div>
               </div>

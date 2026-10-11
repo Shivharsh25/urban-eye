@@ -377,15 +377,15 @@ export default function UserProfilePage() {
       )}
 
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/70 w-full min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200 w-full min-w-0">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shrink-0">
-              <User className="w-5 h-5 text-cyan-400" />
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0">
+              <User className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">{t('citizenProfile', 'Citizen Profile')}</h1>
-              <p className="text-xs sm:text-sm text-slate-400">{t('profileSubtitle', 'Manage identity, track civic score, and view dispatch history')}</p>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{t('citizenProfile', 'Citizen Profile')}</h1>
+              <p className="text-xs sm:text-sm text-slate-500">{t('profileSubtitle', 'Manage identity, track civic score, and view dispatch history')}</p>
             </div>
           </div>
         </div>
@@ -394,23 +394,23 @@ export default function UserProfilePage() {
           {!isEditing ? (
             <button 
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition-all active:scale-95 shadow-md"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 transition-all active:scale-95 shadow-xs cursor-pointer"
             >
-              <Edit3 className="w-3.5 h-3.5 text-cyan-400" />
+              <Edit3 className="w-3.5 h-3.5 text-blue-600" />
               <span>{t('editProfile', 'Edit Profile')}</span>
             </button>
           ) : (
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => setIsEditing(false)}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 transition-all"
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 transition-all cursor-pointer"
               >
                 {t('cancel', 'Cancel')}
               </button>
               <button 
                 onClick={handleSaveProfile}
                 disabled={isSaving}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white shadow-lg shadow-cyan-500/25 transition-all active:scale-95 disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>{isSaving ? t('saving', 'Saving...') : t('saveChanges', 'Save Changes')}</span>
@@ -420,7 +420,7 @@ export default function UserProfilePage() {
 
           <button
             onClick={handleExportCivicRecord}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-all active:scale-95 shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition-all active:scale-95 shadow-xs cursor-pointer"
             title="Download your full civic portfolio in JSON"
           >
             <Download className="w-3.5 h-3.5" />
@@ -436,13 +436,11 @@ export default function UserProfilePage() {
         <div className="lg:col-span-1 space-y-6 w-full min-w-0">
           
           {/* Identity Card */}
-          <div className="glass-card p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800/80 bg-slate-900/50 flex flex-col items-center text-center relative overflow-hidden group w-full min-w-0">
-            {/* Top Accent Line */}
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60"></div>
+          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white flex flex-col items-center text-center relative overflow-hidden group w-full min-w-0 shadow-xs">
             
             {/* Avatar Section */}
             <div className="relative mb-4 mt-2">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-600 p-1 shadow-[0_0_25px_rgba(6,182,212,0.25)] relative">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-blue-100 p-1 border-2 border-blue-500 relative">
                 <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center relative overflow-hidden">
                    {profileData.photoUrl ? (
                      <img src={profileData.photoUrl} alt="Profile" className="w-full h-full object-cover relative z-10" />
@@ -457,8 +455,8 @@ export default function UserProfilePage() {
                 </div>
                 {/* Active Indicator beacon */}
                 {!isEditing && (
-                  <div className="absolute bottom-0 right-1 w-6 h-6 bg-slate-950 rounded-full flex items-center justify-center border-2 border-slate-900">
-                    <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
+                  <div className="absolute bottom-0 right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center border-2 border-slate-200 shadow-sm">
+                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
                   </div>
                 )}
               </div>
@@ -475,7 +473,7 @@ export default function UserProfilePage() {
                   />
                   <button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-0 right-0 w-8 h-8 bg-cyan-600 hover:bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-slate-900 transition-colors"
+                    className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 hover:bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white transition-colors cursor-pointer"
                     title="Upload new photo"
                   >
                     <Camera className="w-3.5 h-3.5" />
@@ -489,62 +487,62 @@ export default function UserProfilePage() {
               {isEditing ? (
                 <div className="space-y-3 w-full text-left">
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('fullName', 'Full Name')}</label>
+                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">{t('fullName', 'Full Name')}</label>
                     <input 
                       type="text" 
                       value={profileData.name}
                       onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-semibold focus:outline-none focus:border-cyan-500 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 font-semibold focus:outline-none focus:border-blue-600 transition-colors"
                       placeholder="Your Name"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('contactPhone', 'Contact Phone')}</label>
+                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">{t('contactPhone', 'Contact Phone')}</label>
                     <input 
                       type="tel" 
                       value={profileData.phone}
                       onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                      className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-600 transition-colors"
                       placeholder="+91 98765 43210"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('wardNeighborhood', 'Municipal Ward / Neighborhood')}</label>
+                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">{t('wardNeighborhood', 'Municipal Ward / Neighborhood')}</label>
                     <input 
                       type="text" 
                       value={profileData.neighborhood}
                       onChange={(e) => setProfileData(prev => ({ ...prev, neighborhood: e.target.value }))}
-                      className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-600 transition-colors"
                       placeholder="e.g. Sector 20 / Greater Noida"
                     />
                   </div>
                 </div>
               ) : (
                 <>
-                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight truncate">{profileData.name}</h2>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">{profileData.name}</h2>
                   
-                  <div className="flex flex-col items-center gap-1 mt-2 text-xs text-slate-400">
+                  <div className="flex flex-col items-center gap-1 mt-2 text-xs text-slate-500">
                     <span className="flex items-center gap-1.5 truncate max-w-full">
-                      <Mail className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <Mail className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                       <span className="truncate">{user?.email || 'citizen@urbaneye.local'}</span>
                     </span>
 
                     {profileData.phone && (
                       <span className="flex items-center gap-1.5 truncate max-w-full">
-                        <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                         <span className="font-mono">{profileData.phone}</span>
                       </span>
                     )}
 
-                    <span className="flex items-center gap-1.5 text-slate-300 mt-0.5 truncate max-w-full">
-                      <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span className="flex items-center gap-1.5 text-slate-600 mt-0.5 truncate max-w-full">
+                      <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                       <span className="truncate">{profileData.neighborhood}</span>
                     </span>
 
-                    <span className="flex items-center gap-1.5 text-slate-500 mt-1 font-mono text-[11px] uppercase tracking-wider">
-                      <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
+                    <span className="flex items-center gap-1.5 text-slate-400 mt-1 font-sans text-[11px] uppercase tracking-wider">
+                      <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
                       {t('activeSince', 'Active since')} {userStats.joinDate}
                     </span>
                   </div>
@@ -553,18 +551,18 @@ export default function UserProfilePage() {
             </div>
 
             {/* About / Civic Statement */}
-            <div className="mt-5 w-full pt-4 border-t border-slate-800/70 text-left">
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('civicStatement', 'Civic Statement')}</h3>
+            <div className="mt-5 w-full pt-4 border-t border-slate-200 text-left">
+              <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">{t('civicStatement', 'Civic Statement')}</h3>
               {isEditing ? (
                 <textarea 
                   value={profileData.about}
                   onChange={(e) => setProfileData(prev => ({ ...prev, about: e.target.value }))}
                   rows="3"
-                  className="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-slate-300 text-xs focus:outline-none focus:border-cyan-500 resize-none transition-colors"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-blue-600 resize-none transition-colors"
                   placeholder="Share your civic mission with the community..."
                 />
               ) : (
-                <p className="text-xs text-slate-300 leading-relaxed italic">
+                <p className="text-xs text-slate-600 leading-relaxed italic">
                   "{profileData.about}"
                 </p>
               )}
@@ -572,15 +570,15 @@ export default function UserProfilePage() {
 
             {/* Role & Verification Badge */}
             {!isEditing && (
-              <div className="mt-5 w-full pt-4 border-t border-slate-800/70 flex items-center justify-between text-xs">
-                <span className="text-slate-400 text-[11px]">{t('systemStatus', 'System Status')}:</span>
+              <div className="mt-5 w-full pt-4 border-t border-slate-200 flex items-center justify-between text-xs">
+                <span className="text-slate-500 text-[11px] font-medium">{t('systemStatus', 'System Status')}:</span>
                 {isAdmin ? (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
                     <Shield className="w-3.5 h-3.5" />
                     {t('adminCommand', 'Admin Command')}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/25">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                     <CheckCircle className="w-3.5 h-3.5" />
                     {t('verifiedCitizen', 'Verified Citizen')}
                   </span>
@@ -590,40 +588,40 @@ export default function UserProfilePage() {
           </div>
 
           {/* Civic Tier Status Card */}
-          <div className="glass-card p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800/80 bg-slate-900/50 w-full min-w-0">
+          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white w-full min-w-0 shadow-xs">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Award className="w-4 h-4 text-amber-400" />
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <Award className="w-4 h-4 text-amber-500" />
                 <span>{t('civicTierRank', 'Civic Tier Rank')}</span>
               </h3>
-              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300`}>
+              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-200 bg-amber-50 text-amber-700">
                 {tierInfo.name}
               </span>
             </div>
 
             {/* Score circle & points */}
             <div className="flex items-center gap-4 py-2">
-              <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center shrink-0 shadow-lg">
-                <span className={`text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r ${tierInfo.textGradient}`}>
+              <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col items-center justify-center shrink-0 shadow-xs">
+                <span className="text-2xl font-black text-blue-700">
                   {userStats.civicScore}
                 </span>
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{t('pointsShort', 'Score')}</span>
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">{t('pointsShort', 'Score')}</span>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-white">{tierInfo.name}</p>
-                <p className="text-[11px] text-slate-400 leading-snug mt-0.5">{tierInfo.perk}</p>
+                <p className="text-xs font-bold text-slate-900">{tierInfo.name}</p>
+                <p className="text-[11px] text-slate-500 leading-snug mt-0.5">{tierInfo.perk}</p>
               </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="mt-4 pt-3 border-t border-slate-800/70">
-              <div className="flex justify-between text-[11px] font-medium text-slate-400 mb-1.5">
+            <div className="mt-4 pt-3 border-t border-slate-200">
+              <div className="flex justify-between text-[11px] font-medium text-slate-500 mb-1.5">
                 <span>{t('tierMilestone', 'Tier Milestone')}</span>
-                <span className="text-amber-400 font-bold">{Math.max(0, tierInfo.next - userStats.civicScore)} {t('ptsToLevelUp', 'pts to Level Up')}</span>
+                <span className="text-amber-600 font-bold">{Math.max(0, tierInfo.next - userStats.civicScore)} {t('ptsToLevelUp', 'pts to Level Up')}</span>
               </div>
-              <div className="h-2 w-full bg-slate-800/80 rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                 <div 
-                  className={`h-full bg-gradient-to-r ${tierInfo.color} rounded-full transition-all duration-700`}
+                  className="h-full bg-blue-600 rounded-full transition-all duration-700"
                   style={{ width: `${Math.min(100, Math.max(10, (userStats.civicScore / tierInfo.next) * 100))}%` }}
                 />
               </div>
@@ -631,50 +629,50 @@ export default function UserProfilePage() {
           </div>
 
           {/* Citizen Preferences Card */}
-          <div className="glass-card p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800/80 bg-slate-900/50 w-full min-w-0">
-            <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-cyan-400" />
+          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white w-full min-w-0 shadow-xs">
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-blue-600" />
               <span>{t('citizenPreferences', 'Citizen Preferences')}</span>
             </h3>
 
             <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                 <div>
-                  <span className="font-semibold text-slate-200 block">{t('emailReportUpdates', 'Email Report Updates')}</span>
+                  <span className="font-semibold text-slate-800 block">{t('emailReportUpdates', 'Email Report Updates')}</span>
                   <span className="text-[10px] text-slate-500">{t('emailUpdatesDesc', 'Alerts when city resolves issues')}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleTogglePreference('emailUpdates')}
-                  className={`w-10 h-6 rounded-full transition-colors relative p-0.5 ${preferences.emailUpdates ? 'bg-cyan-500' : 'bg-slate-700'}`}
+                  className={`w-10 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer ${preferences.emailUpdates ? 'bg-blue-600' : 'bg-slate-300'}`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${preferences.emailUpdates ? 'translate-x-4' : 'translate-x-0'}`} />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                 <div>
-                  <span className="font-semibold text-slate-200 block">{t('criticalSmsAlerts', 'Critical SMS Alerts')}</span>
+                  <span className="font-semibold text-slate-800 block">{t('criticalSmsAlerts', 'Critical SMS Alerts')}</span>
                   <span className="text-[10px] text-slate-500">{t('smsAlertsDesc', 'High-priority road & flood hazard alerts')}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleTogglePreference('smsAlerts')}
-                  className={`w-10 h-6 rounded-full transition-colors relative p-0.5 ${preferences.smsAlerts ? 'bg-cyan-500' : 'bg-slate-700'}`}
+                  className={`w-10 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer ${preferences.smsAlerts ? 'bg-blue-600' : 'bg-slate-300'}`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${preferences.smsAlerts ? 'translate-x-4' : 'translate-x-0'}`} />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                 <div>
-                  <span className="font-semibold text-slate-200 block">{t('locationAutoTag', 'Location Auto-Tag')}</span>
+                  <span className="font-semibold text-slate-800 block">{t('locationAutoTag', 'Location Auto-Tag')}</span>
                   <span className="text-[10px] text-slate-500">{t('locationAutoTagDesc', 'Auto-fill street name on photo upload')}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleTogglePreference('locationAutoTag')}
-                  className={`w-10 h-6 rounded-full transition-colors relative p-0.5 ${preferences.locationAutoTag ? 'bg-cyan-500' : 'bg-slate-700'}`}
+                  className={`w-10 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer ${preferences.locationAutoTag ? 'bg-blue-600' : 'bg-slate-300'}`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${preferences.locationAutoTag ? 'translate-x-4' : 'translate-x-0'}`} />
                 </button>
@@ -689,53 +687,53 @@ export default function UserProfilePage() {
           
           {/* 4-Stat Civic Matrix */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full min-w-0">
-            <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 min-w-0 w-full">
+            <div className="p-4 rounded-2xl border border-slate-200 bg-white min-w-0 w-full shadow-xs">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('totalReports', 'Total Reports')}</span>
-                <Camera className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">{t('totalReports', 'Total Reports')}</span>
+                <Camera className="w-4 h-4 text-blue-600 shrink-0" />
               </div>
-              <p className="text-2xl sm:text-3xl font-black text-white">{userStats.totalReports}</p>
-              <p className="text-[10px] text-slate-500 mt-1 truncate">{t('submittedByYou', 'Submitted by you')}</p>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900">{userStats.totalReports}</p>
+              <p className="text-[10px] text-slate-400 mt-1 truncate">{t('submittedByYou', 'Submitted by you')}</p>
             </div>
 
-            <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 min-w-0 w-full">
+            <div className="p-4 rounded-2xl border border-slate-200 bg-white min-w-0 w-full shadow-xs">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('resolved', 'Resolved')}</span>
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">{t('resolved', 'Resolved')}</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               </div>
-              <p className="text-2xl sm:text-3xl font-black text-emerald-400">{userStats.resolvedReports}</p>
-              <p className="text-[10px] text-emerald-500/80 mt-1 truncate">{resolutionRate}% {t('fixRate', 'fix rate')}</p>
+              <p className="text-2xl sm:text-3xl font-black text-emerald-600">{userStats.resolvedReports}</p>
+              <p className="text-[10px] text-emerald-600/80 mt-1 truncate font-medium">{resolutionRate}% {t('fixRate', 'fix rate')}</p>
             </div>
 
-            <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 min-w-0 w-full">
+            <div className="p-4 rounded-2xl border border-slate-200 bg-white min-w-0 w-full shadow-xs">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('trustScoreLabel', 'Trust Score')}</span>
-                <Award className="w-4 h-4 text-amber-400 shrink-0" />
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">{t('trustScoreLabel', 'Trust Score')}</span>
+                <Award className="w-4 h-4 text-amber-500 shrink-0" />
               </div>
-              <p className="text-2xl sm:text-3xl font-black text-amber-400">{userStats.civicScore}</p>
-              <p className="text-[10px] text-amber-500/80 mt-1 truncate">{t('reliabilityRating', 'Reliability rating')}</p>
+              <p className="text-2xl sm:text-3xl font-black text-amber-600">{userStats.civicScore}</p>
+              <p className="text-[10px] text-amber-600/80 mt-1 truncate font-medium">{t('reliabilityRating', 'Reliability rating')}</p>
             </div>
 
-            <div className="glass-card p-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 min-w-0 w-full">
+            <div className="p-4 rounded-2xl border border-slate-200 bg-white min-w-0 w-full shadow-xs">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('endorsements', 'Endorsements')}</span>
-                <ThumbsUp className="w-4 h-4 text-sky-400 shrink-0" />
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">{t('endorsements', 'Endorsements')}</span>
+                <ThumbsUp className="w-4 h-4 text-blue-600 shrink-0" />
               </div>
-              <p className="text-2xl sm:text-3xl font-black text-sky-400">
+              <p className="text-2xl sm:text-3xl font-black text-blue-600">
                 {contributions.reduce((sum, c) => sum + (c.reportCount || 1), 0)}
               </p>
-              <p className="text-[10px] text-sky-500/80 mt-1 truncate">{t('communityConfirmations', 'Community confirmations')}</p>
+              <p className="text-[10px] text-blue-600/80 mt-1 truncate font-medium">{t('communityConfirmations', 'Community confirmations')}</p>
             </div>
           </div>
 
           {/* Earned Badges & Achievements Grid */}
-          <div className="glass-card p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800/80 bg-slate-900/50 w-full min-w-0">
+          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white w-full min-w-0 shadow-xs">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Medal className="w-4 h-4 text-amber-400" />
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <Medal className="w-4 h-4 text-amber-500" />
                 <span>{t('civicAchievementsBadges', 'Civic Achievements & Badges')}</span>
               </h3>
-              <span className="text-xs font-mono text-cyan-400 font-bold">
+              <span className="text-xs font-sans text-blue-600 font-bold">
                 {achievements.filter(a => a.unlocked).length} / {achievements.length} {t('unlocked', 'Unlocked')}
               </span>
             </div>
@@ -746,24 +744,24 @@ export default function UserProfilePage() {
                   key={badge.id}
                   className={`p-3.5 rounded-2xl border transition-all flex flex-col justify-between ${
                     badge.unlocked 
-                      ? `${badge.bg} ${badge.border} shadow-md` 
-                      : 'bg-slate-950/40 border-slate-800/60 opacity-60'
+                      ? 'bg-blue-50/60 border-blue-200 shadow-2xs' 
+                      : 'bg-slate-50 border-slate-200 opacity-60'
                   }`}
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${badge.unlocked ? badge.bg : 'bg-slate-800'} border ${badge.border}`}>
-                      <badge.icon className={`w-4 h-4 ${badge.unlocked ? badge.color : 'text-slate-500'}`} />
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${badge.unlocked ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-400'}`}>
+                      <badge.icon className="w-4 h-4" />
                     </div>
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${
-                      badge.unlocked ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-500'
+                    <span className={`text-[10px] font-sans px-2 py-0.5 rounded-full font-bold ${
+                      badge.unlocked ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-200 text-slate-600'
                     }`}>
                       {badge.unlocked ? t('unlocked', 'Unlocked') : badge.progress}
                     </span>
                   </div>
 
                   <div>
-                    <h4 className="text-xs font-bold text-white">{badge.name}</h4>
-                    <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">{badge.desc}</p>
+                    <h4 className="text-xs font-bold text-slate-900">{badge.name}</h4>
+                    <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">{badge.desc}</p>
                   </div>
                 </div>
               ))}
@@ -771,20 +769,20 @@ export default function UserProfilePage() {
           </div>
 
           {/* User Contributions History Hub */}
-          <div className="glass-card p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800/80 bg-slate-900/50 w-full min-w-0">
+          <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 bg-white shadow-xs w-full min-w-0">
             
             {/* Header & Filter Tabs */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-slate-800/70 w-full min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-slate-100 w-full min-w-0">
               <div>
-                <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-cyan-400" />
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-blue-600" />
                   <span>{t('myReportedIncidents', 'My Reported Incidents')}</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">{t('trackResolutionDesc', 'Track resolution status and download official municipal PDFs')}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t('trackResolutionDesc', 'Track resolution status and download official municipal PDFs')}</p>
               </div>
 
               {/* Status Tabs */}
-              <div className="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800 text-xs font-semibold overflow-x-auto max-w-full no-scrollbar shrink-0">
+              <div className="flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold overflow-x-auto max-w-full no-scrollbar shrink-0">
                 {[
                   { key: 'ALL', label: t('all', 'All') },
                   { key: 'RESOLVED', label: t('resolved', 'Resolved') },
@@ -796,8 +794,8 @@ export default function UserProfilePage() {
                     onClick={() => setContributionFilter(tab.key)}
                     className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                       contributionFilter === tab.key 
-                        ? 'bg-cyan-500/20 text-cyan-300 font-bold shadow-sm' 
-                        : 'text-slate-400 hover:text-slate-200'
+                        ? 'bg-white text-blue-700 font-bold shadow-xs' 
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     {tab.label}
@@ -809,8 +807,8 @@ export default function UserProfilePage() {
             {/* List of reports */}
             {loading ? (
               <div className="flex flex-col items-center justify-center py-10 space-y-2">
-                <div className="w-6 h-6 border-2 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
-                <p className="text-xs text-slate-400">{t('loadingCivicHistory', 'Loading civic history...')}</p>
+                <div className="w-6 h-6 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <p className="text-xs text-slate-500">{t('loadingCivicHistory', 'Loading civic history...')}</p>
               </div>
             ) : filteredContributions.length > 0 ? (
               <div className="space-y-3 w-full min-w-0">
@@ -822,42 +820,42 @@ export default function UserProfilePage() {
                   return (
                     <div
                       key={item.id || item._id}
-                      className="p-3 sm:p-4 rounded-2xl bg-slate-950/60 border border-slate-800/70 hover:border-slate-700/80 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 w-full min-w-0 overflow-hidden"
+                      className="p-3 sm:p-4 rounded-2xl bg-slate-50/80 border border-slate-200 hover:border-slate-300 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 w-full min-w-0 overflow-hidden"
                     >
                       <div className="flex items-start gap-3 flex-1 min-w-0 w-full">
                         {/* Thumbnail */}
                         {imgUrl ? (
-                          <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-700/60 shadow-md">
+                          <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-xs">
                             <img src={imgUrl} alt={item.type} className="w-full h-full object-cover" />
                           </div>
                         ) : (
-                          <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0">
-                            <MapPin className="w-5 h-5 text-cyan-400" />
+                          <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+                            <MapPin className="w-5 h-5 text-blue-600" />
                           </div>
                         )}
 
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1 min-w-0">
-                            <h4 className="text-xs sm:text-sm font-bold text-white capitalize truncate max-w-[170px] sm:max-w-none">
+                            <h4 className="text-xs sm:text-sm font-bold text-slate-900 capitalize truncate max-w-[170px] sm:max-w-none">
                               {item.type?.replace('_', ' ') || 'Incident'}
                             </h4>
                             
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${
                               isResolved 
-                                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
                                 : isInProgress 
-                                  ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' 
-                                  : 'bg-sky-500/15 text-sky-400 border border-sky-500/30'
+                                  ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                                  : 'bg-blue-50 text-blue-700 border border-blue-200'
                             }`}>
                               {isResolved ? t('resolved', 'Resolved') : isInProgress ? t('inProgress', 'Active') : t('reported', 'Reported')}
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-300 truncate">
+                          <p className="text-xs text-slate-600 truncate">
                             {item.address || `${item.lat}, ${item.lng}`}
                           </p>
 
-                          <div className="flex items-center gap-3 mt-1 text-[10px] sm:text-[11px] text-slate-500 font-mono">
+                          <div className="flex items-center gap-3 mt-1 text-[10px] sm:text-[11px] text-slate-500 font-medium">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3 shrink-0" />
                               {new Date(item.createdAt).toLocaleDateString()}
@@ -869,11 +867,11 @@ export default function UserProfilePage() {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex items-center justify-end gap-2 shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t border-slate-800/60 sm:border-t-0">
+                      <div className="flex items-center justify-end gap-2 shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t border-slate-200 sm:border-t-0">
                         <button
                           type="button"
                           onClick={() => generateReportPDF(item)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-all shadow-xs"
                           title="Download formal dispatch PDF"
                         >
                           <Download className="w-3.5 h-3.5" />
@@ -883,7 +881,7 @@ export default function UserProfilePage() {
                         <button
                           type="button"
                           onClick={() => setSelectedDetection(item)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition-all"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition-all"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>{t('inspect', 'Inspect')}</span>
@@ -894,13 +892,13 @@ export default function UserProfilePage() {
                 })}
               </div>
             ) : (
-              <div className="p-8 text-center text-slate-400 border border-slate-800/60 border-dashed rounded-2xl bg-slate-950/40">
-                <MapPin className="w-8 h-8 mx-auto text-slate-600 mb-2" />
-                <p className="text-sm font-semibold text-slate-300">{t('noIncidentsFound', 'No incident reports under this filter.')}</p>
+              <div className="p-8 text-center text-slate-500 border border-slate-200 border-dashed rounded-2xl bg-slate-50/60">
+                <MapPin className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+                <p className="text-sm font-semibold text-slate-800">{t('noIncidentsFound', 'No incident reports under this filter.')}</p>
                 <p className="text-xs text-slate-500 mt-1">{t('foundHazardQuestion', 'Found a road hazard, streetlight outage, or water leak in your neighborhood?')}</p>
                 <button
                   onClick={() => navigate('/report')}
-                  className="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
+                  className="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-all active:scale-95"
                 >
                   {t('reportAnIssue', 'Report an Issue')}
                 </button>
@@ -912,34 +910,34 @@ export default function UserProfilePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full min-w-0">
             <button
               onClick={() => navigate('/map')}
-              className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 transition-all flex items-center justify-between text-left group"
+              className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50/20 transition-all flex items-center justify-between text-left group shadow-xs cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-                  <Compass className="w-4 h-4 text-cyan-400" />
+                <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+                  <Compass className="w-4 h-4 text-blue-600" />
                 </div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">{t('exploreLiveMap', 'Explore Live Community Map')}</h4>
-                  <p className="text-[11px] text-slate-400">{t('exploreMapDesc', 'View real-time pins and municipal response teams')}</p>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{t('exploreLiveMap', 'Explore Live Community Map')}</h4>
+                  <p className="text-[11px] text-slate-500">{t('exploreMapDesc', 'View real-time pins and municipal response teams')}</p>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 group-hover:text-cyan-400 transition-all shrink-0" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 group-hover:text-blue-600 transition-all shrink-0" />
             </button>
 
             <button
               onClick={() => navigate('/report')}
-              className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/40 transition-all flex items-center justify-between text-left group"
+              className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex items-center justify-between text-left group shadow-xs cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                  <Camera className="w-4 h-4 text-emerald-400" />
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+                  <Camera className="w-4 h-4 text-emerald-600" />
                 </div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">{t('submitRoadHazard', 'Submit New Road Hazard')}</h4>
-                  <p className="text-[11px] text-slate-400">{t('submitHazardDesc', 'Instant AI triage, geolocation, and dispatch')}</p>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{t('submitRoadHazard', 'Submit New Road Hazard')}</h4>
+                  <p className="text-[11px] text-slate-500">{t('submitHazardDesc', 'Instant AI triage, geolocation, and dispatch')}</p>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-500 group-hover:translate-x-1 group-hover:text-emerald-400 transition-all shrink-0" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 group-hover:text-emerald-600 transition-all shrink-0" />
             </button>
           </div>
 

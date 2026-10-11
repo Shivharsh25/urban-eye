@@ -29,38 +29,37 @@ export default function UploadStepper({ currentStage, progressData, error }) {
   const isComplete = currentStage === 'dispatched' || currentStage === 'completed';
 
   return (
-    <div className="w-full bg-stone-900/80 border border-stone-800 rounded-3xl p-6 sm:p-7 shadow-2xl glass-panel relative overflow-hidden backdrop-blur-xl">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      
+    <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 relative overflow-hidden shadow-xs">
+
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-stone-800 relative z-10">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100 relative z-10">
+        <div className="flex items-center space-x-3.5">
+          <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0 shadow-xs">
             {isComplete ? (
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             ) : (
               <Loader2 className="w-5 h-5 animate-spin" />
             )}
           </div>
           <div>
-            <h4 className="text-base font-bold text-stone-100 flex items-center gap-2">
-              <span>{isComplete ? 'Report Dispatched & Confirmed' : 'Processing Your Report...'}</span>
+            <h4 className="text-base font-bold text-slate-900 font-display flex items-center gap-2">
+              <span>{isComplete ? 'Report Dispatched & Verified' : 'AI Analysis & Municipal Triage in Progress...'}</span>
             </h4>
-            <p className="text-xs text-stone-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Automated multi-stage AI triage, geospatial clustering & municipal routing
             </p>
           </div>
         </div>
         {progressData && (
-          <div className="px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold font-mono flex items-center space-x-2 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <div className="px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold font-mono flex items-center space-x-2 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
             <span>Step {Math.min(6, (progressData.step || 1))} of 6</span>
           </div>
         )}
       </div>
 
-      {/* Stepper Milestones Grid (Guaranteed no overflow) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 mb-6 relative z-10">
+      {/* Stepper Milestones Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 mb-5 relative z-10">
         {STAGES.map((stage, idx) => {
           const Icon = stage.icon;
           const isDone = isComplete || idx < activeIndex;
@@ -69,22 +68,22 @@ export default function UploadStepper({ currentStage, progressData, error }) {
           return (
             <div
               key={stage.id}
-              className={`relative flex flex-col p-3 rounded-2xl border min-w-0 overflow-hidden transition-all duration-300 ${
+              className={`relative flex flex-col p-3.5 rounded-xl border min-w-0 overflow-hidden transition-all duration-300 ${
                 isDone
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                  ? 'bg-emerald-50/80 border-emerald-200 text-emerald-700 shadow-xs'
                   : isCurrent
-                  ? 'bg-cyan-500/15 border-cyan-400 text-cyan-300 shadow-md shadow-cyan-500/10 ring-1 ring-cyan-400/40'
-                  : 'bg-stone-800/40 border-stone-700/60 text-stone-500'
+                  ? 'bg-blue-50/90 border-blue-500 text-blue-800 shadow-sm ring-1 ring-blue-500/40'
+                  : 'bg-slate-50/70 border-slate-200/80 text-slate-400'
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-2.5">
                 <div
-                  className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all ${
                     isDone
-                      ? 'bg-emerald-500/20 text-emerald-400'
+                      ? 'bg-emerald-100 text-emerald-700'
                       : isCurrent
-                      ? 'bg-cyan-500 text-stone-950 font-bold'
-                      : 'bg-stone-700/60 text-stone-400'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-slate-200/70 text-slate-500'
                   }`}
                 >
                   {isDone ? (
@@ -99,10 +98,10 @@ export default function UploadStepper({ currentStage, progressData, error }) {
               </div>
 
               <div className="min-w-0 overflow-hidden">
-                <span className="text-xs font-bold tracking-tight block truncate text-stone-200" title={stage.label}>
+                <span className="text-xs font-bold tracking-tight block truncate text-slate-900" title={stage.label}>
                   {stage.label}
                 </span>
-                <span className="text-[10px] text-stone-400 block truncate mt-0.5" title={stage.desc}>
+                <span className="text-[10px] text-slate-500 block truncate mt-0.5" title={stage.desc}>
                   {stage.desc}
                 </span>
               </div>
@@ -112,36 +111,36 @@ export default function UploadStepper({ currentStage, progressData, error }) {
       </div>
 
       {/* Current Real-Time Status Log Message */}
-      <div className="p-4 rounded-2xl bg-stone-950/80 border border-stone-800/90 flex items-start space-x-3.5 relative z-10 shadow-inner">
+      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-start space-x-3.5 relative z-10 shadow-xs">
         {error ? (
           <>
-            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-rose-300 font-mono">PIPELINE ERROR</p>
-              <p className="text-xs text-rose-400 mt-0.5">{error}</p>
+              <p className="text-xs font-bold text-rose-700 font-mono tracking-wider">PIPELINE ALERT</p>
+              <p className="text-xs text-rose-600 mt-0.5">{error}</p>
             </div>
           </>
         ) : (
           <>
             <div className="mt-0.5">
               {isComplete ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               ) : (
-                <Loader2 className="w-4 h-4 text-cyan-400 animate-spin shrink-0" />
+                <Loader2 className="w-4 h-4 text-blue-600 animate-spin shrink-0" />
               )}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold font-mono text-cyan-300">
+                <p className="text-xs font-bold font-mono text-blue-700 uppercase tracking-wider">
                   {isComplete ? 'DISPATCH CONFIRMED' : 'EXECUTING PHASE'}
                 </p>
                 {progressData?.timestamp && (
-                  <span className="text-[10px] text-stone-500 font-mono">
+                  <span className="text-[10px] text-slate-400 font-mono">
                     {new Date(progressData.timestamp).toLocaleTimeString()}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-stone-300 mt-0.5 font-medium truncate">
+              <p className="text-xs text-slate-700 mt-0.5 font-medium truncate">
                 {progressData?.message || 'Processing input stream...'}
               </p>
             </div>

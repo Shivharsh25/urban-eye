@@ -166,11 +166,27 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
     }
   };
 
+  const rawSev = currentDetection.severity || '50%';
+  const sevNum = parseInt(rawSev);
+  let severityTier = 'medium';
+  let severityDisplay = rawSev;
+
+  if (!isNaN(sevNum)) {
+    severityDisplay = `${sevNum}%`;
+    if (sevNum >= 70) severityTier = 'high';
+    else if (sevNum >= 40) severityTier = 'medium';
+    else severityTier = 'low';
+  } else {
+    severityTier = String(rawSev).toLowerCase();
+    severityDisplay = severityTier.toUpperCase();
+  }
+
   const severityColor = {
     high: 'text-rose-400 bg-rose-950/60 border-rose-500/40',
+    critical: 'text-rose-400 bg-rose-950/60 border-rose-500/40',
     medium: 'text-amber-400 bg-amber-950/60 border-amber-500/40',
     low: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40'
-  }[currentDetection.severity] || 'text-cyan-400 bg-cyan-950/60 border-cyan-500/40';
+  }[severityTier] || 'text-cyan-400 bg-cyan-950/60 border-cyan-500/40';
 
   return createPortal(
     <div 
@@ -195,6 +211,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               {currentDetection.type?.replace('_', ' ')} {t('incidentRecord', 'Record')}
             </h3>
           </div>
+
           <div className="flex items-center space-x-2 shrink-0">
             <button
               type="button"
@@ -228,7 +245,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                 {currentDetection.imageUrl ? (
                   <div ref={imageContainerRef} className="relative w-full h-full">
                     <img 
-                      src={currentDetection.imageUrl.startsWith('http') ? currentDetection.imageUrl : `https://urban-eye-wi2j.onrender.com${currentDetection.imageUrl}`} 
+                      src={currentDetection.imageUrl.startsWith('http') ? currentDetection.imageUrl : `http://localhost:5000${currentDetection.imageUrl}`} 
                       alt="Incident Evidence" 
                       className="w-full h-full object-cover"
                     />
@@ -259,10 +276,22 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
             <div className="md:col-span-5 flex flex-col justify-between space-y-3">
               <div className="space-y-2.5">
                 
-                {/* Severity Card */}
-                <div className={`p-3 rounded-xl border flex items-center justify-between ${severityColor}`}>
-                  <span className="text-xs font-bold font-mono">{t('severityLevel', 'SEVERITY LEVEL')}</span>
-                  <span className="text-sm font-black uppercase tracking-wider">{t(currentDetection.severity, currentDetection.severity)}</span>
+                {/* Severity Card in Percentage Form */}
+                <div className={`p-3 rounded-xl border flex flex-col gap-2 ${severityColor}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold font-mono">{t('severityLevel', 'SEVERITY LEVEL')}</span>
+                    <span className="text-sm font-black tracking-wider">{severityDisplay} ({severityTier.toUpperCase()})</span>
+                  </div>
+                  {!isNaN(sevNum) && (
+                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          severityTier === 'high' ? 'bg-rose-500' : severityTier === 'medium' ? 'bg-amber-400' : 'bg-emerald-400'
+                        }`} 
+                        style={{ width: `${Math.min(100, Math.max(5, sevNum))}%` }}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Status Card */}

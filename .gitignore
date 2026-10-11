@@ -8,3 +8,8 @@ __pycache__/
 *.py[cod]
 test_check.pdf
 test_num.pdf
+.agents/
+test_real_*.jpg
+Urban_EYE_Comprehensive_Report.pdf
+backend/scripts/inspect_and_analyze.js
+backend/scripts/test_*.js

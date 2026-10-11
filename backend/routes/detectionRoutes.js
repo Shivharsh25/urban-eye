@@ -94,27 +94,34 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
 
       const aiResponse = await axios.post(`${AI_SERVICE_URL}/detect`, formData, {
         headers: formData.getHeaders(),
-        timeout: 2000 // Reduced from 15000 to fail fast if no AI service is deployed
+        timeout: 15000 // 15 seconds to allow PyTorch / YOLO model inference
       });
 
       detectedIssues = aiResponse.data.detections || [];
     } catch (aiErr) {
-      console.warn(`[Detection API] AI service error or unavailable (${aiErr.message}), using fallback detection.`);
-      // Deterministic fallback if Python service is starting up
-      detectedIssues = [
-        {
-          type: req.body.typeHint || 'pothole',
-          confidence: 0.91,
-          bbox: { x: 140, y: 280, width: 260, height: 180 }
-        }
-      ];
+      console.warn(`[Detection API] AI service error or unavailable (${aiErr.message})`);
+      detectedIssues = [];
     }
 
-    const primaryDetection = detectedIssues[0] || {
-      type: 'pothole',
-      confidence: 0.88,
-      bbox: { x: 100, y: 100, width: 200, height: 150 }
-    };
+    // If nothing detected by the AI model:
+    if (!detectedIssues || detectedIssues.length === 0) {
+      emitPipelineProgress(jobId, {
+        stage: 'detecting',
+        step: 2,
+        totalSteps: 6,
+        message: 'No municipal issue detected in this image',
+        details: { detected: false }
+      });
+
+      return res.status(200).json({
+        success: true,
+        detected: false,
+        message: 'No municipal issue detected in this image',
+        detections: []
+      });
+    }
+
+    const primaryDetection = detectedIssues[0];
 
     emitPipelineProgress(jobId, {
       stage: 'detecting',
