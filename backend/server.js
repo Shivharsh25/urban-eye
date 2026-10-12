@@ -44,8 +44,13 @@ app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 const uploadsDir = path.join(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadsDir));
 
-// Rate limiting on API routes
-app.use('/api', apiLimiter);
+// Rate limiting on API routes (bypassing high-frequency live camera scanning)
+app.use('/api', (req, res, next) => {
+  if (req.path === '/detect/scan') {
+    return next();
+  }
+  return apiLimiter(req, res, next);
+});
 
 // ----------------------------------------------------
 // Health Check

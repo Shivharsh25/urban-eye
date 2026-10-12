@@ -40,7 +40,14 @@ const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
  */
 router.post('/detect/scan', upload.single('image'), async (req, res) => {
   try {
-    if (!req.file) {
+    let imageBuffer = req.file ? req.file.buffer : null;
+
+    if (!imageBuffer && req.body && req.body.imageBase64) {
+      const base64Data = req.body.imageBase64.replace(/^data:image\/\w+;base64,/, '');
+      imageBuffer = Buffer.from(base64Data, 'base64');
+    }
+
+    if (!imageBuffer) {
       return res.status(400).json({ error: 'No image provided for scan.' });
     }
 
@@ -50,7 +57,7 @@ router.post('/detect/scan', upload.single('image'), async (req, res) => {
     // 1. Run Embedded YOLO ONNX inference (0.15 confidence threshold)
     if (embeddedReady) {
       try {
-        detections = await runYoloDetection(req.file.buffer, 0.15);
+        detections = await runYoloDetection(imageBuffer, 0.15);
       } catch (onnxErr) {
         console.warn('[Scan API] ONNX detection failed:', onnxErr.message);
       }
@@ -60,14 +67,14 @@ router.post('/detect/scan', upload.single('image'), async (req, res) => {
     if (!detections || detections.length === 0) {
       try {
         const formData = new FormData();
-        formData.append('image', req.file.buffer, {
-          filename: req.file.originalname || 'image.jpg',
-          contentType: req.file.mimetype || 'image/jpeg'
+        formData.append('image', imageBuffer, {
+          filename: (req.file && req.file.originalname) || 'frame.jpg',
+          contentType: (req.file && req.file.mimetype) || 'image/jpeg'
         });
 
         const aiResponse = await axios.post(`${AI_SERVICE_URL}/detect`, formData, {
           headers: formData.getHeaders(),
-          timeout: 6000
+          timeout: 4000
         });
 
         if (aiResponse.data && aiResponse.data.detections) {
@@ -78,13 +85,16 @@ router.post('/detect/scan', upload.single('image'), async (req, res) => {
       }
     }
 
+    const primary = detections.length > 0 ? detections[0] : null;
+
     return res.json({
       success: true,
       detected: detections.length > 0,
       detections: detections,
-      primaryType: detections.length > 0 ? detections[0].type : null,
-      confidence: detections.length > 0 ? detections[0].confidence : 0,
-      bbox: detections.length > 0 ? detections[0].bbox : null
+      primaryType: primary ? primary.type : null,
+      confidence: primary ? primary.confidence : 0,
+      confidencePercent: primary ? Math.round(primary.confidence * 100) : 0,
+      bbox: primary ? primary.bbox : null
     });
   } catch (err) {
     console.error('[Scan API] Error:', err);

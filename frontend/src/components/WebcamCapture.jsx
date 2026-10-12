@@ -12,14 +12,14 @@ import {
   Sparkles, 
   CheckCircle2, 
   AlertTriangle,
-  Send,
-  Loader2,
-  ArrowRight
+  ArrowRight,
+  Eye,
+  Scan
 } from 'lucide-react';
 import client from '../api/client';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
+export default function WebcamCapture({ onCapture, onClose }) {
   const { t } = useLanguage();
   
   const videoRef = useRef(null);
@@ -35,20 +35,25 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
   const [torchOn, setTorchOn] = useState(false);
   const [flashEffect, setFlashEffect] = useState(false);
 
-  // Snapshot & Detection state
-  // Mode: 'live' | 'analyzing' | 'review'
+  // Mode: 'live' | 'review'
   const [cameraMode, setCameraMode] = useState('live');
   const [capturedImage, setCapturedImage] = useState(null);
-  const [capturedBlob, setCapturedBlob] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
-  
-  // AI Detection result from trained model
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanResult, setScanResult] = useState(null);
-  const [scanError, setScanError] = useState(null);
-  const [imageDimensions, setImageDimensions] = useState({ width: 1280, height: 720 });
 
-  // Prevent background scrolling and attach ESC/Space listeners
+  // Automatic Real-Time Live Detection State (updates automatically as video streams)
+  const [liveDetections, setLiveDetections] = useState([]);
+  const [livePrimaryType, setLivePrimaryType] = useState(null);
+  const [liveConfidencePercent, setLiveConfidencePercent] = useState(0);
+  const [isScanningFrame, setIsScanningFrame] = useState(false);
+  const [scanCount, setScanCount] = useState(0);
+
+  // Demo test feed (allows testing on desktop without needing real potholes on the desk)
+  const [demoSample, setDemoSample] = useState(null); // null | 'pothole' | 'garbage'
+
+  // Final confirmed detection result for the captured photo
+  const [confirmedDetection, setConfirmedDetection] = useState(null);
+
+  // Prevent background scrolling and keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -66,7 +71,7 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
     };
   }, [onClose, cameraMode]);
 
-  // Check camera devices
+  // Check camera hardware devices
   useEffect(() => {
     async function checkDevices() {
       try {
@@ -84,12 +89,11 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
     checkDevices();
   }, []);
 
-  // Initialize and switch camera stream
+  // Initialize camera stream
   const startCamera = useCallback(async () => {
     try {
       setError(null);
 
-      // Stop any existing stream tracks first
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
@@ -110,19 +114,13 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
         videoRef.current.srcObject = newStream;
       }
 
-      // Check torch / flashlight support
       const videoTrack = newStream.getVideoTracks()[0];
       if (videoTrack && videoTrack.getCapabilities) {
         const capabilities = videoTrack.getCapabilities();
-        if (capabilities && capabilities.torch) {
-          setTorchSupported(true);
-        } else {
-          setTorchSupported(false);
-        }
+        setTorchSupported(!!(capabilities && capabilities.torch));
       }
     } catch (err) {
-      console.error('[Webcam] Access error:', err);
-      // Fallback: try default without facingMode constraints
+      console.error('[Webcam] Primary camera access error:', err);
       try {
         const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         setStream(fallbackStream);
@@ -130,7 +128,7 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
           videoRef.current.srcObject = fallbackStream;
         }
       } catch (fallbackErr) {
-        setError('Camera access denied or unavailable. Please grant camera permission in browser settings.');
+        setError('Camera access denied or unavailable. Please enable camera permission in your browser.');
       }
     }
   }, [facingMode]);
@@ -152,9 +150,7 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
     if (videoTrack) {
       try {
         const nextState = !torchOn;
-        await videoTrack.applyConstraints({
-          advanced: [{ torch: nextState }]
-        });
+        await videoTrack.applyConstraints({ advanced: [{ torch: nextState }] });
         setTorchOn(nextState);
       } catch (err) {
         console.warn('Could not toggle torch:', err);
@@ -168,16 +164,104 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
     setTorchOn(false);
   };
 
-  // Take Snapshot & run Model Detection
-  const takeSnapshot = async () => {
+  // ========================================================
+  // REAL-TIME AUTOMATIC DETECTION LOOP (Model infers live)
+  // ========================================================
+  useEffect(() => {
+    let isActive = true;
+    let timerId = null;
+    let isProcessing = false;
+
+    const performAutomaticScan = async () => {
+      if (!isActive || cameraMode !== 'live') return;
+
+      // Scan live video feed or demo sample
+      if (!isProcessing && ((videoRef.current && videoRef.current.readyState >= 2) || demoSample)) {
+        isProcessing = true;
+        setIsScanningFrame(true);
+
+        try {
+          let base64Payload = null;
+
+          if (demoSample) {
+            // Demo sample test image mode
+            const sampleUrl = demoSample === 'pothole' ? '/test_real_pothole.jpg' : '/test_real_garbage.jpg';
+            const sampleRes = await fetch(sampleUrl);
+            const blob = await sampleRes.blob();
+            base64Payload = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            });
+          } else if (videoRef.current) {
+            // Live video frame snapshot
+            const video = videoRef.current;
+            const tempCanvas = document.createElement('canvas');
+            const targetW = 640;
+            const targetH = Math.round((video.videoHeight / (video.videoWidth || 640)) * 640) || 480;
+            tempCanvas.width = targetW;
+            tempCanvas.height = targetH;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, targetW, targetH);
+            base64Payload = tempCanvas.toDataURL('image/jpeg', 0.72);
+          }
+
+          if (base64Payload) {
+            const res = await client.post('/api/detect/scan', {
+              imageBase64: base64Payload
+            }, {
+              timeout: 6000
+            });
+
+            if (isActive && res.data) {
+              setScanCount((prev) => prev + 1);
+              if (res.data.detected && res.data.detections && res.data.detections.length > 0) {
+                setLiveDetections(res.data.detections);
+                setLivePrimaryType(res.data.primaryType);
+                setLiveConfidencePercent(res.data.confidencePercent || Math.round((res.data.confidence || 0) * 100));
+              } else {
+                setLiveDetections([]);
+                setLivePrimaryType(null);
+                setLiveConfidencePercent(0);
+              }
+            }
+          }
+        } catch (scanErr) {
+          // Ignore transient network errors during live scan loop
+        } finally {
+          isProcessing = false;
+          if (isActive) {
+            setIsScanningFrame(false);
+          }
+        }
+      }
+
+      // Schedule next automatic detection scan in 450ms
+      if (isActive && cameraMode === 'live') {
+        timerId = setTimeout(performAutomaticScan, 450);
+      }
+    };
+
+    if (cameraMode === 'live') {
+      timerId = setTimeout(performAutomaticScan, 600);
+    }
+
+    return () => {
+      isActive = false;
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [cameraMode, demoSample, stream]);
+
+  // ========================================================
+  // SNAPSHOT TRIGGER
+  // ========================================================
+  const takeSnapshot = () => {
     if (!videoRef.current || !canvasRef.current) return;
 
-    // Trigger haptic vibration if supported
     if (navigator.vibrate) {
       navigator.vibrate(40);
     }
 
-    // Trigger shutter flash effect
     setFlashEffect(true);
     setTimeout(() => setFlashEffect(false), 120);
 
@@ -188,52 +272,44 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
     
     canvas.width = width;
     canvas.height = height;
-    setImageDimensions({ width, height });
-
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, width, height);
 
+    if (demoSample) {
+      const img = new Image();
+      img.src = demoSample === 'pothole' ? '/test_real_pothole.jpg' : '/test_real_garbage.jpg';
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        finishCapture(canvas);
+      };
+    } else {
+      ctx.drawImage(video, 0, 0, width, height);
+      finishCapture(canvas);
+    }
+  };
+
+  const finishCapture = (canvas) => {
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
     setCapturedImage(dataUrl);
-    setCameraMode('analyzing');
-    setIsScanning(true);
-    setScanResult(null);
-    setScanError(null);
 
-    // Convert canvas to blob & File
+    // Freeze current detection into confirmed state
+    setConfirmedDetection({
+      primaryType: livePrimaryType,
+      confidencePercent: liveConfidencePercent,
+      detections: liveDetections
+    });
+
     canvas.toBlob(
-      async (blob) => {
-        if (!blob) {
-          setCameraMode('review');
-          setIsScanning(false);
-          return;
-        }
-
-        const file = new File([blob], `urban_eye_capture_${Date.now()}.jpg`, {
-          type: 'image/jpeg',
-          lastModified: Date.now()
-        });
-        setCapturedBlob(blob);
-        setCapturedFile(file);
-
-        // Run trained YOLOv8 model inference via fast scan endpoint
-        try {
-          const formData = new FormData();
-          formData.append('image', file);
-
-          const res = await client.post('/api/detect/scan', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            timeout: 10000
+      (blob) => {
+        if (blob) {
+          const file = new File([blob], `urban_eye_${livePrimaryType || 'incident'}_${Date.now()}.jpg`, {
+            type: 'image/jpeg',
+            lastModified: Date.now()
           });
-
-          setScanResult(res.data);
-        } catch (scanErr) {
-          console.warn('[Camera AI Scan Error]:', scanErr);
-          setScanError('Fast AI scan unavailable. Model will re-evaluate during report triage.');
-        } finally {
-          setIsScanning(false);
-          setCameraMode('review');
+          setCapturedFile(file);
         }
+        setCameraMode('review');
       },
       'image/jpeg',
       0.92
@@ -243,39 +319,31 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
   // Retake photo
   const retakePhoto = () => {
     setCapturedImage(null);
-    setCapturedBlob(null);
     setCapturedFile(null);
-    setScanResult(null);
-    setScanError(null);
+    setConfirmedDetection(null);
     setCameraMode('live');
   };
 
   // Confirm and proceed to report
   const handleConfirm = () => {
     if (!capturedFile) return;
-    onCapture(capturedFile, scanResult);
+    onCapture(capturedFile, {
+      primaryType: confirmedDetection?.primaryType || livePrimaryType,
+      confidence: (confirmedDetection?.confidencePercent || liveConfidencePercent) / 100,
+      confidencePercent: confirmedDetection?.confidencePercent || liveConfidencePercent,
+      detections: confirmedDetection?.detections || liveDetections
+    });
     onClose();
-  };
-
-  // Quick submit directly from camera if requested
-  const handleDirectSubmit = () => {
-    if (!capturedFile) return;
-    if (onQuickSubmit) {
-      onQuickSubmit(capturedFile, scanResult);
-      onClose();
-    } else {
-      handleConfirm();
-    }
   };
 
   if (typeof document === 'undefined') return null;
 
-  const primaryDetection = scanResult?.detections && scanResult.detections.length > 0 
-    ? scanResult.detections[0] 
-    : null;
+  const currentType = cameraMode === 'review' ? confirmedDetection?.primaryType : livePrimaryType;
+  const currentConfidence = cameraMode === 'review' ? confirmedDetection?.confidencePercent : liveConfidencePercent;
+  const currentDetections = cameraMode === 'review' ? (confirmedDetection?.detections || []) : liveDetections;
 
-  const isPothole = primaryDetection?.type === 'pothole';
-  const isGarbage = primaryDetection?.type === 'garbage';
+  const isPothole = currentType === 'pothole';
+  const isGarbage = currentType === 'garbage';
 
   return createPortal(
     <div 
@@ -286,7 +354,7 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
       aria-modal="true"
     >
       
-      {/* Shutter Flash Animation Overlay */}
+      {/* Shutter Flash Animation */}
       {flashEffect && (
         <div className="absolute inset-0 bg-white z-[100000] pointer-events-none animate-out fade-out duration-150" />
       )}
@@ -294,35 +362,73 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
       {/* ======================================================== */}
       {/* 1. TOP FLOATING HUD HEADER */}
       {/* ======================================================== */}
-      <div className="absolute top-0 left-0 right-0 z-30 p-4 sm:p-6 flex items-center justify-between bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto">
+      <div className="absolute top-0 left-0 right-0 z-40 p-4 sm:p-6 flex items-center justify-between bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-auto">
         
-        {/* Optical Lens System Badge */}
-        <div className="flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full bg-stone-900/80 border border-stone-700/80 backdrop-blur-md shadow-lg">
+        {/* Optical AI System Badge */}
+        <div className="flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full bg-stone-900/85 border border-stone-700/80 backdrop-blur-md shadow-xl">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
           <span className="text-[11px] font-mono font-bold tracking-widest text-stone-200 uppercase flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span>URBAN EYE • FULL OPTICAL CAMERA</span>
+            <span className="hidden sm:inline">URBAN EYE • </span>REAL-TIME AI LENS
           </span>
         </div>
 
-        {/* Action Controls (Torch, Flip, Close) */}
-        <div className="flex items-center space-x-2.5">
+        {/* Demo Test Switcher & Camera Controls */}
+        <div className="flex items-center space-x-2">
+          {/* Quick Test Preset Switcher (allows testing on desktop without outdoor road defect) */}
+          <div className="flex items-center bg-stone-900/85 border border-stone-700/80 rounded-full p-1 backdrop-blur-md shadow-lg">
+            <button
+              type="button"
+              onClick={() => setDemoSample(null)}
+              className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase transition-all ${
+                demoSample === null 
+                  ? 'bg-cyan-500 text-stone-950 shadow-md' 
+                  : 'text-stone-400 hover:text-white'
+              }`}
+            >
+              Live
+            </button>
+            <button
+              type="button"
+              onClick={() => setDemoSample('pothole')}
+              className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase transition-all flex items-center gap-1 ${
+                demoSample === 'pothole' 
+                  ? 'bg-amber-400 text-stone-950 shadow-md' 
+                  : 'text-amber-400/80 hover:text-amber-300'
+              }`}
+            >
+              <span>🚧</span>
+              <span>Pothole</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setDemoSample('garbage')}
+              className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase transition-all flex items-center gap-1 ${
+                demoSample === 'garbage' 
+                  ? 'bg-rose-500 text-white shadow-md' 
+                  : 'text-rose-400/80 hover:text-rose-300'
+              }`}
+            >
+              <span>🗑️</span>
+              <span>Garbage</span>
+            </button>
+          </div>
+
           {cameraMode === 'live' && torchSupported && (
             <button
               type="button"
               onClick={toggleTorch}
-              className={`p-3 rounded-full transition-all backdrop-blur-md border shadow-lg ${
+              className={`p-2.5 rounded-full transition-all backdrop-blur-md border shadow-lg ${
                 torchOn 
                   ? 'bg-amber-500 text-stone-950 border-amber-400' 
                   : 'bg-stone-900/80 text-stone-300 border-stone-700 hover:text-white'
               }`}
               title="Toggle Flashlight / Torch"
-              aria-label="Toggle Flashlight"
             >
-              {torchOn ? <Zap className="w-5 h-5 fill-current" /> : <ZapOff className="w-5 h-5" />}
+              {torchOn ? <Zap className="w-4 h-4 fill-current" /> : <ZapOff className="w-4 h-4" />}
             </button>
           )}
 
@@ -330,20 +436,18 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
             <button
               type="button"
               onClick={flipCamera}
-              className="p-3 rounded-full bg-stone-900/80 text-stone-300 hover:text-white border border-stone-700 backdrop-blur-md transition-all shadow-lg active:rotate-180 duration-300"
+              className="p-2.5 rounded-full bg-stone-900/80 text-stone-300 hover:text-white border border-stone-700 backdrop-blur-md transition-all shadow-lg active:rotate-180 duration-300"
               title="Switch Front/Rear Camera"
-              aria-label="Switch Camera"
             >
-              <SwitchCamera className="w-5 h-5" />
+              <SwitchCamera className="w-4 h-4" />
             </button>
           )}
 
           <button
             type="button"
             onClick={onClose}
-            className="p-3 rounded-full bg-stone-900/80 text-stone-300 hover:text-white hover:bg-stone-800 border border-stone-700 backdrop-blur-md transition-all shadow-lg active:scale-95"
+            className="p-2.5 rounded-full bg-stone-900/80 text-stone-300 hover:text-white hover:bg-stone-800 border border-stone-700 backdrop-blur-md transition-all shadow-lg active:scale-95"
             title="Close Camera (Esc)"
-            aria-label="Close Camera"
           >
             <X className="w-5 h-5" />
           </button>
@@ -351,7 +455,64 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
       </div>
 
       {/* ======================================================== */}
-      {/* 2. FULL VIEWPORT VIEWFINDER (Live Video or Captured Image) */}
+      {/* 2. REAL-TIME AUTOMATIC DETECTION BANNER (OVERLAY) */}
+      {/* ======================================================== */}
+      <div className="absolute top-20 sm:top-24 left-1/2 -translate-x-1/2 z-30 pointer-events-none w-11/12 max-w-lg transition-all duration-300">
+        {currentType ? (
+          <div 
+            className={`p-4 rounded-2xl backdrop-blur-xl border-2 shadow-2xl flex items-center justify-between gap-4 animate-in zoom-in-95 duration-200 ${
+              isPothole 
+                ? 'bg-amber-950/90 border-amber-400 shadow-[0_0_35px_rgba(245,158,11,0.5)]' 
+                : 'bg-rose-950/90 border-rose-500 shadow-[0_0_35px_rgba(239,68,68,0.5)]'
+            }`}
+          >
+            <div className="flex items-center space-x-3.5">
+              <div 
+                className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-2xl shadow-inner ${
+                  isPothole ? 'bg-amber-500/25 text-amber-300 border border-amber-400/50' : 'bg-rose-500/25 text-rose-300 border border-rose-400/50'
+                }`}
+              >
+                {isPothole ? '🚧' : '🗑️'}
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-black font-mono uppercase tracking-wider text-white">
+                    {isPothole ? 'ROAD POTHOLE DETECTED' : 'GARBAGE DUMP DETECTED'}
+                  </span>
+                  <span 
+                    className={`text-xs font-mono font-black px-2.5 py-0.5 rounded-full shadow-md ${
+                      isPothole ? 'bg-amber-400 text-stone-950' : 'bg-rose-500 text-white'
+                    }`}
+                  >
+                    {currentConfidence}% MATCH
+                  </span>
+                </div>
+                <p className="text-xs text-stone-300 mt-0.5 font-medium">
+                  {isPothole ? 'Roads & Infrastructure Department' : 'Sanitation & Solid Waste Department'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-emerald-500/20 text-emerald-400 text-[11px] font-mono font-black border border-emerald-500/40">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>YOLOv8</span>
+            </div>
+          </div>
+        ) : (
+          <div className="px-5 py-2.5 rounded-full bg-black/75 border border-cyan-500/40 backdrop-blur-md text-center shadow-xl flex items-center justify-center space-x-2.5 mx-auto max-w-sm">
+            <div className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
+            </div>
+            <span className="text-xs font-mono font-bold tracking-wider text-cyan-300 uppercase">
+              SCANNING LIVE: POTHOLE & GARBAGE DETECTOR
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* ======================================================== */}
+      {/* 3. FULL VIEWPORT VIEWFINDER (Live Video & Overlays) */}
       {/* ======================================================== */}
       <div className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
         
@@ -371,112 +532,89 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
             </button>
           </div>
         ) : capturedImage ? (
-          /* Snapshot Preview Container */
+          /* Captured Snapshot Review View */
           <div className="relative w-full h-full flex items-center justify-center">
             <img
               src={capturedImage}
-              alt="Captured Frame"
+              alt="Snapshot"
               className="w-full h-full object-contain md:object-cover"
             />
-
-            {/* Bounding Box Visualizer for Detected Defect */}
-            {cameraMode === 'review' && primaryDetection && primaryDetection.bbox && (
-              <div 
-                className="absolute pointer-events-none transition-all duration-300"
-                style={{
-                  left: `${(primaryDetection.bbox.x / imageDimensions.width) * 100}%`,
-                  top: `${(primaryDetection.bbox.y / imageDimensions.height) * 100}%`,
-                  width: `${(primaryDetection.bbox.width / imageDimensions.width) * 100}%`,
-                  height: `${(primaryDetection.bbox.height / imageDimensions.height) * 100}%`,
-                  border: isPothole ? '3px solid #f59e0b' : '3px solid #ef4444',
-                  boxShadow: isPothole 
-                    ? '0 0 25px rgba(245, 158, 11, 0.6), inset 0 0 15px rgba(245, 158, 11, 0.2)' 
-                    : '0 0 25px rgba(239, 68, 68, 0.6), inset 0 0 15px rgba(239, 68, 68, 0.2)',
-                  borderRadius: '12px'
-                }}
-              >
-                {/* Detection Tag Badge above box */}
-                <div 
-                  className={`absolute -top-7 left-0 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-black uppercase text-stone-950 shadow-md ${
-                    isPothole ? 'bg-amber-400' : 'bg-rose-500 text-white'
-                  }`}
-                >
-                  {isPothole ? '🚧 POTHOLE' : '🗑️ GARBAGE'} {(primaryDetection.confidence * 100).toFixed(0)}%
-                </div>
-              </div>
-            )}
-
-            {/* Scanning / Analyzing Wave Animation */}
-            {isScanning && (
-              <div className="absolute inset-0 bg-stone-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-20">
-                {/* Laser scan beam */}
-                <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#22d3ee] animate-pulse top-1/2 -translate-y-1/2 w-full"></div>
-                
-                <div className="relative p-6 rounded-3xl bg-stone-900/90 border border-cyan-500/40 shadow-2xl flex flex-col items-center text-center space-y-3 max-w-sm mx-4 backdrop-blur-xl">
-                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-black text-white tracking-wide uppercase font-mono">
-                      YOLOv8 AI Inference
-                    </h4>
-                    <p className="text-xs text-stone-300 mt-1">
-                      Analyzing frame for hazardous potholes & municipal garbage dumps...
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
+          </div>
+        ) : demoSample ? (
+          /* Demo Image Feed (when testing pothole or garbage sample) */
+          <div className="relative w-full h-full flex items-center justify-center">
+            <img
+              src={demoSample === 'pothole' ? '/test_real_pothole.jpg' : '/test_real_garbage.jpg'}
+              alt="Demo Defect Feed"
+              className="w-full h-full object-contain md:object-cover"
+            />
           </div>
         ) : (
           /* Live Camera Feed */
-          <>
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-cover"
-            />
-
-            {/* Smart City Optical Targeting Reticle / HUD */}
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-              
-              {/* Central Target Reticle Frame */}
-              <div className="relative w-72 h-72 sm:w-88 sm:h-88 border border-white/20 rounded-3xl overflow-hidden backdrop-brightness-105">
-                
-                {/* Top-Left Corner Bracket */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-cyan-400 rounded-tl-xl shadow-[0_0_10px_#22d3ee]"></div>
-                {/* Top-Right Corner Bracket */}
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-cyan-400 rounded-tr-xl shadow-[0_0_10px_#22d3ee]"></div>
-                {/* Bottom-Left Corner Bracket */}
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-cyan-400 rounded-bl-xl shadow-[0_0_10px_#22d3ee]"></div>
-                {/* Bottom-Right Corner Bracket */}
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-cyan-400 rounded-br-xl shadow-[0_0_10px_#22d3ee]"></div>
-                
-                {/* Central Crosshair Pulse */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4">
-                  <div className="absolute inset-0 rounded-full border border-cyan-400/80 animate-ping"></div>
-                  <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-cyan-400/80 -translate-y-1/2"></div>
-                  <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-cyan-400/80 -translate-x-1/2"></div>
-                </div>
-
-                {/* Laser Sweep Scan Line */}
-                <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_8px_#22d3ee] animate-pulse top-1/3"></div>
-
-              </div>
-
-              {/* Viewfinder Alignment Prompt */}
-              <div className="absolute bottom-32 sm:bottom-36 text-center">
-                <span className="px-4 py-1.5 rounded-full bg-black/60 border border-stone-700/80 text-[11px] font-mono tracking-wider text-stone-200 backdrop-blur-md shadow-lg">
-                  FRAME ISSUE INSIDE RETICLE • ROAD POTHOLE OR GARBAGE
-                </span>
-              </div>
-
-            </div>
-          </>
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="w-full h-full object-cover"
+          />
         )}
+
+        {/* Live Automatic Bounding Boxes Overlay */}
+        {currentDetections && currentDetections.length > 0 && (
+          <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center">
+            {currentDetections.map((det, idx) => {
+              const detIsPothole = det.type === 'pothole';
+              return (
+                <div
+                  key={idx}
+                  className="absolute transition-all duration-150 animate-in zoom-in-90"
+                  style={{
+                    left: `${Math.max(5, Math.min(85, (det.bbox.x / (videoRef.current?.videoWidth || 640)) * 100))}%`,
+                    top: `${Math.max(15, Math.min(75, (det.bbox.y / (videoRef.current?.videoHeight || 480)) * 100))}%`,
+                    width: `${Math.max(12, Math.min(80, (det.bbox.width / (videoRef.current?.videoWidth || 640)) * 100))}%`,
+                    height: `${Math.max(12, Math.min(70, (det.bbox.height / (videoRef.current?.videoHeight || 480)) * 100))}%`,
+                    border: detIsPothole ? '3px solid #f59e0b' : '3px solid #ef4444',
+                    boxShadow: detIsPothole 
+                      ? '0 0 30px rgba(245, 158, 11, 0.8), inset 0 0 15px rgba(245, 158, 11, 0.3)' 
+                      : '0 0 30px rgba(239, 68, 68, 0.8), inset 0 0 15px rgba(239, 68, 68, 0.3)',
+                    borderRadius: '16px'
+                  }}
+                >
+                  <div 
+                    className={`absolute -top-7 left-0 px-2.5 py-1 rounded-md text-[11px] font-mono font-black uppercase text-stone-950 shadow-lg flex items-center gap-1.5 whitespace-nowrap ${
+                      detIsPothole ? 'bg-amber-400' : 'bg-rose-500 text-white'
+                    }`}
+                  >
+                    <span>{detIsPothole ? '🚧 POTHOLE' : '🗑️ GARBAGE'}</span>
+                    <span className="font-extrabold underline">{Math.round(det.confidence * 100)}%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Tactical HUD Viewfinder Brackets */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-6 z-10">
+          <div className="relative w-72 h-72 sm:w-96 sm:h-96 border border-white/20 rounded-3xl overflow-hidden">
+            {/* Corner brackets */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-cyan-400 rounded-tl-xl shadow-[0_0_10px_#22d3ee]"></div>
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-cyan-400 rounded-tr-xl shadow-[0_0_10px_#22d3ee]"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-cyan-400 rounded-bl-xl shadow-[0_0_10px_#22d3ee]"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-cyan-400 rounded-br-xl shadow-[0_0_10px_#22d3ee]"></div>
+            
+            {/* Center target crosshair */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4">
+              <div className="absolute inset-0 rounded-full border border-cyan-400/80 animate-ping"></div>
+              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-cyan-400/80 -translate-y-1/2"></div>
+              <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-cyan-400/80 -translate-x-1/2"></div>
+            </div>
+
+            {/* Continuous laser scanning line */}
+            <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_8px_#22d3ee] animate-pulse top-1/3"></div>
+          </div>
+        </div>
 
         {/* Hidden Canvas for High-Resolution Capture */}
         <canvas ref={canvasRef} className="hidden" />
@@ -484,79 +622,16 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
       </div>
 
       {/* ======================================================== */}
-      {/* 3. BOTTOM FLOATING CONTROLS & DETECTION VERDICT */}
+      {/* 4. BOTTOM FLOATING SHUTTER & REVIEW CONTROLS */}
       {/* ======================================================== */}
-      <div className="absolute bottom-0 left-0 right-0 z-30 p-6 sm:p-8 bg-gradient-to-t from-black via-black/85 to-transparent flex flex-col items-center justify-end pointer-events-auto space-y-4">
+      <div className="absolute bottom-0 left-0 right-0 z-40 p-6 sm:p-8 bg-gradient-to-t from-black via-black/85 to-transparent flex flex-col items-center justify-end pointer-events-auto space-y-3">
         
-        {/* Detection Result Card in Review Mode */}
-        {cameraMode === 'review' && (
-          <div className="w-full max-w-lg mx-auto animate-in slide-in-from-bottom-4 duration-300">
-            {primaryDetection ? (
-              <div 
-                className={`p-4 sm:p-5 rounded-2xl backdrop-blur-xl border shadow-2xl flex items-center justify-between gap-4 ${
-                  isPothole 
-                    ? 'bg-amber-950/80 border-amber-500/50 shadow-amber-500/20' 
-                    : 'bg-rose-950/80 border-rose-500/50 shadow-rose-500/20'
-                }`}
-              >
-                <div className="flex items-center space-x-3.5">
-                  <div 
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-2xl shrink-0 ${
-                      isPothole ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
-                    }`}
-                  >
-                    {isPothole ? '🚧' : '🗑️'}
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs font-mono font-black uppercase tracking-wider text-white">
-                        {isPothole ? 'Pothole Detected' : 'Garbage Dump Detected'}
-                      </span>
-                      <span 
-                        className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                          isPothole ? 'bg-amber-400 text-stone-950' : 'bg-rose-400 text-stone-950'
-                        }`}
-                      >
-                        {(primaryDetection.confidence * 100).toFixed(0)}% Match
-                      </span>
-                    </div>
-                    <p className="text-xs text-stone-300 mt-0.5 font-medium">
-                      {isPothole 
-                        ? 'Department: Roads & Works Infrastructure' 
-                        : 'Department: Municipal Solid Waste & Sanitation'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="shrink-0 hidden sm:flex items-center text-xs text-emerald-400 font-bold gap-1 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1.5 rounded-xl">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>AI Verified</span>
-                </div>
-              </div>
-            ) : (
-              <div className="p-4 rounded-2xl bg-stone-900/90 border border-stone-700/80 backdrop-blur-xl text-stone-300 flex items-center space-x-3 shadow-2xl">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
-                  <AlertTriangle className="w-5 h-5" />
-                </div>
-                <div className="text-xs">
-                  <span className="font-bold text-white block">No Defect Detected Above Confidence Threshold</span>
-                  <span className="text-stone-400 text-[11px]">
-                    You can still use this photo to file a report or retake for clearer lighting.
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Action Buttons Row */}
         <div className="w-full max-w-lg flex items-center justify-between gap-4">
           
           {cameraMode === 'live' ? (
             /* Live Camera Shutter Controls */
             <div className="w-full flex items-center justify-between px-4 sm:px-8">
               
-              {/* Cancel Button */}
               <button
                 type="button"
                 onClick={onClose}
@@ -572,14 +647,11 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
                 className="group relative flex items-center justify-center p-2 rounded-full focus:outline-none"
                 aria-label="Capture Photo"
               >
-                {/* Outer Ring */}
                 <div className="w-20 h-20 rounded-full border-4 border-white/80 group-hover:border-cyan-400 group-active:scale-90 transition-all flex items-center justify-center shadow-[0_0_25px_rgba(255,255,255,0.4)] group-hover:shadow-[0_0_30px_#22d3ee]">
-                  {/* Inner Trigger Disc */}
                   <div className="w-16 h-16 rounded-full bg-white group-hover:bg-gradient-to-tr group-hover:from-cyan-400 group-hover:to-white group-active:scale-95 transition-all shadow-inner"></div>
                 </div>
               </button>
 
-              {/* Desktop keyboard hint */}
               <div className="hidden sm:block text-right">
                 <span className="text-[10px] font-mono text-stone-400 bg-stone-900/80 border border-stone-700 px-2.5 py-1 rounded-lg">
                   SPACE: Snap
@@ -595,8 +667,7 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
               <button
                 type="button"
                 onClick={retakePhoto}
-                disabled={isScanning}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-2xl text-xs font-bold text-stone-300 hover:text-white bg-stone-900/90 hover:bg-stone-800 border border-stone-700 backdrop-blur-md transition-all shadow-lg flex items-center justify-center space-x-2 active:scale-95 disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-2xl text-xs font-bold text-stone-300 hover:text-white bg-stone-900/90 hover:bg-stone-800 border border-stone-700 backdrop-blur-md transition-all shadow-lg flex items-center justify-center space-x-2 active:scale-95"
               >
                 <RefreshCw className="w-4 h-4 text-cyan-400" />
                 <span>{t('retake', 'Retake Photo')}</span>
@@ -605,8 +676,7 @@ export default function WebcamCapture({ onCapture, onClose, onQuickSubmit }) {
               <button
                 type="button"
                 onClick={handleConfirm}
-                disabled={isScanning}
-                className="w-full sm:w-auto flex-1 px-8 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider text-stone-950 bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-400 hover:from-cyan-300 hover:via-emerald-300 hover:to-amber-300 shadow-xl shadow-cyan-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="w-full sm:w-auto flex-1 px-8 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider text-stone-950 bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-400 hover:from-cyan-300 hover:via-emerald-300 hover:to-amber-300 shadow-xl shadow-cyan-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
               >
                 <Check className="w-4 h-4 stroke-[3]" />
                 <span>{t('usePhotoAndProceed', 'Use Photo & Review Report')}</span>
