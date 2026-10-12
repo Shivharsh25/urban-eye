@@ -39,9 +39,9 @@ function getOrt() {
 
 const MODEL_PATH = path.join(__dirname, '../models/urban_eye_yolov8.onnx');
 const CLASS_NAMES = ['pothole', 'garbage'];
-const DEFAULT_CONF_THRESHOLD = 0.25;
+const DEFAULT_CONF_THRESHOLD = 0.10;
 const NMS_IOU_THRESHOLD = 0.45;
-const MIN_BOX_PIXELS = 15; // Minimum width & height in original image pixels
+const MIN_BOX_PIXELS = 10; // Minimum width & height in original image pixels
 
 let session = null;
 let sessionLoading = null;

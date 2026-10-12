@@ -54,10 +54,10 @@ router.post('/detect/scan', upload.single('image'), async (req, res) => {
     let detections = [];
     const embeddedReady = isModelAvailable();
 
-    // 1. Run Embedded YOLO ONNX inference (0.15 confidence threshold)
+    // 1. Run Embedded YOLO ONNX inference (0.10 confidence threshold)
     if (embeddedReady) {
       try {
-        detections = await runYoloDetection(imageBuffer, 0.15);
+        detections = await runYoloDetection(imageBuffer, 0.10);
       } catch (onnxErr) {
         console.warn('[Scan API] ONNX detection failed:', onnxErr.message);
       }
