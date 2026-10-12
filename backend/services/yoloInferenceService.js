@@ -203,6 +203,12 @@ async function runYoloDetection(imageBuffer, confThreshold = DEFAULT_CONF_THRESH
         y: Math.round(y * 100) / 100,
         width: Math.round(width * 100) / 100,
         height: Math.round(height * 100) / 100
+      },
+      normalizedBbox: {
+        xPercent: Math.round((x / origWidth) * 1000) / 10,
+        yPercent: Math.round((y / origHeight) * 1000) / 10,
+        widthPercent: Math.round((width / origWidth) * 1000) / 10,
+        heightPercent: Math.round((height / origHeight) * 1000) / 10
       }
     });
   }

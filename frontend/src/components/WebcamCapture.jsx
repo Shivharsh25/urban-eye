@@ -41,6 +41,8 @@ export default function WebcamCapture({ onCapture, onClose }) {
   const [liveDetections, setLiveDetections] = useState([]);
   const [livePrimaryType, setLivePrimaryType] = useState(null);
   const [liveConfidencePercent, setLiveConfidencePercent] = useState(0);
+  const [isLiveScanningActive, setIsLiveScanningActive] = useState(false);
+  const lastDetectionTimestamp = useRef(0);
 
   // Demo test feed (allows testing on desktop/phone without needing an outdoor defect)
   const [demoSample, setDemoSample] = useState(null); // null | 'pothole' | 'garbage'
@@ -107,6 +109,9 @@ export default function WebcamCapture({ onCapture, onClose }) {
 
       if (videoRef.current) {
         videoRef.current.srcObject = newStream;
+        videoRef.current.setAttribute('playsinline', 'true');
+        videoRef.current.setAttribute('webkit-playsinline', 'true');
+        videoRef.current.play().catch((e) => console.warn('Play error:', e));
         videoRef.current.onloadedmetadata = () => {
           videoRef.current?.play().catch((e) => console.warn('Autoplay error:', e));
         };
@@ -124,6 +129,9 @@ export default function WebcamCapture({ onCapture, onClose }) {
         setStream(fallbackStream);
         if (videoRef.current) {
           videoRef.current.srcObject = fallbackStream;
+          videoRef.current.setAttribute('playsinline', 'true');
+          videoRef.current.setAttribute('webkit-playsinline', 'true');
+          videoRef.current.play().catch(console.warn);
           videoRef.current.onloadedmetadata = () => {
             videoRef.current?.play().catch(console.warn);
           };
@@ -181,6 +189,7 @@ export default function WebcamCapture({ onCapture, onClose }) {
 
       if (!isProcessing && (isVideoReady || demoSample)) {
         isProcessing = true;
+        setIsLiveScanningActive(true);
 
         try {
           let base64Payload = null;
@@ -196,52 +205,61 @@ export default function WebcamCapture({ onCapture, onClose }) {
             });
           } else if (isVideoReady) {
             const tempCanvas = document.createElement('canvas');
-            const targetW = 480;
-            const targetH = Math.round((video.videoHeight / video.videoWidth) * targetW) || 360;
+            const targetW = 384;
+            const targetH = Math.round((video.videoHeight / video.videoWidth) * targetW) || 384;
             tempCanvas.width = targetW;
             tempCanvas.height = targetH;
             const ctx = tempCanvas.getContext('2d');
             ctx.drawImage(video, 0, 0, targetW, targetH);
-            base64Payload = tempCanvas.toDataURL('image/jpeg', 0.65);
+            base64Payload = tempCanvas.toDataURL('image/jpeg', 0.55);
           }
 
           if (base64Payload && isActive) {
             const res = await client.post('/api/detect/scan', {
               imageBase64: base64Payload
             }, {
-              timeout: 4500
+              timeout: 12000
             });
 
             if (isActive && res.data) {
               if (res.data.detected && res.data.detections && res.data.detections.length > 0) {
+                lastDetectionTimestamp.current = Date.now();
                 setLiveDetections(res.data.detections);
                 setLivePrimaryType(res.data.primaryType);
                 setLiveConfidencePercent(res.data.confidencePercent || Math.round((res.data.confidence || 0) * 100));
               } else {
-                setLiveDetections([]);
-                setLivePrimaryType(null);
-                setLiveConfidencePercent(0);
+                if (Date.now() - lastDetectionTimestamp.current > 1200) {
+                  setLiveDetections([]);
+                  setLivePrimaryType(null);
+                  setLiveConfidencePercent(0);
+                }
               }
             }
           }
         } catch (scanErr) {
-          // Silent catch for live loop
+          // If error occurs, keep previous detection within grace period
+          if (Date.now() - lastDetectionTimestamp.current > 1200) {
+            setLiveDetections([]);
+            setLivePrimaryType(null);
+            setLiveConfidencePercent(0);
+          }
         } finally {
           isProcessing = false;
         }
       }
 
       if (isActive && cameraMode === 'live') {
-        timerId = setTimeout(performAutomaticScan, 400);
+        timerId = setTimeout(performAutomaticScan, 350);
       }
     };
 
     if (cameraMode === 'live') {
-      timerId = setTimeout(performAutomaticScan, 400);
+      timerId = setTimeout(performAutomaticScan, 350);
     }
 
     return () => {
       isActive = false;
+      setIsLiveScanningActive(false);
       if (timerId) clearTimeout(timerId);
     };
   }, [cameraMode, demoSample, stream]);
@@ -413,29 +431,34 @@ export default function WebcamCapture({ onCapture, onClose }) {
         <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
           {currentDetections.map((det, idx) => {
             const detIsPothole = det.type === 'pothole';
+            const leftPct = det.normalizedBbox ? det.normalizedBbox.xPercent : Math.round((det.bbox.x / 384) * 100);
+            const topPct = det.normalizedBbox ? det.normalizedBbox.yPercent : Math.round((det.bbox.y / 384) * 100);
+            const widthPct = det.normalizedBbox ? det.normalizedBbox.widthPercent : Math.round((det.bbox.width / 384) * 100);
+            const heightPct = det.normalizedBbox ? det.normalizedBbox.heightPercent : Math.round((det.bbox.height / 384) * 100);
+
             return (
               <div
                 key={idx}
-                className="absolute transition-all duration-150 animate-in zoom-in-90 box-border"
+                className="absolute transition-all duration-150 animate-in zoom-in-90 box-border pointer-events-none"
                 style={{
-                  left: `${Math.max(4, Math.min(78, (det.bbox.x / (videoRef.current?.videoWidth || 640)) * 100))}%`,
-                  top: `${Math.max(16, Math.min(72, (det.bbox.y / (videoRef.current?.videoHeight || 480)) * 100))}%`,
-                  width: `${Math.max(18, Math.min(75, (det.bbox.width / (videoRef.current?.videoWidth || 640)) * 100))}%`,
-                  height: `${Math.max(16, Math.min(65, (det.bbox.height / (videoRef.current?.videoHeight || 480)) * 100))}%`,
+                  left: `${Math.max(2, Math.min(82, leftPct))}%`,
+                  top: `${Math.max(10, Math.min(78, topPct))}%`,
+                  width: `${Math.max(16, Math.min(85, widthPct))}%`,
+                  height: `${Math.max(14, Math.min(75, heightPct))}%`,
                   border: detIsPothole ? '3px solid #f59e0b' : '3px solid #ef4444',
                   boxShadow: detIsPothole 
-                    ? '0 0 25px rgba(245, 158, 11, 0.9), inset 0 0 10px rgba(245, 158, 11, 0.3)' 
-                    : '0 0 25px rgba(239, 68, 68, 0.9), inset 0 0 10px rgba(239, 68, 68, 0.3)',
-                  borderRadius: '12px'
+                    ? '0 0 30px rgba(245, 158, 11, 0.95), inset 0 0 12px rgba(245, 158, 11, 0.35)' 
+                    : '0 0 30px rgba(239, 68, 68, 0.95), inset 0 0 12px rgba(239, 68, 68, 0.35)',
+                  borderRadius: '16px'
                 }}
               >
                 <div 
-                  className={`absolute -top-6 left-0 px-2 py-0.5 rounded text-[10px] font-mono font-black uppercase text-stone-950 shadow-xl flex items-center gap-1 whitespace-nowrap ${
+                  className={`absolute -top-7 left-0 px-2.5 py-1 rounded-md text-[11px] font-mono font-black uppercase text-stone-950 shadow-2xl flex items-center gap-1.5 whitespace-nowrap ${
                     detIsPothole ? 'bg-amber-400' : 'bg-rose-500 text-white'
                   }`}
                 >
                   <span>{detIsPothole ? '🚧 POTHOLE' : '🗑️ GARBAGE'}</span>
-                  <span className="font-extrabold underline">{Math.round(det.confidence * 100)}%</span>
+                  <span className="font-extrabold underline">{Math.round((det.confidence || 0) * 100)}%</span>
                 </div>
               </div>
             );

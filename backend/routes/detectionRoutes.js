@@ -94,7 +94,8 @@ router.post('/detect/scan', upload.single('image'), async (req, res) => {
       primaryType: primary ? primary.type : null,
       confidence: primary ? primary.confidence : 0,
       confidencePercent: primary ? Math.round(primary.confidence * 100) : 0,
-      bbox: primary ? primary.bbox : null
+      bbox: primary ? primary.bbox : null,
+      normalizedBbox: primary ? primary.normalizedBbox : null
     });
   } catch (err) {
     console.error('[Scan API] Error:', err);
