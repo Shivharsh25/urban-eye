@@ -8,6 +8,7 @@
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:ai": "ai_service\\.venv\\Scripts\\uvicorn main:app --app-dir ai_service --reload --port 8000",
+    "build": "npm --prefix frontend run build",
     "build:frontend": "npm --prefix frontend run build"
   }
 }
