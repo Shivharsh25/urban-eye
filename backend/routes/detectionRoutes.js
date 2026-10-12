@@ -33,6 +33,66 @@ const upload = multer({
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
 /**
+ * POST /api/detect/scan
+ * Instant AI scan for live camera review & instant detection
+ * Returns detected municipal defects (pothole, garbage) with bounding boxes and confidences
+ * without creating database incident records or triggering email dispatches.
+ */
+router.post('/detect/scan', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image provided for scan.' });
+    }
+
+    let detections = [];
+    const embeddedReady = isModelAvailable();
+
+    // 1. Run Embedded YOLO ONNX inference (0.15 confidence threshold)
+    if (embeddedReady) {
+      try {
+        detections = await runYoloDetection(req.file.buffer, 0.15);
+      } catch (onnxErr) {
+        console.warn('[Scan API] ONNX detection failed:', onnxErr.message);
+      }
+    }
+
+    // 2. Microservice fallback if zero detections or onnx error
+    if (!detections || detections.length === 0) {
+      try {
+        const formData = new FormData();
+        formData.append('image', req.file.buffer, {
+          filename: req.file.originalname || 'image.jpg',
+          contentType: req.file.mimetype || 'image/jpeg'
+        });
+
+        const aiResponse = await axios.post(`${AI_SERVICE_URL}/detect`, formData, {
+          headers: formData.getHeaders(),
+          timeout: 6000
+        });
+
+        if (aiResponse.data && aiResponse.data.detections) {
+          detections = aiResponse.data.detections;
+        }
+      } catch (aiErr) {
+        // AI service unavailable
+      }
+    }
+
+    return res.json({
+      success: true,
+      detected: detections.length > 0,
+      detections: detections,
+      primaryType: detections.length > 0 ? detections[0].type : null,
+      confidence: detections.length > 0 ? detections[0].confidence : 0,
+      bbox: detections.length > 0 ? detections[0].bbox : null
+    });
+  } catch (err) {
+    console.error('[Scan API] Error:', err);
+    return res.status(500).json({ error: `Scanning failed: ${err.message}` });
+  }
+});
+
+/**
  * POST /api/detect
  * Complete Automated Smart City Incident Pipeline
  */
@@ -102,7 +162,7 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
     }
 
     // Attempt 2: External Python FastAPI Microservice (if embedded is unavailable or failed)
-    if ((!detectedIssues || detectedIssues.length === 0) && !embeddedReady) {
+    if (!detectedIssues || detectedIssues.length === 0) {
       try {
         const formData = new FormData();
         formData.append('image', req.file.buffer, {

@@ -56,6 +56,8 @@ export default function CitizenReportPage() {
   const [editedLetterText, setEditedLetterText] = useState('');
   const [savingLetter, setSavingLetter] = useState(false);
   const [saveLetterSuccess, setSaveLetterSuccess] = useState(false);
+  const [cameraScanInfo, setCameraScanInfo] = useState(null);
+  const [isQuickScanning, setIsQuickScanning] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -176,7 +178,7 @@ export default function CitizenReportPage() {
     fetchAddress();
   }, [pinLocation]);
 
-  const handleFileSelect = async (file) => {
+  const handleFileSelect = async (file, scanData = null) => {
     if (!file || !file.type.startsWith('image/')) return;
     setSelectedFile(file);
     const objectUrl = URL.createObjectURL(file);
@@ -185,6 +187,35 @@ export default function CitizenReportPage() {
     setNoIssueDetected(false);
     setNoIssueMessage('');
     setPipelineError(null);
+
+    // If scanData was already evaluated in the full-screen camera:
+    if (scanData && scanData.primaryType) {
+      setCameraScanInfo(scanData);
+      if (['pothole', 'garbage', 'water_leak', 'streetlight'].includes(scanData.primaryType)) {
+        setTypeHint(scanData.primaryType);
+      }
+    } else {
+      // Trigger background fast model inference scan
+      setIsQuickScanning(true);
+      const scanFormData = new FormData();
+      scanFormData.append('image', file);
+      client.post('/api/detect/scan', scanFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }).then((res) => {
+        if (res.data && res.data.primaryType) {
+          setCameraScanInfo(res.data);
+          if (['pothole', 'garbage', 'water_leak', 'streetlight'].includes(res.data.primaryType)) {
+            setTypeHint(res.data.primaryType);
+          }
+        } else {
+          setCameraScanInfo(res.data || null);
+        }
+      }).catch((err) => {
+        console.warn('Fast scan error:', err);
+      }).finally(() => {
+        setIsQuickScanning(false);
+      });
+    }
 
     try {
       let lat = 40.7128;
@@ -214,8 +245,6 @@ export default function CitizenReportPage() {
           }
         }
       }
-      
-      // Auto Submit Pipeline Trigger removed so user can review/edit location
     } catch (err) {
       console.warn("Could not extract EXIF data:", err);
       let lat = 40.7128;
@@ -235,7 +264,6 @@ export default function CitizenReportPage() {
           console.warn("Geolocation fallback failed in catch block", e);
         }
       }
-      // Auto Submit Pipeline Trigger removed
     }
   };
 
@@ -289,8 +317,8 @@ export default function CitizenReportPage() {
     }
   };
 
-  const handleCameraCapture = (file) => {
-    handleFileSelect(file);
+  const handleCameraCapture = (file, scanData) => {
+    handleFileSelect(file, scanData);
     setShowWebcam(false);
   };
 
@@ -357,6 +385,8 @@ export default function CitizenReportPage() {
     setCurrentStage(null);
     setProgressData(null);
     setPipelineError(null);
+    setCameraScanInfo(null);
+    setIsQuickScanning(false);
   };
 
   return (
@@ -622,6 +652,31 @@ export default function CitizenReportPage() {
                   alt="Preview"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover/preview:scale-105"
                 />
+
+                {/* AI Model Detection Badge Overlay */}
+                {isQuickScanning ? (
+                  <div className="absolute top-3 left-3 z-20 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-stone-950/80 border border-cyan-500/40 backdrop-blur-md shadow-lg animate-pulse">
+                    <div className="w-3.5 h-3.5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
+                    <span className="text-[11px] font-mono font-bold text-cyan-300">
+                      Analyzing with YOLOv8 Model...
+                    </span>
+                  </div>
+                ) : cameraScanInfo && cameraScanInfo.primaryType ? (
+                  <div className="absolute top-3 left-3 z-20 flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-stone-950/90 border border-amber-500/60 backdrop-blur-md shadow-xl">
+                    <span className="text-base">
+                      {cameraScanInfo.primaryType === 'pothole' ? '🚧' : '🗑️'}
+                    </span>
+                    <div>
+                      <span className="text-xs font-mono font-black text-amber-400 uppercase block tracking-wider">
+                        {cameraScanInfo.primaryType === 'pothole' ? 'Pothole Detected' : 'Garbage Dump Detected'}
+                      </span>
+                      <span className="text-[10px] text-stone-300 font-mono block">
+                        {(cameraScanInfo.confidence * 100).toFixed(0)}% Confidence • Category Auto-Assigned
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className="absolute inset-0 bg-stone-950/60 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center space-x-3 backdrop-blur-sm">
                   {isSubmitting ? (
                     <div className="text-amber-400 font-bold flex items-center bg-stone-900/80 px-4 py-2 rounded-xl">
