@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -6,39 +6,30 @@ import {
   MapPin, 
   AlertTriangle, 
   ShieldAlert, 
-  Navigation, 
-  Plus, 
   Award, 
   Activity, 
   Camera, 
   CheckCircle, 
   CheckCircle2, 
   ThumbsUp, 
-  UserCircle, 
   PhoneCall, 
-  Filter, 
-  Info, 
-  BellRing, 
-  TrendingUp, 
-  Clock, 
-  FileText, 
-  ChevronRight, 
-  Eye, 
   RefreshCw, 
   ShieldCheck, 
   Compass, 
   X, 
-  ExternalLink, 
-  Download, 
-  Layers, 
-  Flame, 
+  Clock, 
+  FileText, 
+  ChevronRight, 
+  Eye, 
   Droplets, 
   Zap, 
   Trash2,
   Phone,
   Volume2,
   VolumeX,
-  Sparkles
+  Sparkles,
+  TrendingUp,
+  ArrowUpRight
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import DetectionModal from '../components/DetectionModal';
@@ -117,7 +108,6 @@ export default function CitizenDashboardPage() {
     if (isManualRefresh) setRefreshing(true);
     try {
       const [reportsRes, announcementsRes, statsRes] = await Promise.all([
-        // Query community-wide reports so map shows all local incidents
         api.get('/api/detections?scope=community'),
         api.get('/api/announcements'),
         api.get('/api/stats/user-summary')
@@ -187,10 +177,10 @@ export default function CitizenDashboardPage() {
 
   // Civic tier calculation
   const getCivicTier = (score) => {
-    if (score >= 500) return { name: t('platinumTier'), color: 'from-cyan-300 via-sky-400 to-indigo-500', textGradient: 'from-cyan-400 to-blue-400', threshold: 500, next: 1000, badge: t('ambassadorBadge'), perk: 'Direct priority municipal escalation' };
-    if (score >= 250) return { name: t('goldTier'), color: 'from-amber-300 via-amber-400 to-orange-500', textGradient: 'from-amber-400 to-orange-400', threshold: 250, next: 500, badge: t('guardianBadge'), perk: 'Priority dispatch & verified reporter badge' };
-    if (score >= 100) return { name: t('silverTier'), color: 'from-slate-200 via-slate-300 to-slate-400', textGradient: 'from-slate-200 to-slate-400', threshold: 100, next: 250, badge: t('activeBadge'), perk: 'Expedited AI incident triage' };
-    return { name: t('bronzeTier'), color: 'from-orange-400 to-amber-600', textGradient: 'from-orange-400 to-amber-500', threshold: 0, next: 100, badge: t('contributorBadge'), perk: 'Standard community reporting' };
+    if (score >= 500) return { name: t('platinumTier'), threshold: 500, next: 1000, badge: t('ambassadorBadge') };
+    if (score >= 250) return { name: t('goldTier'), threshold: 250, next: 500, badge: t('guardianBadge') };
+    if (score >= 100) return { name: t('silverTier'), threshold: 100, next: 250, badge: t('activeBadge') };
+    return { name: t('bronzeTier'), threshold: 0, next: 100, badge: t('contributorBadge') };
   };
 
   const tier = getCivicTier(userStats.civicScore);
@@ -200,30 +190,30 @@ export default function CitizenDashboardPage() {
   const getCategoryMeta = (type) => {
     const rawType = (type || '').toLowerCase();
     if (rawType.includes('pothole') || rawType.includes('road')) {
-      return { label: t('roadHazard'), icon: AlertTriangle, bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/30' };
+      return { label: t('roadHazard'), icon: AlertTriangle, bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' };
     }
     if (rawType.includes('garbage') || rawType.includes('waste') || rawType.includes('dump')) {
-      return { label: t('illegalWaste'), icon: Trash2, bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' };
+      return { label: t('illegalWaste'), icon: Trash2, bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' };
     }
     if (rawType.includes('water') || rawType.includes('leak') || rawType.includes('drain')) {
-      return { label: t('waterSewage'), icon: Droplets, bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/30' };
+      return { label: t('waterSewage'), icon: Droplets, bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-200' };
     }
     if (rawType.includes('light') || rawType.includes('lamp')) {
-      return { label: t('streetlight'), icon: Zap, bg: 'bg-yellow-500/15', text: 'text-yellow-400', border: 'border-yellow-500/30' };
+      return { label: t('streetlight'), icon: Zap, bg: 'bg-yellow-50', text: 'text-amber-700', border: 'border-yellow-200' };
     }
-    return { label: t('civicInfra'), icon: ShieldAlert, bg: 'bg-indigo-500/15', text: 'text-indigo-400', border: 'border-indigo-500/30' };
+    return { label: t('civicInfra'), icon: ShieldAlert, bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' };
   };
 
   // Severity color helper
   const getSeverityBadge = (severity, priority) => {
     const s = (severity || priority || 'medium').toLowerCase();
     if (s === 'high' || s === 'critical') {
-      return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-rose-500/15 text-rose-400 border border-rose-500/30">{t('critical')}</span>;
+      return <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200">{t('critical')}</span>;
     }
     if (s === 'medium') {
-      return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">{t('medium')}</span>;
+      return <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">{t('medium')}</span>;
     }
-    return <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">{t('low')}</span>;
+    return <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">{t('low')}</span>;
   };
 
   // Status badge helper
@@ -231,23 +221,23 @@ export default function CitizenDashboardPage() {
     const st = (status || 'new').toLowerCase();
     if (st === 'resolved') {
       return (
-        <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
           {t('resolved')}
         </span>
       );
     }
     if (st === 'in_progress' || st === 'assigned') {
       return (
-        <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+        <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
           {t('inProgress')}
         </span>
       );
     }
     return (
-      <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-400 border border-sky-500/30">
-        <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+      <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+        <span className="w-1.5 h-1.5 rounded-full bg-sky-600"></span>
         {t('reported')}
       </span>
     );
@@ -294,39 +284,39 @@ export default function CitizenDashboardPage() {
   const resolutionPercentage = totalIncidentsCount > 0 ? Math.round((resolvedCount / totalIncidentsCount) * 100) : 100;
 
   return (
-    <div className="p-3 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto space-y-5 sm:space-y-6 animate-fade-in relative z-10 font-sans min-w-0 overflow-x-hidden pb-16 lg:pb-8">
+    <div className="w-full text-slate-800 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-7 font-sans min-w-0 relative">
       
-      {/* Top Welcome & Notification Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-slate-800/60 w-full min-w-0">
-        <div className="min-w-0">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight truncate">
-              {t('welcomeBack')}, <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-cyan-300">{user?.name?.split(' ')[0] || t('citizen')}</span>
+      {/* 1. Header Section: Clean, Spacious Greeting */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#EAE7DD]">
+        <div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              {t('welcomeBack')}, {user?.name?.split(' ')[0] || t('citizen')}
             </h1>
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FAF9F5] text-[#6B503B] border border-[#EAE7DD]">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               {t('liveGridActive')}
             </span>
           </div>
-          <p className="text-slate-400 text-xs sm:text-sm mt-1 truncate">
+          <p className="text-sm text-slate-500 mt-1">
             {t('dashboardSubtitle')}
           </p>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
           <button
             onClick={() => fetchData(true)}
             disabled={refreshing}
-            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60 transition-all shadow-md active:scale-95 disabled:opacity-50"
-            title="Refresh feed"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-[#FAF9F5] text-slate-700 border border-[#EAE7DD] hover:border-[#99775C]/40 transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
+            title="Refresh community feed"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#99775C] ${refreshing ? 'animate-spin' : ''}`} />
             <span>{refreshing ? t('syncing') : t('syncLive')}</span>
           </button>
           
           <button
             onClick={() => navigate('/report')}
-            className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-[#99775C] hover:bg-[#84644B] text-white transition-all shadow-xs active:scale-95 cursor-pointer"
           >
             <Camera className="w-3.5 h-3.5" />
             <span>{t('newReport')}</span>
@@ -334,196 +324,169 @@ export default function CitizenDashboardPage() {
         </div>
       </div>
 
-      {/* 4-Card Community Metric Overview Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 w-full min-w-0">
-        <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('communityIssues')}</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center shrink-0">
-              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-400" />
+      {/* 2. Key Metrics Bar: 4 Clean, Airy Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        {/* Stat 1: Community Issues */}
+        <div className="bg-white/95 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#EAE7DD] hover:border-[#99775C]/50 shadow-xs hover:shadow-sm transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{t('communityIssues')}</span>
+            <div className="w-8 h-8 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center">
+              <MapPin className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-1.5">
-            <span className="text-xl sm:text-3xl font-black text-white">{totalIncidentsCount}</span>
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">{t('inArea')}</span>
-          </div>
-          <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-cyan-400 font-medium truncate">
-            <Sparkles className="w-3 h-3 shrink-0" />
-            <span className="truncate">{t('gpsVerified')}</span>
+          <div className="mt-3">
+            <div className="text-3xl font-extrabold text-slate-900">{totalIncidentsCount}</div>
+            <p className="text-xs text-slate-500 mt-1">{t('inArea')}</p>
           </div>
         </div>
 
-        <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('resolutionRate')}</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-              <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
+        {/* Stat 2: Resolution Rate */}
+        <div className="bg-white/95 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#EAE7DD] hover:border-[#99775C]/50 shadow-xs hover:shadow-sm transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{t('resolutionRate')}</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-1.5">
-            <span className="text-xl sm:text-3xl font-black text-white">{resolutionPercentage}%</span>
-            <span className="text-[10px] sm:text-xs font-semibold text-emerald-400 truncate">{t('resolved')}</span>
-          </div>
-          <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-emerald-400/80 font-medium truncate">
-            <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
-            <span className="truncate">{resolvedCount} {t('civicFixes')}</span>
+          <div className="mt-3">
+            <div className="text-3xl font-extrabold text-slate-900">{resolutionPercentage}%</div>
+            <p className="text-xs text-emerald-700 font-medium mt-1">{resolvedCount} {t('civicFixes')}</p>
           </div>
         </div>
 
-        <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('mySubmissions')}</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
-              <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400" />
+        {/* Stat 3: My Submissions */}
+        <div className="bg-white/95 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#EAE7DD] hover:border-[#99775C]/50 shadow-xs hover:shadow-sm transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{t('mySubmissions')}</span>
+            <div className="w-8 h-8 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center">
+              <FileText className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-1.5">
-            <span className="text-xl sm:text-3xl font-black text-white">{userStats.totalReports}</span>
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 truncate">{t('filed')}</span>
-          </div>
-          <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-indigo-300 font-medium truncate">
-            <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
-            <span className="truncate">{userStats.resolvedReports} {t('done')}</span>
+          <div className="mt-3">
+            <div className="text-3xl font-extrabold text-slate-900">{userStats.totalReports}</div>
+            <p className="text-xs text-slate-500 mt-1">{userStats.resolvedReports} {t('done')}</p>
           </div>
         </div>
 
-        <div className="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 bg-slate-900/40 relative overflow-hidden group min-w-0 w-full">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">{t('trustScore')}</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
+        {/* Stat 4: Civic Score */}
+        <div className="bg-white/95 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#EAE7DD] hover:border-[#99775C]/50 shadow-xs hover:shadow-sm transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{t('trustScore')}</span>
+            <div className="w-8 h-8 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center">
+              <Award className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-1.5">
-            <span className={`text-xl sm:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r ${tier.textGradient}`}>{userStats.civicScore}</span>
-            <span className="text-[10px] sm:text-xs font-bold uppercase text-amber-400/90 truncate">{tier.name}</span>
-          </div>
-          <div className="mt-2 flex items-center gap-1 text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">
-            <span className="truncate">{tier.next - userStats.civicScore} {t('ptsToNextRank')}</span>
+          <div className="mt-3">
+            <div className="text-3xl font-extrabold text-slate-900">{userStats.civicScore}</div>
+            <p className="text-xs text-[#84644B] font-medium mt-1">{tier.name} • {tier.next - userStats.civicScore} {t('ptsToNextRank')}</p>
           </div>
         </div>
       </div>
 
-      {/* Quick Action Navigation Buttons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 w-full min-w-0">
+      {/* 3. Streamlined Quick Navigation Dock (Compact, non-congested) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <button 
           onClick={() => navigate('/report')} 
-          className="glass-card hover:border-sky-500/40 p-3 sm:p-4 rounded-2xl flex items-center gap-2.5 sm:gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-sky-500/5 to-slate-900/50 min-w-0 w-full overflow-hidden"
+          className="bg-white/90 backdrop-blur-xs hover:bg-white border border-[#EAE7DD] hover:border-[#99775C]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
         >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-            <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-sky-400" />
+          <div className="w-9 h-9 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+            <Camera className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
-              {t('reportIssueAction')}
-              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">{t('aiDetection')}</p>
+            <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate">{t('reportIssueAction')}</span>
+            <span className="text-[11px] text-slate-500 block truncate">{t('aiDetection')}</span>
           </div>
+          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
         </button>
 
         <button 
           onClick={() => navigate('/my-reports')} 
-          className="glass-card hover:border-indigo-500/40 p-3 sm:p-4 rounded-2xl flex items-center gap-2.5 sm:gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-indigo-500/5 to-slate-900/50 min-w-0 w-full overflow-hidden"
+          className="bg-white/90 backdrop-blur-xs hover:bg-white border border-[#EAE7DD] hover:border-[#99775C]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
         >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-            <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
+          <div className="w-9 h-9 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+            <Activity className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
-              {t('myActivity')}
-              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">{t('statusAndPdf')}</p>
+            <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate">{t('myActivity')}</span>
+            <span className="text-[11px] text-slate-500 block truncate">{t('statusAndPdf')}</span>
           </div>
+          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
         </button>
 
         <button 
           onClick={() => navigate('/map')} 
-          className="glass-card hover:border-emerald-500/40 p-3 sm:p-4 rounded-2xl flex items-center gap-2.5 sm:gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-emerald-500/5 to-slate-900/50 min-w-0 w-full overflow-hidden"
+          className="bg-white/90 backdrop-blur-xs hover:bg-white border border-[#EAE7DD] hover:border-[#99775C]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
         >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-            <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+          <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+            <Compass className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1 truncate">
-              {t('liveMap')}
-              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">{t('cityScanner')}</p>
+            <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate">{t('liveMap')}</span>
+            <span className="text-[11px] text-slate-500 block truncate">{t('cityScanner')}</span>
           </div>
+          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
         </button>
 
         <button 
           onClick={() => setShowEmergencyModal(true)} 
-          className="glass-card hover:border-rose-500/40 p-3 sm:p-4 rounded-2xl flex items-center gap-2.5 sm:gap-3.5 text-left group transition-all duration-200 bg-gradient-to-br from-rose-500/5 to-slate-900/50 min-w-0 w-full overflow-hidden"
+          className="bg-white/90 backdrop-blur-xs hover:bg-white border border-[#EAE7DD] hover:border-rose-300 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
         >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-            <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5 text-rose-400 animate-pulse" />
+          <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+            <PhoneCall className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs sm:text-sm font-bold text-rose-200 flex items-center gap-1 truncate">
-              {t('emergencySOS')}
-              <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:translate-x-0.5 transition-transform shrink-0" />
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-rose-300/70 truncate">{t('hotlines')}</p>
+            <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate">{t('emergencySOS')}</span>
+            <span className="text-[11px] text-slate-500 block truncate">{t('hotlines')}</span>
           </div>
+          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
         </button>
       </div>
 
-      {/* Main Grid: Left (Local Activity) + Right (Civic Score & Alerts) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 w-full min-w-0">
+      {/* 4. Main Section: Left Feed (2 cols) + Right Info (1 col) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Left 2 Columns */}
-        <div className="lg:col-span-2 space-y-5 sm:space-y-6 w-full min-w-0">
-
-          {/* Local Activity Feed */}
-          <div className="glass-card rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border border-slate-800/80 bg-slate-900/40 w-full min-w-0 overflow-hidden">
+        {/* Left 2 Columns: Activity Feed */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="bg-white/95 backdrop-blur-xs border border-[#EAE7DD] rounded-2xl p-5 sm:p-6 shadow-xs">
             
-            {/* Feed Header & Filters */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 pb-3 border-b border-slate-800/60 w-full min-w-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center shrink-0">
-                  <Activity className="w-4 h-4 text-indigo-400" />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="text-sm sm:text-base font-bold text-white truncate">{t('recentAreaActivity')}</h2>
-                  <p className="text-[11px] sm:text-xs text-slate-400 truncate">{t('tapIncidentHint')}</p>
-                </div>
+            {/* Feed Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#EAE7DD]">
+              <div>
+                <h2 className="text-base sm:text-lg font-bold text-slate-900">{t('recentAreaActivity')}</h2>
+                <p className="text-xs text-slate-500 mt-0.5">{t('tapIncidentHint')}</p>
               </div>
 
-              {/* Status Filter Tabs */}
-              <div className="flex items-center p-1 rounded-xl bg-slate-900/80 border border-slate-800 text-xs font-semibold overflow-x-auto max-w-full w-full sm:w-auto shrink-0 no-scrollbar">
+              {/* Status Filter Tabs (Unified, clean) */}
+              <div className="flex items-center p-1 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-xs font-semibold shrink-0">
                 <button 
                   onClick={() => setFilter('ALL')} 
-                  className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'ALL' ? 'bg-indigo-600/30 text-indigo-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'ALL' ? 'bg-[#99775C] text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
                 >
                   {t('all')}
                 </button>
                 <button 
-                  onClick={() => setFilter('CRITICAL')} 
-                  className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'CRITICAL' ? 'bg-rose-500/20 text-rose-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
-                >
-                  {t('critical')}
-                </button>
-                <button 
                   onClick={() => setFilter('IN_PROGRESS')} 
-                  className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'IN_PROGRESS' ? 'bg-amber-500/20 text-amber-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'IN_PROGRESS' ? 'bg-[#99775C] text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
                 >
                   {t('active')}
                 </button>
                 <button 
                   onClick={() => setFilter('RESOLVED')} 
-                  className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg transition-all text-center whitespace-nowrap ${filter === 'RESOLVED' ? 'bg-emerald-500/20 text-emerald-300 font-bold shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'RESOLVED' ? 'bg-[#99775C] text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
                 >
                   {t('resolved')}
+                </button>
+                <button 
+                  onClick={() => setFilter('CRITICAL')} 
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'CRITICAL' ? 'bg-rose-600 text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  {t('critical')}
                 </button>
               </div>
             </div>
 
-            {/* Category Sub-Filters */}
-            <div className="flex items-center gap-1.5 mb-4 pb-1 overflow-x-auto max-w-full w-full no-scrollbar">
-              <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 shrink-0">{t('filterBy')}</span>
+            {/* Category Filter Chips (Single streamlined row) */}
+            <div className="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar border-b border-[#EAE7DD]/60">
               {[
                 { id: 'ALL', label: t('allCategories') },
                 { id: 'pothole', label: t('potholes') },
@@ -534,10 +497,10 @@ export default function CitizenDashboardPage() {
                 <button
                   key={cat.id}
                   onClick={() => setCategoryFilter(cat.id)}
-                  className={`shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border ${
+                  className={`shrink-0 px-3 py-1 rounded-lg text-xs transition-all cursor-pointer border ${
                     categoryFilter === cat.id 
-                      ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-sm' 
-                      : 'bg-slate-900/50 text-slate-400 border-slate-800/80 hover:text-slate-300 hover:bg-slate-800/40'
+                      ? 'bg-[#FAF9F5] text-[#6B503B] border-[#99775C] font-semibold shadow-xs' 
+                      : 'bg-white text-slate-600 border-[#EAE7DD] hover:bg-[#FAF9F5]'
                   }`}
                 >
                   {cat.label}
@@ -545,14 +508,14 @@ export default function CitizenDashboardPage() {
               ))}
             </div>
 
-            {/* Reports List */}
+            {/* Feed List Items */}
             {loading ? (
               <div className="flex flex-col items-center justify-center p-12 space-y-3">
-                <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-400 rounded-full animate-spin"></div>
-                <p className="text-xs text-slate-400 font-medium">{t('scanningGrid')}</p>
+                <div className="w-8 h-8 border-2 border-[#99775C]/30 border-t-[#99775C] rounded-full animate-spin"></div>
+                <p className="text-xs text-slate-500 font-medium">{t('scanningGrid')}</p>
               </div>
             ) : filteredReports.length > 0 ? (
-              <div className="space-y-3 w-full min-w-0">
+              <div className="space-y-3 mt-3">
                 {filteredReports.slice(0, 8).map(report => {
                   const cat = getCategoryMeta(report.type);
                   const Icon = cat.icon;
@@ -564,27 +527,27 @@ export default function CitizenDashboardPage() {
                   return (
                     <div 
                       key={report._id || report.id} 
-                      className="p-3 sm:p-4 rounded-2xl bg-slate-900/60 border border-slate-800/70 hover:border-slate-700/80 hover:bg-slate-850/70 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 group cursor-pointer w-full min-w-0 overflow-hidden"
+                      className="p-3.5 sm:p-4 rounded-xl border border-[#EAE7DD] hover:border-[#99775C]/60 hover:bg-[#FAF9F5]/40 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 group cursor-pointer shadow-xs"
                       onClick={() => setSelectedDetection(report)}
                     >
-                      <div className="flex items-start gap-3 flex-1 min-w-0 w-full">
-                        {/* Thumbnail or Category Icon */}
+                      <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                        {/* Thumbnail / Category Icon */}
                         {imgUrl ? (
-                          <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden shrink-0 border border-slate-700/60 shadow-md">
+                          <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-[#EAE7DD] shadow-xs">
                             <img src={imgUrl} alt={report.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                            <div className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60 backdrop-blur-sm">
-                              <Icon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${cat.text}`} />
+                            <div className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60">
+                              <Icon className="w-2.5 h-2.5 text-white" />
                             </div>
                           </div>
                         ) : (
-                          <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl shrink-0 flex items-center justify-center border ${cat.border} ${cat.bg}`}>
+                          <div className={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center border ${cat.border} ${cat.bg}`}>
                             <Icon className={`w-5 h-5 ${cat.text}`} />
                           </div>
                         )}
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1 min-w-0">
-                            <span className="text-xs sm:text-sm font-bold text-white capitalize group-hover:text-cyan-300 transition-colors truncate max-w-[150px] sm:max-w-none">
+                          <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+                            <span className="text-sm font-bold text-slate-900 capitalize group-hover:text-[#99775C] transition-colors truncate">
                               {cat.label}
                             </span>
                             <div className="flex items-center gap-1.5 shrink-0">
@@ -593,15 +556,15 @@ export default function CitizenDashboardPage() {
                             </div>
                           </div>
 
-                          <p className="text-xs text-slate-300 flex items-center gap-1.5 min-w-0 w-full">
-                            <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                          <p className="text-xs text-slate-600 flex items-center gap-1.5 min-w-0">
+                            <MapPin className="w-3.5 h-3.5 text-[#99775C] shrink-0" />
                             <span className="truncate">{summaryText}</span>
                           </p>
 
-                          <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] sm:text-[11px] text-slate-500 font-mono">
+                          <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-400 font-mono">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3 shrink-0" />
-                              {new Date(report.createdAt).toLocaleDateString(lang === 'hi' ? 'hi-IN' : lang === 'mr' ? 'mr-IN' : lang === 'ta' ? 'ta-IN' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              {new Date(report.createdAt).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
                             <span>•</span>
                             <span className="truncate">{t('ward')}: {report.assignedDepartment?.split(' ')[0] || 'PWD'}</span>
@@ -609,24 +572,24 @@ export default function CitizenDashboardPage() {
                         </div>
                       </div>
 
-                      {/* Action buttons on card */}
-                      <div className="flex items-center justify-end gap-2 self-end sm:self-center shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t border-slate-800/60 sm:border-t-0" onClick={(e) => e.stopPropagation()}>
+                      {/* Card Action Controls */}
+                      <div className="flex items-center justify-end gap-2.5 self-end sm:self-center shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t border-[#EAE7DD]/60 sm:border-t-0" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleToggleUpvote(report._id || report.id)}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
                             isUpvoted 
-                              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm' 
-                              : 'bg-slate-800/80 text-slate-400 border-slate-700/60 hover:text-cyan-300 hover:bg-slate-800'
+                              ? 'bg-[#FAF9F5] text-[#6B503B] border-[#99775C]' 
+                              : 'bg-white text-slate-600 border-[#EAE7DD] hover:bg-[#FAF9F5]'
                           }`}
                           title={t('confirmExistsTitle')}
                         >
-                          <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-cyan-400 text-cyan-400' : ''}`} />
+                          <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-[#99775C] text-[#99775C]' : ''}`} />
                           <span>{currentUpvotes}</span>
                         </button>
 
                         <button
                           onClick={() => setSelectedDetection(report)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 transition-all"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#84644B] hover:text-[#523D2C] hover:bg-[#FAF9F5] transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>{t('inspectPdf')}</span>
@@ -637,13 +600,13 @@ export default function CitizenDashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="p-8 text-center text-slate-400 border border-slate-800/50 border-dashed rounded-2xl bg-slate-900/20">
-                <MapPin className="w-8 h-8 mx-auto text-slate-600 mb-2" />
-                <p className="text-sm font-semibold text-slate-300">{t('noMatchingReports')}</p>
+              <div className="p-8 text-center text-slate-500 border border-[#EAE7DD] border-dashed rounded-xl bg-[#FAF9F5]/50 mt-3">
+                <MapPin className="w-8 h-8 mx-auto text-[#99775C] mb-2" />
+                <p className="text-sm font-semibold text-slate-800">{t('noMatchingReports')}</p>
                 <p className="text-xs text-slate-500 mt-1">{t('clearFiltersHint')}</p>
                 <button
                   onClick={() => { setFilter('ALL'); setCategoryFilter('ALL'); }}
-                  className="mt-3 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors"
+                  className="mt-3 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-[#EAE7DD] text-slate-700 hover:bg-[#FAF9F5] transition-colors cursor-pointer"
                 >
                   {t('resetFilters')}
                 </button>
@@ -652,158 +615,122 @@ export default function CitizenDashboardPage() {
           </div>
         </div>
 
-        {/* Right Sidebar: Civic Score, Alerts & Quick Guides */}
-        <div className="space-y-6">
+        {/* Right 1 Column: Civic Score & Announcements */}
+        <div className="space-y-5">
           
-          {/* Enhanced Civic Score Card */}
-          <div className="glass-card rounded-3xl p-6 border border-slate-800/80 relative overflow-hidden bg-slate-900/50">
-            <div className="absolute -top-16 -right-16 w-36 h-36 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
-            
-            <div className="flex items-center justify-between mb-4 relative z-10">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Award className="w-5 h-5 text-amber-400" />
-                {t('civicEngagementScore')}
+          {/* Clean Civic Score Card */}
+          <div className="bg-white/95 backdrop-blur-xs border border-[#EAE7DD] rounded-2xl p-5 sm:p-6 shadow-xs">
+            <div className="flex items-center justify-between mb-3.5">
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Award className="w-5 h-5 text-[#99775C]" />
+                <span>{t('civicEngagementScore')}</span>
               </h2>
-              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300`}>
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FAF9F5] text-[#6B503B] border border-[#EAE7DD]">
                 {tier.badge}
               </span>
             </div>
-            
-            {/* Circular Gauge Representation */}
-            <div className="flex flex-col items-center justify-center py-4 relative z-10">
-              <div className="relative w-28 h-28 rounded-full border-4 border-slate-800 flex items-center justify-center shadow-2xl bg-slate-950/70 overflow-hidden">
-                <div 
-                  className={`absolute bottom-0 w-full bg-gradient-to-t ${tier.color} opacity-25 transition-all duration-500`} 
-                  style={{ height: `${progressPercent}%` }} 
-                />
-                <div className="text-center z-10">
-                  <span className={`text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r ${tier.textGradient}`}>
-                    {userStats.civicScore}
-                  </span>
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{t('pointsShort')}</span>
+
+            {/* Score & Tier Overview */}
+            <div className="py-2">
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <span className="text-4xl font-extrabold text-slate-900">{userStats.civicScore}</span>
+                  <span className="text-xs font-medium text-slate-500 ml-1.5">{t('pointsShort')}</span>
                 </div>
+                <span className="text-xs font-bold text-[#84644B] uppercase">{tier.name}</span>
               </div>
 
-              <p className={`text-xs font-extrabold tracking-widest uppercase mt-3 bg-clip-text text-transparent bg-gradient-to-r ${tier.textGradient}`}>
-                {tier.name} {t('tierCitizen')}
-              </p>
-              
-              {/* Progress to Next Tier */}
-              <div className="w-full mt-3">
-                <div className="flex justify-between text-[11px] font-medium text-slate-400 mb-1">
+              {/* Progress bar to next rank */}
+              <div className="mt-3">
+                <div className="flex justify-between text-xs text-slate-500 mb-1">
                   <span>{t('levelProgress')}</span>
-                  <span className="text-amber-400 font-bold">{tier.next - userStats.civicScore} {t('ptsTo')} {tier.name === t('platinumTier') ? t('legend') : t('nextTier')}</span>
+                  <span className="font-semibold text-slate-700">{tier.next - userStats.civicScore} {t('ptsToNextRank')}</span>
                 </div>
-                <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-[#FAF9F5] border border-[#EAE7DD] rounded-full overflow-hidden">
                   <div 
-                    className={`h-full bg-gradient-to-r ${tier.color} transition-all duration-500`} 
+                    className="h-full bg-gradient-to-r from-[#D7D2C0] to-[#99775C] rounded-full transition-all duration-500" 
                     style={{ width: `${progressPercent}%` }} 
                   />
                 </div>
               </div>
             </div>
 
-            {/* Submissions breakdown */}
-            <div className="grid grid-cols-2 gap-3 mt-3 relative z-10">
-              <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex flex-col items-center text-center">
-                <Camera className="w-4 h-4 text-cyan-400 mb-1" />
-                <span className="text-lg font-bold text-white">{userStats.totalReports}</span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{t('reported')}</span>
+            {/* Submissions Mini Grid */}
+            <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-[#EAE7DD]">
+              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-center">
+                <span className="text-xl font-bold text-slate-900 block">{userStats.totalReports}</span>
+                <span className="text-[11px] text-slate-500 font-medium">{t('reported')}</span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex flex-col items-center text-center">
-                <CheckCircle className="w-4 h-4 text-emerald-400 mb-1" />
-                <span className="text-lg font-bold text-white">{userStats.resolvedReports}</span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{t('resolved')}</span>
+              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-center">
+                <span className="text-xl font-bold text-slate-900 block">{userStats.resolvedReports}</span>
+                <span className="text-[11px] text-emerald-700 font-medium">{t('resolved')}</span>
               </div>
             </div>
 
-            {/* How to Earn Points Box */}
-            <div className="mt-4 p-3.5 rounded-xl bg-slate-950/40 border border-slate-800/60 text-xs space-y-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{t('howToBoostScore')}</span>
-              <div className="flex items-center justify-between text-[11px] text-slate-300">
-                <span>📸 {t('verifiedIncidentReport')}</span>
-                <span className="font-mono font-bold text-emerald-400">+25 pts</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-slate-300">
-                <span>✅ {t('municipalFixCompleted')}</span>
-                <span className="font-mono font-bold text-cyan-400">+50 pts</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-slate-300">
-                <span>👍 {t('confirmCommunityHazard')}</span>
-                <span className="font-mono font-bold text-amber-400">+5 pts</span>
-              </div>
-            </div>
+            <p className="text-xs text-slate-500 mt-3 text-center">
+              Earn +25 points for every verified hazard you report.
+            </p>
           </div>
 
-          {/* Active Municipal Announcements Card */}
-          <div className="glass-card rounded-3xl p-5 sm:p-6 border border-slate-800/80 bg-slate-900/50 flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <BellRing className="w-5 h-5 text-rose-400" />
+          {/* Municipal Announcements Card */}
+          <div className="bg-white/95 backdrop-blur-xs border border-[#EAE7DD] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col">
+            <div className="flex items-center justify-between mb-3.5">
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#99775C]" />
                 <span>{t('activeAlerts')}</span>
               </h2>
-              <div className="flex items-center gap-2">
-                {announcements.length > 0 && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30">
-                    {announcements.length} {t('alertsCount')}
-                  </span>
-                )}
-                <Link
-                  to="/alerts"
-                  className="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 transition-colors"
-                >
-                  {t('viewAll', 'View All')} →
-                </Link>
-              </div>
+              <Link
+                to="/alerts"
+                className="text-xs font-semibold text-[#84644B] hover:text-[#523D2C] transition-colors"
+              >
+                {t('viewAll', 'View All')} →
+              </Link>
             </div>
 
             <div className="space-y-3 flex-1">
               {announcements.length > 0 ? (
-                announcements.map(ann => {
-                  let colorClasses = 'bg-cyan-500/10 border-cyan-500/25 text-cyan-200';
-                  let dotClass = 'bg-cyan-400';
+                announcements.slice(0, 3).map(ann => {
+                  let alertStyle = 'bg-[#FAF9F5] border-[#EAE7DD] text-slate-800';
+                  let dotStyle = 'bg-[#99775C]';
                   if (ann.type === 'error' || ann.type === 'critical') {
-                    colorClasses = 'bg-rose-500/10 border-rose-500/25 text-rose-200';
-                    dotClass = 'bg-rose-500 animate-pulse';
+                    alertStyle = 'bg-rose-50/70 border-rose-200 text-slate-800';
+                    dotStyle = 'bg-rose-500';
                   } else if (ann.type === 'warning') {
-                    colorClasses = 'bg-amber-500/10 border-amber-500/25 text-amber-200';
-                    dotClass = 'bg-amber-400 animate-pulse';
-                  } else if (ann.type === 'success') {
-                    colorClasses = 'bg-emerald-500/10 border-emerald-500/25 text-emerald-200';
-                    dotClass = 'bg-emerald-400';
+                    alertStyle = 'bg-amber-50/70 border-amber-200 text-slate-800';
+                    dotStyle = 'bg-amber-500';
                   }
 
                   const isPlaying = playingAlertId === (ann._id || ann.id);
 
                   return (
-                    <div key={ann._id || ann.id} className={`p-3.5 rounded-xl border ${colorClasses} flex flex-col gap-2 shadow-sm`}>
+                    <div key={ann._id || ann.id} className={`p-3.5 rounded-xl border ${alertStyle} flex flex-col gap-2`}>
                       <div className="flex items-start gap-2.5">
-                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${dotClass}`} />
+                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${dotStyle}`} />
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold leading-snug">{ann.title}</p>
-                          <p className="text-[11px] opacity-80 mt-0.5 leading-relaxed">{ann.message}</p>
+                          <p className="text-xs font-bold text-slate-900 leading-snug">{ann.title}</p>
+                          <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">{ann.message}</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-1 border-t border-white/10 text-[10px]">
-                        <span className="font-mono opacity-50">
+                      <div className="flex items-center justify-between pt-1 border-t border-[#EAE7DD]/60 text-[11px] text-slate-500">
+                        <span className="font-mono">
                           {new Date(ann.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                         
                         <button
                           type="button"
                           onClick={() => handlePlayAlertAudio(ann)}
-                          className="px-2 py-0.5 rounded-lg bg-black/40 hover:bg-black/60 text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                          className="px-2 py-0.5 rounded-md bg-white border border-[#EAE7DD] text-slate-700 hover:bg-[#FAF9F5] text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
                           title="Listen to broadcast"
                         >
                           {isPlaying ? (
                             <>
-                              <VolumeX className="w-3 h-3 text-cyan-400" />
+                              <VolumeX className="w-3 h-3 text-[#99775C]" />
                               <span>{t('stopListening', 'Stop')}</span>
                             </>
                           ) : (
                             <>
-                              <Volume2 className="w-3 h-3 text-cyan-400" />
+                              <Volume2 className="w-3 h-3 text-[#99775C]" />
                               <span>{t('listenAlert', 'Listen')}</span>
                             </>
                           )}
@@ -813,19 +740,32 @@ export default function CitizenDashboardPage() {
                   );
                 })
               ) : (
-                <div className="flex flex-col items-center justify-center p-6 text-center border border-dashed border-slate-800 rounded-2xl bg-slate-950/40">
-                  <ShieldCheck className="w-8 h-8 text-emerald-400/80 mb-2" />
-                  <p className="text-xs font-bold text-slate-300">{t('allClearSector')}</p>
+                <div className="flex flex-col items-center justify-center p-6 text-center border border-dashed border-[#EAE7DD] rounded-xl bg-[#FAF9F5]/50">
+                  <ShieldCheck className="w-7 h-7 text-[#99775C] mb-2" />
+                  <p className="text-xs font-semibold text-slate-800">{t('allClearSector')}</p>
                   <p className="text-[11px] text-slate-500 mt-0.5">{t('allClearDesc')}</p>
-                  <Link
-                    to="/alerts"
-                    className="mt-3 text-[11px] font-bold text-cyan-400 hover:text-cyan-300"
-                  >
-                    {t('viewAllAlerts', 'View All Community Alerts')} →
-                  </Link>
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Emergency Helpline Access Card */}
+          <div className="bg-white/95 backdrop-blur-xs border border-[#EAE7DD] rounded-2xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center shrink-0">
+                <Phone className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-slate-900 block">{t('emergencyHotlines', 'Emergency Hotlines')}</span>
+                <span className="text-[11px] text-slate-500 block">Police 112 • Fire 101 • PWD</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowEmergencyModal(true)}
+              className="px-3 py-1.5 rounded-lg bg-[#FAF9F5] border border-[#EAE7DD] text-slate-700 hover:bg-[#EAE7DD]/60 text-xs font-semibold transition-all cursor-pointer"
+            >
+              View
+            </button>
           </div>
 
         </div>
@@ -845,56 +785,56 @@ export default function CitizenDashboardPage() {
       {/* Emergency Hotlines Modal */}
       {showEmergencyModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[99999] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150"
           style={{ minHeight: '100vh', width: '100vw' }}
           onClick={() => setShowEmergencyModal(false)}
           role="dialog"
           aria-modal="true"
         >
           <div 
-            className="glass-card bg-slate-900 border border-slate-700/80 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-fade-in m-auto"
+            className="bg-white border border-[#EAE7DD] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 m-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-[#EAE7DD] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center">
-                  <PhoneCall className="w-5 h-5 text-rose-400 animate-pulse" />
+                <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center">
+                  <PhoneCall className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">{t('emergencyModalTitle')}</h3>
-                  <p className="text-xs text-slate-400">{t('emergencyModalSubtitle')}</p>
+                  <h3 className="text-base font-bold text-slate-900">{t('emergencyModalTitle')}</h3>
+                  <p className="text-xs text-slate-500">{t('emergencyModalSubtitle')}</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowEmergencyModal(false)}
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-[#FAF9F5] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {[
-                { name: t('policeHelpline'), number: '112', desc: t('policeDesc'), color: 'rose' },
-                { name: t('fireHelpline'), number: '101', desc: t('fireDesc'), color: 'orange' },
-                { name: t('pwdHelpline'), number: '1800-180-0101', desc: t('pwdDesc'), color: 'sky' },
-                { name: t('waterHelpline'), number: '1916', desc: t('waterDesc'), color: 'cyan' },
-                { name: t('electricityHelpline'), number: '1912', desc: t('electricityDesc'), color: 'amber' },
+                { name: t('policeHelpline'), number: '112', desc: t('policeDesc') },
+                { name: t('fireHelpline'), number: '101', desc: t('fireDesc') },
+                { name: t('pwdHelpline'), number: '1800-180-0101', desc: t('pwdDesc') },
+                { name: t('waterHelpline'), number: '1916', desc: t('waterDesc') },
+                { name: t('electricityHelpline'), number: '1912', desc: t('electricityDesc') },
               ].map(line => (
                 <a
                   key={line.number}
                   href={`tel:${line.number}`}
-                  className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-slate-700 hover:bg-slate-800/50 transition-all group"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#FAF9F5] hover:bg-[#F5F3EC] border border-[#EAE7DD] transition-all group"
                 >
                   <div>
-                    <span className="text-xs font-bold text-white block group-hover:text-cyan-300 transition-colors">{line.name}</span>
-                    <span className="text-[11px] text-slate-400">{line.desc}</span>
+                    <span className="text-xs font-bold text-slate-900 block group-hover:text-[#99775C] transition-colors">{line.name}</span>
+                    <span className="text-[11px] text-slate-500">{line.desc}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-lg border border-cyan-500/20">
+                    <span className="text-xs font-mono font-bold text-[#6B503B] bg-white px-2 py-0.5 rounded border border-[#EAE7DD]">
                       {line.number}
                     </span>
-                    <Phone className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-300 transition-colors" />
+                    <Phone className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#99775C] transition-colors" />
                   </div>
                 </a>
               ))}
@@ -902,7 +842,7 @@ export default function CitizenDashboardPage() {
 
             <button
               onClick={() => setShowEmergencyModal(false)}
-              className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-[#FAF9F5] hover:bg-[#EAE7DD]/70 text-xs font-semibold text-slate-700 border border-[#EAE7DD] transition-colors cursor-pointer"
             >
               {t('close')}
             </button>

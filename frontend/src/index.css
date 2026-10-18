@@ -20,7 +20,7 @@
     transition: background-color 0.25s ease, color 0.25s ease;
   }
   body {
-    @apply bg-stone-950 text-stone-100;
+    @apply bg-[#FAF9F5] text-slate-900;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
@@ -40,34 +40,30 @@
   font-size: 12.5px !important;
 }
 
-/* Glass UI Component Enhancements */
+/* Glass UI Component Enhancements with Narvik (#EAE7DD) & Sorrell (#99775C) */
 .glass-panel {
-  background: rgba(10, 15, 29, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #EAE7DD;
+  box-shadow: 0 4px 20px -2px rgba(153, 119, 92, 0.05);
 }
 
 .glass-card {
-  background: rgba(10, 15, 29, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #EAE7DD;
+  box-shadow: 0 1px 3px 0 rgba(153, 119, 92, 0.04);
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .glass-card:hover {
-  border-color: rgba(6, 182, 212, 0.35);
-  box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.65), 0 0 25px -4px rgba(6, 182, 212, 0.15);
+  border-color: rgba(153, 119, 92, 0.4);
+  box-shadow: 0 8px 24px -4px rgba(153, 119, 92, 0.08);
 }
 
 /* Polished Interactive Focus States */
 input:focus, select:focus, textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25), 0 0 25px -3px rgba(6, 182, 212, 0.2) !important;
-  border-color: rgba(6, 182, 212, 0.75) !important;
+  box-shadow: 0 0 0 3px rgba(153, 119, 92, 0.2) !important;
+  border-color: #99775C !important;
 }
 
 /* ======================================================== */
@@ -79,7 +75,7 @@ html.light {
 
 html.light body,
 html.light #root {
-  background-color: #f8fafc !important;
+  background-color: transparent !important;
   color: #0f172a !important;
 }
 
@@ -90,58 +86,155 @@ html.light [class*="bg-[#05080f]"],
 html.light [class*="bg-[#0a0f1d]"],
 html.light [class*="bg-stone-950"],
 html.light [class*="bg-slate-950"] {
-  background-color: #f8fafc !important;
+  background-color: transparent !important;
   color: #0f172a !important;
 }
 
 html.light [class*="bg-slate-900"],
 html.light [class*="bg-stone-900"] {
-  background-color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.96) !important;
   color: #1e293b !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  border-color: #EAE7DD !important;
+  box-shadow: 0 1px 3px 0 rgba(153, 119, 92, 0.04);
 }
 
 html.light [class*="bg-slate-800"],
 html.light [class*="bg-stone-800"] {
-  background-color: #f1f5f9 !important;
+  background-color: #FAF9F5 !important;
   color: #0f172a !important;
-  border-color: #cbd5e1 !important;
+  border-color: #EAE7DD !important;
 }
 
-html.light [class*="text-white"],
-html.light [class*="text-slate-100"],
-html.light [class*="text-slate-200"] {
+/* Comprehensive Typography Contrast Guarantees */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6 {
   color: #0f172a !important;
 }
 
+/* Fix any gradient-clipped headers that use from-white or from-stone */
+html.light .bg-clip-text,
+html.light [class*="bg-clip-text"] {
+  background-image: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  color: #0f172a !important;
+}
+
+/* Scoped protection for standalone dark pages like Login */
+.login-dark-page,
+.login-dark-page * {
+  box-sizing: border-box;
+}
+
+.login-dark-page {
+  background-color: #050811 !important;
+  color: #f8fafc !important;
+}
+
+.login-dark-page h1,
+.login-dark-page h2,
+.login-dark-page h3 {
+  color: #ffffff !important;
+}
+
+.login-dark-page .bg-clip-text,
+.login-dark-page [class*="bg-clip-text"] {
+  background-image: linear-gradient(to right, #38bdf8, #22d3ee, #3b82f6) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+.login-dark-page input {
+  background-color: rgba(10, 17, 34, 0.85) !important;
+  color: #ffffff !important;
+  border-color: #1e293b !important;
+}
+
+.login-dark-page input::placeholder {
+  color: #64748b !important;
+}
+
+/* Solid colored buttons & badges preserve white text */
+button[class*="bg-sky-"],
+button[class*="bg-sky-"] *,
+button[class*="bg-[#99775C]"],
+button[class*="bg-[#99775C]"] *,
+button[class*="bg-rose-"],
+button[class*="bg-rose-"] *,
+button[class*="bg-emerald-"],
+button[class*="bg-emerald-"] *,
+button[class*="bg-indigo-"],
+button[class*="bg-indigo-"] *,
+button[class*="bg-amber-600"],
+button[class*="bg-amber-600"] *,
+button[class*="bg-slate-900"],
+button[class*="bg-slate-900"] *,
+.btn-primary,
+.btn-primary *,
+[class*="bg-sky-600"] *,
+[class*="bg-emerald-600"] *,
+[class*="bg-rose-600"] * {
+  color: #ffffff !important;
+}
+
+/* Invert all light text classes to dark readable slate */
+html.light [class*="text-white"]:not(button *):not([class*="bg-"]):not(.badge *),
+html.light [class*="text-slate-100"]:not(button *):not([class*="bg-"]):not(.badge *),
+html.light [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not(.badge *),
+html.light [class*="text-stone-100"]:not(button *):not([class*="bg-"]):not(.badge *),
+html.light [class*="text-stone-200"]:not(button *):not([class*="bg-"]):not(.badge *),
+html.light [class*="text-gray-100"]:not(button *):not([class*="bg-"]):not(.badge *),
+html.light [class*="text-gray-200"]:not(button *):not([class*="bg-"]):not(.badge *) {
+  color: #0f172a !important;
+}
+
+/* Secondary & Body Text: High-contrast slate */
 html.light [class*="text-slate-300"],
-html.light [class*="text-slate-400"] {
+html.light [class*="text-stone-300"],
+html.light [class*="text-gray-300"] {
+  color: #1e293b !important;
+}
+
+html.light [class*="text-slate-400"],
+html.light [class*="text-stone-400"],
+html.light [class*="text-gray-400"] {
+  color: #334155 !important;
+}
+
+html.light [class*="text-slate-500"],
+html.light [class*="text-stone-500"],
+html.light [class*="text-gray-500"] {
   color: #475569 !important;
 }
 
 html.light [class*="border-slate-800"],
 html.light [class*="border-slate-700"],
-html.light [class*="border-stone-800"] {
-  border-color: #e2e8f0 !important;
+html.light [class*="border-stone-800"],
+html.light [class*="border-stone-700"] {
+  border-color: #EAE7DD !important;
 }
 
 html.light header,
 html.light aside {
   background-color: rgba(255, 255, 255, 0.96) !important;
-  border-color: #e2e8f0 !important;
+  border-color: #EAE7DD !important;
 }
 
 html.light .glass-panel {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border: 1px solid rgba(226, 232, 240, 0.9) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid #EAE7DD !important;
+  box-shadow: 0 10px 30px rgba(153, 119, 92, 0.05) !important;
 }
 
 html.light .glass-card {
   background: rgba(255, 255, 255, 0.96) !important;
-  border: 1px solid rgba(226, 232, 240, 0.8) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #EAE7DD !important;
+  box-shadow: 0 4px 16px rgba(153, 119, 92, 0.04) !important;
 }
 
 html.light input,
@@ -149,7 +242,12 @@ html.light select,
 html.light textarea {
   background-color: #ffffff !important;
   color: #0f172a !important;
-  border-color: #cbd5e1 !important;
+  border-color: #EAE7DD !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #64748b !important;
 }
 
 .no-scrollbar::-webkit-scrollbar {

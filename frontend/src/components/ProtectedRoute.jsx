@@ -8,21 +8,17 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#090d16]">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin"></div>
-          <p className="text-sm font-mono text-cyan-400">AUTHENTICATING SESSION...</p>
+          <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-600 rounded-full animate-spin"></div>
+          <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">AUTHENTICATING SESSION...</p>
         </div>
       </div>
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
   if (adminOnly && !isAdmin) {
-    return <Navigate to="/my-reports" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

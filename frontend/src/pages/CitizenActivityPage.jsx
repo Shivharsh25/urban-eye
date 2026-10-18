@@ -61,14 +61,8 @@ export default function CitizenActivityPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#05080f] p-6 lg:p-10 relative overflow-hidden">
+    <div className="min-h-full p-4 sm:p-6 lg:p-10 relative overflow-hidden">
       
-      {/* Background aesthetics */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[120px]"></div>
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03]"></div>
-      </div>
-
       <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left Column: Timeline */}
@@ -76,42 +70,42 @@ export default function CitizenActivityPage() {
           
           {/* Header */}
           <div>
-            <h1 className="text-3xl font-black text-white tracking-tight flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center">
-                <Activity className="w-6 h-6 text-blue-400" />
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center space-x-3">
+              <div className="w-12 h-12 rounded-xl bg-[#99775C]/10 border border-[#99775C]/25 flex items-center justify-center">
+                <Activity className="w-6 h-6 text-[#99775C]" />
               </div>
               <span>{t('cityActivityTitle', 'City Activity')}</span>
             </h1>
-            <p className="text-slate-400 mt-2">{t('cityActivitySubtitle', 'Live feed of community reports and city crew resolutions.')}</p>
+            <p className="text-slate-600 mt-2 text-sm font-medium">{t('cityActivitySubtitle', 'Live feed of community reports and city crew resolutions.')}</p>
           </div>
 
           {/* Timeline Feed */}
-          <div className="glass-panel rounded-3xl bg-slate-900/40 border border-slate-800/80 p-8 relative">
+          <div className="rounded-3xl bg-white/95 border border-[#EAE7DD] p-6 sm:p-8 relative shadow-sm">
             
             {/* Continuous Line */}
-            <div className="absolute left-[39px] top-12 bottom-12 w-px bg-slate-800"></div>
+            <div className="absolute left-[39px] sm:left-[47px] top-12 bottom-12 w-px bg-[#EAE7DD]"></div>
 
             <div className="space-y-8 relative z-10">
               {activities.map((item) => (
-                <div key={item.id} className="flex items-start space-x-6 group">
-                  <div className={`w-12 h-12 rounded-full ${item.bg} border border-slate-700/50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform relative z-10`}>
+                <div key={item.id} className="flex items-start space-x-4 sm:space-x-6 group">
+                  <div className={`w-12 h-12 rounded-full ${item.bg} border border-[#EAE7DD] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform relative z-10 bg-white shadow-xs`}>
                     <item.icon className={`w-5 h-5 ${item.color}`} />
                   </div>
-                  <div className="flex-1 pt-2">
-                    <p className="text-slate-300 text-sm">
-                      <span className="font-bold text-white">{t(item.userKey, item.defaultUser)}</span>{' '}
+                  <div className="flex-1 pt-1.5">
+                    <p className="text-slate-700 text-sm leading-relaxed">
+                      <span className="font-bold text-slate-900">{t(item.userKey, item.defaultUser)}</span>{' '}
                       {t(item.actionKey, item.defaultAction)}{' '}
                       {t('near', 'near')}{' '}
-                      <span className="text-cyan-400 font-medium">{item.location}</span>.
+                      <span className="text-[#99775C] font-semibold">{item.location}</span>.
                     </p>
-                    <p className="text-xs text-slate-500 mt-1 font-mono">{t(item.timeKey, item.defaultTime)}</p>
+                    <p className="text-xs text-slate-500 mt-1 font-mono font-medium">{t(item.timeKey, item.defaultTime)}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 pt-4 flex justify-center relative z-10">
-              <button className="text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest transition-colors">
+            <div className="mt-8 pt-4 flex justify-center relative z-10 border-t border-[#EAE7DD]">
+              <button className="text-xs font-bold text-slate-600 hover:text-slate-900 uppercase tracking-widest transition-colors py-1 px-3 rounded-lg hover:bg-slate-50">
                 {t('loadOlderActivity', 'Load Older Activity ↓')}
               </button>
             </div>
@@ -121,29 +115,29 @@ export default function CitizenActivityPage() {
 
         {/* Right Column: Stats */}
         <div className="space-y-6">
-          <div className="glass-panel p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80">
-            <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-6 flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4 text-cyan-400" />
+          <div className="p-6 rounded-3xl bg-white/95 border border-[#EAE7DD] shadow-sm">
+            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-widest mb-6 flex items-center space-x-2">
+              <TrendingUp className="w-4 h-4 text-[#99775C]" />
               <span>{t('todaysImpact', "Today's Impact")}</span>
             </h3>
             
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                <div className="text-3xl font-black text-white mb-1">142</div>
-                <div className="text-xs text-slate-400 uppercase tracking-widest font-semibold">{t('newReportsStat', 'New Reports')}</div>
+              <div className="p-4 rounded-2xl bg-[#FAF9F5] border border-[#EAE7DD]">
+                <div className="text-3xl font-black text-slate-900 mb-1">142</div>
+                <div className="text-xs text-slate-600 uppercase tracking-widest font-bold">{t('newReportsStat', 'New Reports')}</div>
               </div>
               
-              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-                <div className="text-3xl font-black text-emerald-400 mb-1">89</div>
-                <div className="text-xs text-emerald-500/70 uppercase tracking-widest font-semibold">{t('issuesResolved', 'Issues Resolved')}</div>
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                <div className="text-3xl font-black text-emerald-700 mb-1">89</div>
+                <div className="text-xs text-emerald-800 uppercase tracking-widest font-bold">{t('issuesResolved', 'Issues Resolved')}</div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20">
-                <div className="flex items-center space-x-3 mb-2">
-                  <Users className="w-5 h-5 text-cyan-400" />
-                  <span className="text-lg font-bold text-cyan-400">12</span>
+              <div className="p-4 rounded-2xl bg-[#99775C]/10 border border-[#99775C]/25">
+                <div className="flex items-center space-x-3 mb-1">
+                  <Users className="w-5 h-5 text-[#99775C]" />
+                  <span className="text-2xl font-black text-slate-900">12</span>
                 </div>
-                <div className="text-xs text-cyan-500/70 uppercase tracking-widest font-semibold">{t('activeCityCrews', 'Active City Crews')}</div>
+                <div className="text-xs text-slate-700 uppercase tracking-widest font-bold">{t('activeCityCrews', 'Active City Crews')}</div>
               </div>
             </div>
           </div>

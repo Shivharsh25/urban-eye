@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import TopHeader from '../components/TopHeader';
 import UserMenuDropdown from '../components/UserMenuDropdown';
+import WatermarkBackground from '../components/WatermarkBackground';
 import { Menu, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -16,33 +17,32 @@ export default function CitizenLayout({ children }) {
   };
 
   return (
-    <div className="h-screen h-[100dvh] bg-[#090d16] text-slate-100 flex flex-col lg:flex-row font-sans selection:bg-cyan-500 selection:text-white relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-5 pointer-events-none z-0"></div>
-      <div className="absolute top-0 right-0 w-[40%] h-[50%] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
-      
+    <div className="h-screen h-[100dvh] text-slate-800 flex flex-col lg:flex-row font-sans selection:bg-[#99775C] selection:text-white relative overflow-hidden">
+      {/* Universal Watermark Background with Narvik (#EAE7DD) and Sorrell Brown (#99775C) */}
+      <WatermarkBackground />
+
       {/* Mobile Header with tap avatar dropdown */}
-      <header className="lg:hidden shrink-0 z-30 border-b border-slate-800/80 px-3.5 py-2.5 flex items-center justify-between relative bg-[#090d16]/95 backdrop-blur-md w-full max-w-full box-border">
+      <header className="lg:hidden shrink-0 z-30 border-b border-[#EAE7DD] px-3.5 py-2.5 flex items-center justify-between relative bg-white/90 backdrop-blur-md w-full max-w-full box-border">
          <div className="flex items-center space-x-2 min-w-0">
             <button 
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-              className="text-slate-300 p-1.5 rounded-lg hover:bg-slate-800 transition-colors mr-1 shrink-0"
+              className="text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors mr-1 shrink-0"
               aria-label="Toggle Navigation Menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <span className="font-bold text-white text-base tracking-tight truncate">URBAN <span className="text-cyan-400">EYE</span></span>
+            <span className="font-bold text-slate-900 text-base tracking-tight truncate">URBAN <span className="text-sky-600">EYE</span></span>
          </div>
          <div className="flex items-center space-x-2 shrink-0">
            <button
              type="button"
              onClick={handleNextLang}
              title="Switch Language"
-             className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-cyan-300 text-xs font-mono font-bold flex items-center space-x-1 active:scale-95"
+             className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-sky-700 text-xs font-mono font-bold flex items-center space-x-1 active:scale-95"
            >
              <span className="text-xs">अ/A</span>
-             <span className="text-[10px] text-cyan-400 font-bold uppercase">{lang}</span>
+             <span className="text-[10px] text-sky-600 font-bold uppercase">{lang}</span>
            </button>
            <UserMenuDropdown />
          </div>

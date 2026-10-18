@@ -7,9 +7,9 @@ export function ThemeProvider({ children }) {
     try {
       const saved = localStorage.getItem('urban_eye_theme');
       if (saved === 'light' || saved === 'dark') return saved;
-      return 'dark'; // Urban EYE default dark cyber-civic aesthetic
+      return 'light'; // Clean white background aesthetic
     } catch {
-      return 'dark';
+      return 'light';
     }
   });
 

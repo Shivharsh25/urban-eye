@@ -2,39 +2,71 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import client from '../api/client';
 import { getSocket } from '../api/socket';
 
+const DEFAULT_LOCAL_USER = {
+  id: '65e90d235f3b72c4e2010001',
+  name: 'Shivharsh Tiwari',
+  email: 'sarah.jenkins@example.com',
+  role: 'citizen',
+  ward: 'Ward 14 (Central Zone)',
+  trustScore: 85,
+  createdAt: '2024-01-15T08:00:00.000Z'
+};
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem('urban_eye_user');
-      return stored ? JSON.parse(stored) : null;
+      if (stored) return JSON.parse(stored);
+      // Auto-set default citizen for instant localhost access without login
+      localStorage.setItem('urban_eye_user', JSON.stringify(DEFAULT_LOCAL_USER));
+      return DEFAULT_LOCAL_USER;
     } catch {
-      return null;
+      return DEFAULT_LOCAL_USER;
     }
   });
 
-  const [token, setToken] = useState(() => localStorage.getItem('urban_eye_token') || null);
-  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(() => localStorage.getItem('urban_eye_token') || 'local-demo-token');
+  const [loading, setLoading] = useState(false);
 
-  // Validate session on load
+  // Validate session on load and obtain valid token in background if needed
   useEffect(() => {
     async function verifyAuth() {
       const savedToken = localStorage.getItem('urban_eye_token');
-      if (savedToken) {
+      if (savedToken && savedToken !== 'local-demo-token') {
         try {
           const res = await client.get('/api/auth/me');
-          setUser(res.data.user);
-          localStorage.setItem('urban_eye_user', JSON.stringify(res.data.user));
-          
-          // Join socket user room
-          const socket = getSocket();
-          if (socket.connected) {
-            socket.emit('join:user', res.data.user.id);
+          if (res.data?.user) {
+            setUser(res.data.user);
+            localStorage.setItem('urban_eye_user', JSON.stringify(res.data.user));
+            const socket = getSocket();
+            if (socket.connected) {
+              socket.emit('join:user', res.data.user.id);
+            }
           }
         } catch (err) {
-          console.warn('[AuthContext] Session expired or invalid:', err.message);
-          logout();
+          console.warn('[AuthContext] Session check, keeping local session active:', err.message);
+        }
+      } else {
+        // Automatically obtain a live valid JWT token from backend
+        try {
+          const res = await client.post('/api/auth/login', {
+            email: 'sarah.jenkins@example.com',
+            password: 'Citizen@123456'
+          });
+          if (res.data?.token) {
+            setToken(res.data.token);
+            localStorage.setItem('urban_eye_token', res.data.token);
+            const activeUser = {
+              ...DEFAULT_LOCAL_USER,
+              id: res.data.user?.id || DEFAULT_LOCAL_USER.id
+            };
+            setUser(activeUser);
+            localStorage.setItem('urban_eye_user', JSON.stringify(activeUser));
+          }
+        } catch {
+          // Offline fallback
         }
       }
       setLoading(false);

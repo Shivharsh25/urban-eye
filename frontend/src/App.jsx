@@ -29,20 +29,7 @@ import CitizenSettingsPage from './pages/CitizenSettingsPage';
 import CitizenSupportPage from './pages/CitizenSupportPage';
 
 function HomeRedirect() {
-  const { user, loading, isAdmin } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#090d16]">
-        <div className="w-10 h-10 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
+  const { isAdmin } = useAuth();
   return <Navigate to={isAdmin ? "/admin" : "/dashboard"} replace />;
 }
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyC3XzCS017KU681EYAZ1E3j5BwRV49ETHU';

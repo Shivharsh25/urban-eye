@@ -5,6 +5,7 @@ import { getSocket } from '../api/socket';
 import TopHeader from '../components/TopHeader';
 import UserMenuDropdown from '../components/UserMenuDropdown';
 import SignOutModal from '../components/SignOutModal';
+import WatermarkBackground from '../components/WatermarkBackground';
 import { useLanguage } from '../context/LanguageContext';
 import { 
   Eye, 
@@ -98,7 +99,8 @@ export default function AdminLayout({ children }) {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen h-[100dvh] bg-[#090d16] overflow-hidden text-slate-100 font-sans selection:bg-cyan-500 selection:text-white">
+    <div className="flex flex-col lg:flex-row h-screen h-[100dvh] bg-[#090d16]/85 overflow-hidden text-slate-100 font-sans selection:bg-[#99775C] selection:text-white relative">
+      <WatermarkBackground />
       
       {/* Mobile Header */}
       <header className="lg:hidden shrink-0 z-30 glass-panel border-b border-slate-800/80 px-4 py-2.5 flex items-center justify-between">

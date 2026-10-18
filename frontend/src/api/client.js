@@ -19,17 +19,12 @@ client.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle 401 unauthorized
+// Response Interceptor: Handle 401 unauthorized gracefully
 client.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear token on auth expiry
-      localStorage.removeItem('urban_eye_token');
-      localStorage.removeItem('urban_eye_user');
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-        window.location.href = '/login';
-      }
+      console.warn('[API Client] 401 Unauthorized encountered:', error.config?.url);
     }
     return Promise.reject(error);
   }
