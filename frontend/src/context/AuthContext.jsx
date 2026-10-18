@@ -197,13 +197,34 @@ export function AuthProvider({ children }) {
     });
   };
 
+  const requestPhoneOtp = async (phoneNumber) => {
+    const { auth } = await import('../config/firebase');
+    const { RecaptchaVerifier, signInWithPhoneNumber } = await import('firebase/auth');
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible'
+      });
+    }
+    return await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
+  };
+
+  const verifyPhoneOtp = async (confirmationResult, otp) => {
+    const result = await confirmationResult.confirm(otp);
+    const firebaseUser = result.user;
+    const idToken = typeof firebaseUser.getIdToken === 'function' ? await firebaseUser.getIdToken() : 'demo-token';
+    return await loginWithPhone(firebaseUser.phoneNumber, idToken);
+  };
+
   const value = {
     user,
     token,
     loading,
     isAdmin: user?.role === 'admin',
     login,
+    loginWithCredentials: login,
     loginWithPhone,
+    requestPhoneOtp,
+    verifyPhoneOtp,
     loginWithGoogle,
     requestGoogleOtp,
     verifyGoogleOtp,

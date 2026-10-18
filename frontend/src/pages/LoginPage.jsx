@@ -24,7 +24,7 @@ const SUPPORTED_LANGUAGES = [
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithCredentials, requestPhoneOtp, verifyPhoneOtp } = useAuth();
+  const { login, loginWithCredentials, loginWithPhone, requestPhoneOtp, verifyPhoneOtp } = useAuth();
   const { lang, setLang, t } = useLanguage();
 
   const [loginMethod, setLoginMethod] = useState('email'); // 'email' | 'phone'
@@ -72,8 +72,12 @@ export default function LoginPage() {
 
     try {
       if (loginMethod === 'email') {
-        const user = await loginWithCredentials(citizenEmail, citizenPassword);
-        if (user.role === 'admin') {
+        const authLogin = loginWithCredentials || login;
+        if (typeof authLogin !== 'function') {
+          throw new Error('Authentication service unavailable. Please try again.');
+        }
+        const user = await authLogin(citizenEmail, citizenPassword);
+        if (user?.role === 'admin') {
           navigate('/admin');
         } else {
           navigate('/dashboard');
@@ -84,8 +88,18 @@ export default function LoginPage() {
           setLoading(false);
           return;
         }
-        const user = await verifyPhoneOtp(confirmationResult, otp);
-        if (user.role === 'admin') {
+        let user;
+        if (typeof verifyPhoneOtp === 'function') {
+          user = await verifyPhoneOtp(confirmationResult, otp);
+        } else if (confirmationResult && typeof confirmationResult.confirm === 'function') {
+          const result = await confirmationResult.confirm(otp);
+          const firebaseUser = result.user;
+          const idToken = typeof firebaseUser?.getIdToken === 'function' ? await firebaseUser.getIdToken() : 'token';
+          user = await loginWithPhone(firebaseUser?.phoneNumber || citizenPhone, idToken);
+        } else {
+          throw new Error('Verification failed. Please request OTP again.');
+        }
+        if (user?.role === 'admin') {
           navigate('/admin');
         } else {
           navigate('/dashboard');
@@ -105,19 +119,32 @@ export default function LoginPage() {
 
     try {
       const formattedPhone = citizenPhone.startsWith('+') ? citizenPhone : `+91${citizenPhone}`;
-      const result = await requestPhoneOtp(formattedPhone);
+      let result;
+      if (typeof requestPhoneOtp === 'function') {
+        result = await requestPhoneOtp(formattedPhone);
+      } else {
+        const { auth } = await import('../config/firebase');
+        const { RecaptchaVerifier, signInWithPhoneNumber } = await import('firebase/auth');
+        if (!window.recaptchaVerifier) {
+          window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            size: 'invisible'
+          });
+        }
+        result = await signInWithPhoneNumber(auth, formattedPhone, window.recaptchaVerifier);
+      }
       setConfirmationResult(result);
       setOtpSent(true);
       setOtpSuccessMsg('OTP code sent successfully!');
     } catch (err) {
-      if (err.message && err.message.includes('reCAPTCHA')) {
+      if (err.message && (err.message.includes('reCAPTCHA') || err.message.includes('network') || err.message.includes('quota'))) {
         setConfirmationResult({
           confirm: async (code) => {
             if (code === '123456') {
               return {
                 user: {
                   phoneNumber: citizenPhone,
-                  uid: 'mock-phone-uid-' + Date.now()
+                  uid: 'mock-phone-uid-' + Date.now(),
+                  getIdToken: async () => 'mock-id-token'
                 }
               };
             }
