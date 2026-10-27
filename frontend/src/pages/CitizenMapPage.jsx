@@ -130,11 +130,11 @@ export default function CitizenMapPage() {
   }, []);
 
   const filters = [
-    { id: 'all', label: t('allIssues', 'All Incidents'), icon: Layers, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
-    { id: 'pothole', label: t('roadHazard', 'Road Hazards'), icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
-    { id: 'waste', label: t('illegalWaste', 'Illegal Dumping'), icon: Trash2, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
-    { id: 'water', label: t('waterSewage', 'Water Leaks'), icon: Droplets, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
-    { id: 'lighting', label: t('streetlights', 'Streetlights'), icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' }
+    { id: 'all', label: t('allIssues', 'All Incidents'), icon: Layers, color: 'text-[#302B69]', bg: 'bg-[#F6F6FC]', border: 'border-[#302B69]/30' },
+    { id: 'pothole', label: t('roadHazard', 'Road Hazards'), icon: AlertTriangle, color: 'text-[#302B69]', bg: 'bg-[#F6F6FC]', border: 'border-[#302B69]/30' },
+    { id: 'waste', label: t('illegalWaste', 'Illegal Dumping'), icon: Trash2, color: 'text-[#302B69]', bg: 'bg-[#F6F6FC]', border: 'border-[#302B69]/30' },
+    { id: 'water', label: t('waterSewage', 'Water Leaks'), icon: Droplets, color: 'text-[#302B69]', bg: 'bg-[#F6F6FC]', border: 'border-[#302B69]/30' },
+    { id: 'lighting', label: t('streetlights', 'Streetlights'), icon: Zap, color: 'text-[#302B69]', bg: 'bg-[#F6F6FC]', border: 'border-[#302B69]/30' }
   ];
 
   // Filter detections
@@ -184,7 +184,7 @@ export default function CitizenMapPage() {
   };
 
   return (
-    <div className="flex-1 w-full h-full min-h-[calc(100dvh-57px)] lg:min-h-full bg-[#05080f] overflow-hidden relative font-sans">
+    <div className="flex-1 w-full h-full min-h-[calc(100dvh-57px)] lg:min-h-full bg-[#F6EBE8] overflow-hidden relative font-sans">
       
       {/* 1. Full-Bleed Google Map Container (Always fills 100% of viewport) */}
       <div className="absolute inset-0 w-full h-full z-0">
@@ -198,26 +198,26 @@ export default function CitizenMapPage() {
         />
       </div>
 
-      {/* High-Tech Radar Sweep Animation */}
+      {/* Radar Sweep Animation */}
       {showScanner && (
         <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center overflow-hidden">
-          <div className="absolute w-[800px] h-[800px] rounded-full border border-cyan-500/10 flex items-center justify-center">
-            <div className="absolute w-[600px] h-[600px] rounded-full border border-cyan-500/20 flex items-center justify-center">
-              <div className="absolute w-[400px] h-[400px] rounded-full border border-cyan-500/30 flex items-center justify-center">
-                <div className="absolute w-[200px] h-[200px] rounded-full border border-cyan-400/50 shadow-[0_0_50px_rgba(6,182,212,0.2)]"></div>
+          <div className="absolute w-[800px] h-[800px] rounded-full border border-[#302B69]/10 flex items-center justify-center">
+            <div className="absolute w-[600px] h-[600px] rounded-full border border-[#302B69]/20 flex items-center justify-center">
+              <div className="absolute w-[400px] h-[400px] rounded-full border border-[#302B69]/30 flex items-center justify-center">
+                <div className="absolute w-[200px] h-[200px] rounded-full border border-[#302B69]/40 shadow-xs"></div>
               </div>
             </div>
           </div>
           
-          <Crosshair className="absolute w-12 h-12 text-cyan-400/50" strokeWidth={1} />
+          <Crosshair className="absolute w-12 h-12 text-[#302B69]/50" strokeWidth={1} />
           
           <div className="absolute w-[800px] h-[800px] rounded-full animate-[spin_4s_linear_infinite]" style={{ clipPath: 'polygon(50% 50%, 100% 0, 100% 50%)' }}>
-              <div className="w-full h-full bg-gradient-to-tr from-cyan-400/0 to-cyan-400/20 rounded-full"></div>
+              <div className="w-full h-full bg-gradient-to-tr from-[#302B69]/0 to-[#302B69]/10 rounded-full"></div>
           </div>
         </div>
       )}
 
-      {/* 2. Mobile Floating HUD Bar (Never overlaps, ultra compact, 100% responsive) */}
+      {/* 2. Mobile Floating HUD Bar */}
       <div className="lg:hidden absolute top-3 left-3 right-3 z-20 flex items-center justify-between gap-2 pointer-events-none">
         {/* Left: Filter Trigger Button */}
         <button
@@ -225,18 +225,18 @@ export default function CitizenMapPage() {
             updateLeftOpen(!isLeftOpen);
             if (isRightOpen) updateRightOpen(false);
           }}
-          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-bold shadow-xl backdrop-blur-xl active:scale-95 transition-all"
+          className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] text-[#191636] text-xs font-bold shadow-xs active:scale-95 transition-all"
         >
-          <Filter className="w-3.5 h-3.5 text-cyan-400" />
+          <Filter className="w-3.5 h-3.5 text-[#302B69]" />
           <span>{t('filterBy')}</span>
-          <span className="px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px]">
+          <span className="px-1.5 py-0.5 rounded-full bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5] font-mono text-[10px]">
             {filteredReports.length}
           </span>
         </button>
 
         {/* Center: Live Pin Indicator */}
-        <div className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-emerald-400 text-xs font-mono font-bold shadow-xl backdrop-blur-xl">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E8E2E5] text-[#191636] text-xs font-mono font-bold shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-[#302B69] animate-pulse"></span>
           <span>{filteredReports.length} {t('live')}</span>
         </div>
 
@@ -245,7 +245,7 @@ export default function CitizenMapPage() {
           <button
             onClick={handleLocateMe}
             disabled={isLocating}
-            className="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-cyan-400 shadow-xl backdrop-blur-xl active:scale-95 transition-all"
+            className="p-2 rounded-xl bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] text-[#302B69] shadow-xs active:scale-95 transition-all"
             title="Locate me"
           >
             <Locate className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
@@ -256,9 +256,9 @@ export default function CitizenMapPage() {
               updateRightOpen(!isRightOpen);
               if (isLeftOpen) updateLeftOpen(false);
             }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-bold shadow-xl backdrop-blur-xl active:scale-95 transition-all"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] text-[#191636] text-xs font-bold shadow-xs active:scale-95 transition-all"
           >
-            <Activity className="w-3.5 h-3.5 text-cyan-400" />
+            <Activity className="w-3.5 h-3.5 text-[#302B69]" />
             <span>{t('activity')}</span>
           </button>
         </div>
@@ -267,7 +267,7 @@ export default function CitizenMapPage() {
       {/* 3. Mobile Backdrop when either drawer is open */}
       {(isLeftOpen || isRightOpen) && (
         <div 
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-30 lg:hidden animate-fade-in"
+          className="fixed inset-0 bg-[#191636]/30 backdrop-blur-xs z-30 lg:hidden animate-fade-in"
           onClick={() => {
             updateLeftOpen(false);
             updateRightOpen(false);
@@ -285,19 +285,19 @@ export default function CitizenMapPage() {
       >
         <button
           onClick={() => updateLeftOpen(true)}
-          className="glass-panel px-4 py-2.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 text-slate-200 hover:text-white flex items-center space-x-3 shadow-2xl backdrop-blur-xl transition-all duration-200 group hover:scale-[1.02]"
+          className="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] text-[#191636] flex items-center space-x-3 shadow-xs transition-all duration-200 group hover:scale-[1.02]"
           title="Open Layer Filters & Grid Info"
         >
-          <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
+          <div className="w-8 h-8 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center text-[#302B69] group-hover:bg-[#302B69] group-hover:text-white transition-colors">
             <Filter className="w-4 h-4" />
           </div>
           <div className="flex flex-col text-left">
             <span className="text-xs font-bold leading-tight">{t('filterBy')}</span>
-            <span className="text-[10px] text-cyan-400 font-mono font-medium">
+            <span className="text-[10px] text-[#302B69] font-mono font-medium">
               {activeFilter === 'all' ? `${filteredReports.length} ${t('pins')}` : filters.find(f => f.id === activeFilter)?.label}
             </span>
           </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
+          <ChevronRight className="w-4 h-4 text-[#8C87A6] group-hover:text-[#302B69] group-hover:translate-x-0.5 transition-all" />
         </button>
       </div>
 
@@ -310,22 +310,22 @@ export default function CitizenMapPage() {
         }`}
       >
         {/* Header Card */}
-        <div className="glass-panel p-4 rounded-2xl bg-slate-900/95 border border-slate-800/80 backdrop-blur-xl shadow-2xl">
+        <div className="p-4 rounded-2xl bg-white border border-[#E8E2E5] shadow-xs">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-                <MapPin className="w-4 h-4 text-cyan-400" />
+              <div className="w-9 h-9 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center">
+                <MapPin className="w-4 h-4 text-[#302B69]" />
               </div>
               <div>
-                <h1 className="text-base sm:text-lg font-black text-white tracking-tight">{t('liveGridActive')}</h1>
-                <p className="text-[9px] text-cyan-400/80 font-mono uppercase tracking-widest">{t('appSubtitle')}</p>
+                <h1 className="text-base sm:text-lg font-black text-[#191636] tracking-tight">{t('liveGridActive')}</h1>
+                <p className="text-[9px] text-[#57536E] font-mono uppercase tracking-widest">{t('appSubtitle')}</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-1">
               <button
                 onClick={fetchReports}
-                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                className="p-1.5 rounded-xl bg-[#F6F6FC] hover:bg-[#302B69] text-[#57536E] hover:text-white transition-colors"
                 title="Refresh Map Data"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -333,7 +333,7 @@ export default function CitizenMapPage() {
               
               <button
                 onClick={() => updateLeftOpen(false)}
-                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition-colors border border-transparent hover:border-rose-500/30"
+                className="p-1.5 rounded-xl bg-[#F6F6FC] hover:bg-[#302B69] text-[#57536E] hover:text-white transition-colors border border-transparent"
                 title="Close Filters Panel"
               >
                 <X className="w-4 h-4 lg:hidden" />
@@ -342,29 +342,29 @@ export default function CitizenMapPage() {
             </div>
           </div>
 
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-[#57536E] leading-relaxed">
             {t('dashboardSubtitle')}
           </p>
 
-          <div className="mt-3 pt-2.5 border-t border-slate-800/70 flex items-center justify-between text-xs">
-            <span className="text-slate-400 font-medium">{t('communityIssues')}:</span>
-            <span className="font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+          <div className="mt-3 pt-2.5 border-t border-[#E8E2E5] flex items-center justify-between text-xs">
+            <span className="text-[#57536E] font-medium">{t('communityIssues')}:</span>
+            <span className="font-mono font-bold text-[#302B69] bg-[#F6F6FC] px-2 py-0.5 rounded-full border border-[#E8E2E5]">
               {filteredReports.length}
             </span>
           </div>
         </div>
 
         {/* Filters Card */}
-        <div className="glass-panel p-3 rounded-2xl bg-slate-900/95 border border-slate-800/80 backdrop-blur-xl shadow-2xl">
-          <div className="flex items-center justify-between px-2 pb-2.5 mb-1.5 border-b border-slate-800/60">
+        <div className="p-3 rounded-2xl bg-white border border-[#E8E2E5] shadow-xs">
+          <div className="flex items-center justify-between px-2 pb-2.5 mb-1.5 border-b border-[#E8E2E5]">
             <div className="flex items-center space-x-2">
-              <Filter className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('filterBy')}</span>
+              <Filter className="w-3.5 h-3.5 text-[#302B69]" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#57536E]">{t('filterBy')}</span>
             </div>
             {activeFilter !== 'all' && (
               <button
                 onClick={() => setActiveFilter('all')}
-                className="text-[10px] text-cyan-400 hover:text-cyan-300 font-mono font-bold"
+                className="text-[10px] text-[#302B69] hover:text-[#191636] font-mono font-bold"
               >
                 {t('reset')}
               </button>
@@ -383,6 +383,8 @@ export default function CitizenMapPage() {
                     return false;
                   }).length;
 
+              const isSelected = activeFilter === filter.id;
+
               return (
                 <button
                   key={filter.id}
@@ -393,19 +395,19 @@ export default function CitizenMapPage() {
                     }
                   }}
                   className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all ${
-                    activeFilter === filter.id
-                      ? `${filter.bg} border ${filter.border} shadow-sm`
-                      : 'border border-transparent hover:bg-slate-800/50'
+                    isSelected
+                      ? 'bg-[#F6F6FC] border border-[#302B69]/30 shadow-xs'
+                      : 'border border-transparent hover:bg-[#F6F6FC]'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5">
-                    <filter.icon className={`w-4 h-4 ${activeFilter === filter.id ? filter.color : 'text-slate-500'}`} />
-                    <span className={`text-xs font-semibold ${activeFilter === filter.id ? 'text-white font-bold' : 'text-slate-400'}`}>
+                    <filter.icon className={`w-4 h-4 ${isSelected ? 'text-[#302B69]' : 'text-[#8C87A6]'}`} />
+                    <span className={`text-xs font-semibold ${isSelected ? 'text-[#191636] font-bold' : 'text-[#57536E]'}`}>
                       {filter.label}
                     </span>
                   </div>
                   <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md ${
-                    activeFilter === filter.id ? 'bg-slate-900/60 text-white font-bold' : 'text-slate-500'
+                    isSelected ? 'bg-white text-[#302B69] border border-[#E8E2E5] font-bold' : 'text-[#8C87A6]'
                   }`}>
                     {count}
                   </span>
@@ -417,48 +419,48 @@ export default function CitizenMapPage() {
       </div>
 
       {/* 6. Desktop Top Centered Status HUD & Master Zen Mode Toggle */}
-      <div className="hidden lg:flex absolute top-6 left-1/2 -translate-x-1/2 z-20 glass-panel px-4 py-2 rounded-full bg-slate-900/90 border border-slate-700/80 backdrop-blur-xl items-center space-x-3 shadow-2xl pointer-events-auto">
+      <div className="hidden lg:flex absolute top-6 left-1/2 -translate-x-1/2 z-20 px-4 py-2 rounded-full bg-white/95 border border-[#E8E2E5] items-center space-x-3 shadow-xs pointer-events-auto">
           {/* Live Pins Badge */}
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]"></div>
-            <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest whitespace-nowrap">
+            <div className="w-2 h-2 bg-[#302B69] rounded-full animate-pulse"></div>
+            <span className="text-xs font-mono font-bold text-[#191636] uppercase tracking-widest whitespace-nowrap">
               {filteredReports.length} {t('pinsLive', 'Pins Live')}
             </span>
           </div>
           
-          <div className="h-4 w-px bg-slate-700"></div>
+          <div className="h-4 w-px bg-[#E8E2E5]"></div>
 
           {/* Locate Me */}
           <button 
             onClick={handleLocateMe}
             disabled={isLocating}
-            className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest transition-colors"
+            className="flex items-center gap-1.5 text-[11px] font-mono font-semibold text-[#302B69] hover:text-[#191636] uppercase tracking-widest transition-colors"
             title="Center map on your current location"
           >
             <Locate className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
             <span>{isLocating ? t('locating', 'Locating...') : t('myLocation', 'My Location')}</span>
           </button>
 
-          <div className="h-4 w-px bg-slate-700"></div>
+          <div className="h-4 w-px bg-[#E8E2E5]"></div>
 
           {/* Radar Toggle */}
           <button 
             onClick={() => setShowScanner(!showScanner)}
-            className={`text-[10px] font-mono uppercase tracking-widest transition-colors ${showScanner ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'}`}
+            className={`text-[10px] font-mono uppercase tracking-widest transition-colors ${showScanner ? 'text-[#302B69] font-bold' : 'text-[#57536E] hover:text-[#191636]'}`}
             title="Toggle Radar Sweep Animation"
           >
             {showScanner ? t('radarOn', 'Radar ON') : t('radarOff', 'Radar OFF')}
           </button>
 
-          <div className="h-4 w-px bg-slate-700"></div>
+          <div className="h-4 w-px bg-[#E8E2E5]"></div>
 
           {/* Full Map / Zen Mode Toggle */}
           <button 
             onClick={toggleFullMap}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
               isFullMap 
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 shadow-md shadow-cyan-500/25 font-black' 
-                : 'bg-slate-800/80 text-cyan-400 hover:bg-slate-700/80 hover:text-cyan-300 border border-cyan-500/30'
+                ? 'bg-[#302B69] text-white shadow-xs font-black' 
+                : 'bg-[#F6F6FC] text-[#302B69] hover:bg-[#302B69] hover:text-white border border-[#E8E2E5]'
             }`}
             title={isFullMap ? "Restore side cards (Shortcut: M)" : "Hide all side cards for clean full map view (Shortcut: M)"}
           >
@@ -477,20 +479,20 @@ export default function CitizenMapPage() {
       >
         <button
           onClick={() => updateRightOpen(true)}
-          className="glass-panel px-4 py-2.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 text-slate-200 hover:text-white flex items-center space-x-3 shadow-2xl backdrop-blur-xl transition-all duration-200 group hover:scale-[1.02]"
+          className="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] text-[#191636] flex items-center space-x-3 shadow-xs transition-all duration-200 group hover:scale-[1.02]"
           title="Open Live Incident Feed"
         >
-          <ChevronLeft className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 group-hover:-translate-x-0.5 transition-all" />
-          <div className="relative w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
+          <ChevronLeft className="w-4 h-4 text-[#8C87A6] group-hover:text-[#302B69] group-hover:-translate-x-0.5 transition-all" />
+          <div className="relative w-8 h-8 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center text-[#302B69] group-hover:bg-[#302B69] group-hover:text-white transition-colors">
             <Activity className="w-4 h-4" />
             <span className="absolute -top-1 -right-1 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#302B69] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#302B69]"></span>
             </span>
           </div>
           <div className="flex flex-col text-left">
             <span className="text-xs font-bold leading-tight">{t('feed', 'Feed')}</span>
-            <span className="text-[10px] text-cyan-400 font-mono font-medium">
+            <span className="text-[10px] text-[#302B69] font-mono font-medium">
               {filteredReports.length} {t('live', 'Live')}
             </span>
           </div>
@@ -505,24 +507,24 @@ export default function CitizenMapPage() {
             : 'translate-y-full lg:translate-x-[120%] opacity-0 pointer-events-none'
         }`}
       >
-        <div className="glass-panel h-full rounded-2xl bg-slate-900/95 border border-slate-800/80 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden max-h-[70vh] lg:max-h-none">
+        <div className="h-full rounded-2xl bg-white border border-[#E8E2E5] shadow-xs flex flex-col overflow-hidden max-h-[70vh] lg:max-h-none">
           
           {/* Header */}
-          <div className="p-3.5 sm:p-4 border-b border-slate-800/80 flex items-center justify-between bg-black/20">
+          <div className="p-3.5 sm:p-4 border-b border-[#E8E2E5] flex items-center justify-between bg-[#F6F6FC]">
             <div className="flex items-center space-x-2.5">
-              <Activity className="w-4 h-4 text-cyan-400" />
-              <h2 className="text-xs font-bold text-white uppercase tracking-widest">{t('liveIncidentFeed', 'Live Incident Feed')}</h2>
+              <Activity className="w-4 h-4 text-[#302B69]" />
+              <h2 className="text-xs font-bold text-[#191636] uppercase tracking-widest">{t('liveIncidentFeed', 'Live Incident Feed')}</h2>
             </div>
             
             <div className="flex items-center space-x-2">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#302B69] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#302B69]"></span>
               </span>
 
               <button
                 onClick={() => updateRightOpen(false)}
-                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition-colors border border-transparent hover:border-rose-500/30 ml-1"
+                className="p-1.5 rounded-xl bg-white hover:bg-[#302B69] text-[#57536E] hover:text-white transition-colors border border-[#E8E2E5] ml-1"
                 title="Close Live Feed"
               >
                 <X className="w-4 h-4 lg:hidden" />
@@ -535,7 +537,7 @@ export default function CitizenMapPage() {
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2.5">
             {loading ? (
               <div className="flex justify-center p-8">
-                <div className="w-6 h-6 border-2 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-2 border-[#302B69]/20 border-t-[#302B69] rounded-full animate-spin"></div>
               </div>
             ) : filteredReports.length > 0 ? (
               filteredReports.map((report) => (
@@ -550,46 +552,46 @@ export default function CitizenMapPage() {
                       updateRightOpen(false);
                     }
                   }}
-                  className="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800/80 hover:border-cyan-500/40 transition-all cursor-pointer group"
+                  className="p-3 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5] hover:border-[#302B69]/40 transition-all cursor-pointer group"
                 >
                   <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <MapPin className="w-4 h-4 text-cyan-400" />
+                    <div className="w-8 h-8 rounded-xl bg-white border border-[#E8E2E5] flex items-center justify-center shrink-0 mt-0.5">
+                      <MapPin className="w-4 h-4 text-[#302B69]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
-                        <h4 className="text-xs font-bold text-white truncate capitalize group-hover:text-cyan-300 transition-colors">
+                        <h4 className="text-xs font-bold text-[#191636] truncate capitalize group-hover:text-[#302B69] transition-colors">
                           {report.type?.replace('_', ' ') || 'Incident'}
                         </h4>
-                        <span className="text-[9px] text-cyan-400/70 font-mono whitespace-nowrap ml-1">
+                        <span className="text-[9px] text-[#57536E] font-mono whitespace-nowrap ml-1">
                           {new Date(report.createdAt).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' })}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 truncate">
+                      <p className="text-[11px] text-[#57536E] truncate">
                         {report.address || `${Number(report.lat).toFixed(4)}, ${Number(report.lng).toFixed(4)}`}
                       </p>
-                      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-700/40 text-[10px]">
-                        <span className={`uppercase font-extrabold ${report.severity === 'high' ? 'text-rose-400' : report.severity === 'medium' ? 'text-amber-400' : 'text-emerald-400'}`}>
+                      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-[#E8E2E5] text-[10px]">
+                        <span className="uppercase font-extrabold text-[#302B69]">
                           {t((report.severity || 'medium').toLowerCase(), report.severity || 'Medium')}
                         </span>
-                        <span className="text-slate-400 capitalize">{t((report.status || 'reported').toLowerCase(), report.status || 'Reported')}</span>
+                        <span className="text-[#57536E] capitalize">{t((report.status || 'reported').toLowerCase(), report.status || 'Reported')}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="p-6 text-center text-slate-500 text-xs">
+              <div className="p-6 text-center text-[#57536E] text-xs">
                 {t('noIncidentsForFilter', 'No incidents found for current filter.')}
               </div>
             )}
           </div>
 
           {/* Bottom Button */}
-          <div className="p-3 border-t border-slate-800/80 bg-black/20">
+          <div className="p-3 border-t border-[#E8E2E5] bg-[#F6F6FC]">
             <button 
               onClick={() => navigate('/my-reports')}
-              className="w-full py-2 rounded-xl bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-widest hover:bg-cyan-500/20 border border-cyan-500/20 transition-all flex items-center justify-center space-x-2"
+              className="w-full py-2.5 rounded-xl bg-[#302B69] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#242052] transition-all flex items-center justify-center space-x-2"
             >
               <span>{t('myReportsAndPdf', 'My Reports & PDF')}</span>
               <ArrowRight className="w-3.5 h-3.5" />

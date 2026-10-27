@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import GoogleAuthButton from '../components/GoogleAuthButton';
 import Logo from '../components/Logo';
+import WatermarkBackground from '../components/WatermarkBackground';
 import api from '../api/client';
 
 const SUPPORTED_LANGUAGES = [
@@ -42,7 +43,7 @@ export default function LoginPage() {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [otpSuccessMsg, setOtpSuccessMsg] = useState(null);
 
-  // Platform stats (Default to 24 & 3 exactly matching previous screenshot)
+  // Platform stats
   const [stats, setStats] = useState({
     activeCitizens: '24',
     issuesResolved: '3'
@@ -163,26 +164,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div 
-      className="login-dark-page min-h-screen flex selection:bg-cyan-500 selection:text-black font-sans relative overflow-hidden"
-      style={{ backgroundColor: '#050811', color: '#f8fafc' }}
-    >
-      
-      {/* ===================================================================== */}
-      {/* LEFT SIDE: Hero / Stats Split Screen (Exact Match to Screenshot)      */}
-      {/* ===================================================================== */}
-      <div 
-        className="hidden lg:flex w-1/2 relative overflow-hidden border-r border-slate-800/80"
-        style={{ backgroundColor: '#060a16', color: '#ffffff' }}
-      >
-        {/* Soft Ambient Cyan Glow Halo behind logo */}
-        <div className="absolute top-10 left-12 w-56 h-56 bg-cyan-500/15 rounded-full blur-[90px] pointer-events-none"></div>
-        <div className="absolute bottom-16 right-16 w-72 h-72 bg-blue-600/10 rounded-full blur-[110px] pointer-events-none"></div>
+    <div className="min-h-screen flex selection:bg-[#302B69] selection:text-white font-sans relative overflow-hidden bg-[#F6EBE8]">
+      <WatermarkBackground />
 
-        {/* Ambient Grid overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#071328]/95 via-[#060a16]/98 to-[#03060d] z-0"></div>
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] z-0 pointer-events-none"></div>
-
+      {/* ===================================================================== */}
+      {/* LEFT SIDE: Hero & Community Impact Panel (Light Lavender Surface)     */}
+      {/* ===================================================================== */}
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden border-r border-[#E8E2E5] bg-[#F6F6FC]/80 backdrop-blur-md">
         <div className="relative z-10 flex flex-col justify-between p-12 lg:p-14 h-full w-full">
           {/* Logo Area */}
           <div>
@@ -191,63 +179,51 @@ export default function LoginPage() {
 
           {/* Hero Content */}
           <div className="space-y-6 max-w-lg">
-            <h2 className="text-4xl xl:text-5xl font-extrabold text-white leading-tight tracking-tight">
+            <h2 className="text-4xl xl:text-5xl font-black text-[#191636] leading-tight tracking-tight">
               Empowering citizens.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-500">
+              <span className="text-[#302B69]">
                 Improving cities.
               </span>
             </h2>
-            <p className="text-base xl:text-lg text-slate-300 font-normal leading-relaxed">
+            <p className="text-base text-[#57536E] font-normal leading-relaxed">
               Join thousands of residents actively monitoring and reporting urban infrastructure issues in real-time.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-4">
               {/* Stat 1: Active Citizen */}
-              <div 
-                className="p-5 rounded-2xl border border-slate-800/90 backdrop-blur-md"
-                style={{ backgroundColor: 'rgba(11, 19, 37, 0.75)' }}
-              >
-                <Users className="w-6 h-6 text-cyan-400 mb-2.5" />
-                <div className="text-2xl font-bold text-white tracking-tight">{stats.activeCitizens}</div>
-                <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mt-0.5">ACTIVE CITIZEN</div>
+              <div className="p-5 rounded-2xl border border-[#E8E2E5] bg-white shadow-xs">
+                <Users className="w-5 h-5 text-[#302B69] mb-2.5" />
+                <div className="text-2xl font-bold text-[#191636] tracking-tight">{stats.activeCitizens}</div>
+                <div className="text-[10px] text-[#57536E] uppercase tracking-wider font-semibold mt-0.5">ACTIVE CITIZENS</div>
               </div>
 
               {/* Stat 2: Issues Resolved */}
-              <div 
-                className="p-5 rounded-2xl border border-slate-800/90 backdrop-blur-md"
-                style={{ backgroundColor: 'rgba(11, 19, 37, 0.75)' }}
-              >
-                <CheckCircle className="w-6 h-6 text-emerald-400 mb-2.5" />
-                <div className="text-2xl font-bold text-white tracking-tight">{stats.issuesResolved}</div>
-                <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mt-0.5">ISSUES RESOLVED</div>
+              <div className="p-5 rounded-2xl border border-[#E8E2E5] bg-white shadow-xs">
+                <CheckCircle className="w-5 h-5 text-[#302B69] mb-2.5" />
+                <div className="text-2xl font-bold text-[#191636] tracking-tight">{stats.issuesResolved}</div>
+                <div className="text-[10px] text-[#57536E] uppercase tracking-wider font-semibold mt-0.5">ISSUES RESOLVED</div>
               </div>
             </div>
           </div>
 
           {/* Bottom Security Badge */}
-          <div className="flex items-center text-slate-400 text-xs sm:text-sm space-x-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Secure & encrypted connection</span>
+          <div className="flex items-center text-[#57536E] text-xs space-x-2">
+            <ShieldCheck className="w-4 h-4 text-[#302B69]" />
+            <span>Secure & encrypted municipal connection</span>
           </div>
         </div>
       </div>
 
       {/* ===================================================================== */}
-      {/* RIGHT SIDE: Dark Modern Auth Panel (Exact Match to Screenshot)        */}
+      {/* RIGHT SIDE: Pure White Auth Card on Soft Cream Background             */}
       {/* ===================================================================== */}
-      <div 
-        className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative overflow-hidden"
-        style={{ backgroundColor: '#050811' }}
-      >
-        <div className="w-full max-w-md relative z-10">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative overflow-y-auto">
+        <div className="w-full max-w-md bg-white rounded-3xl border border-[#E8E2E5] p-8 sm:p-10 shadow-sm relative z-10">
           
           {/* Top Language Toggle */}
-          <div className="flex justify-end mb-8">
-            <div 
-              className="inline-flex items-center space-x-1 border border-slate-800/90 rounded-xl p-1"
-              style={{ backgroundColor: 'rgba(10, 16, 32, 0.9)' }}
-            >
-              <Globe className="w-3.5 h-3.5 text-slate-400 ml-1.5 mr-0.5" />
+          <div className="flex justify-end mb-6">
+            <div className="inline-flex items-center space-x-1 border border-[#E8E2E5] rounded-xl p-1 bg-[#F6F6FC]">
+              <Globe className="w-3.5 h-3.5 text-[#57536E] ml-1.5 mr-0.5" />
               {SUPPORTED_LANGUAGES.map((l) => (
                 <button
                   key={l.code}
@@ -255,8 +231,8 @@ export default function LoginPage() {
                   onClick={() => setLang(l.code)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     lang === l.code
-                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-white text-[#191636] font-bold shadow-xs border border-[#E8E2E5]'
+                      : 'text-[#57536E] hover:text-[#191636]'
                   }`}
                 >
                   {l.native}
@@ -266,16 +242,16 @@ export default function LoginPage() {
           </div>
 
           {/* Mobile Header (Hidden on Desktop) */}
-          <div className="flex lg:hidden items-center justify-center space-x-4 mb-6">
-            <Logo size="md" subtitle="" />
+          <div className="flex lg:hidden items-center justify-center mb-6">
+            <Logo size="md" subtitle="Active Watch" />
           </div>
 
           {/* Headings */}
-          <div className="mb-7">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-2 tracking-tight">
+          <div className="mb-6">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#191636] mb-1.5 tracking-tight">
               Welcome back
             </h2>
-            <p className="text-slate-400 text-sm">
+            <p className="text-[#57536E] text-xs sm:text-sm">
               Sign in to your citizen portal to continue.
             </p>
           </div>
@@ -284,7 +260,7 @@ export default function LoginPage() {
           <div className="mb-6">
             <GoogleAuthButton 
               mode="signin"
-              className="!bg-[#0c1427] !border-slate-800/90 !text-white hover:!bg-[#111c36]"
+              className="!bg-white !border-[#E8E2E5] !text-[#191636] hover:!bg-[#F6F6FC] shadow-xs"
               onSuccess={(user) => {
                 if (user?.role === 'admin') {
                   navigate('/admin');
@@ -297,28 +273,22 @@ export default function LoginPage() {
 
             {/* Divider */}
             <div className="relative my-6 flex items-center justify-center">
-              <div className="border-t border-slate-800/80 w-full"></div>
-              <span 
-                className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 absolute"
-                style={{ backgroundColor: '#050811' }}
-              >
+              <div className="border-t border-[#E8E2E5] w-full"></div>
+              <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-[#787399] absolute bg-white">
                 OR CONTINUE WITH
               </span>
             </div>
           </div>
 
           {/* Login Method Tabs */}
-          <div 
-            className="flex p-1 rounded-xl mb-6 border border-slate-800/90"
-            style={{ backgroundColor: 'rgba(9, 15, 30, 0.9)' }}
-          >
+          <div className="flex p-1 rounded-xl mb-6 border border-[#E8E2E5] bg-[#F6F6FC]">
             <button
               type="button"
               onClick={() => { setLoginMethod('email'); setCitizenError(null); }}
-              className={`flex-1 text-xs font-semibold py-2.5 rounded-lg transition-all cursor-pointer ${
+              className={`flex-1 text-xs font-semibold py-2 rounded-lg transition-all cursor-pointer ${
                 loginMethod === 'email' 
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold shadow-xs' 
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white text-[#302B69] border border-[#E8E2E5] font-bold shadow-xs' 
+                  : 'text-[#57536E] hover:text-[#191636]'
               }`}
             >
               Email Login
@@ -326,10 +296,10 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => { setLoginMethod('phone'); setCitizenError(null); }}
-              className={`flex-1 text-xs font-semibold py-2.5 rounded-lg transition-all cursor-pointer ${
+              className={`flex-1 text-xs font-semibold py-2 rounded-lg transition-all cursor-pointer ${
                 loginMethod === 'phone' 
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold shadow-xs' 
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white text-[#302B69] border border-[#E8E2E5] font-bold shadow-xs' 
+                  : 'text-[#57536E] hover:text-[#191636]'
               }`}
             >
               Phone (OTP)
@@ -337,30 +307,30 @@ export default function LoginPage() {
           </div>
 
           {citizenError && (
-            <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start space-x-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{citizenError}</span>
             </div>
           )}
 
           {otpSuccessMsg && (
-            <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-start space-x-3">
-              <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-start space-x-2.5">
+              <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{otpSuccessMsg}</span>
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleCitizenSubmit} className="space-y-5">
+          <form onSubmit={handleCitizenSubmit} className="space-y-4">
             {loginMethod === 'email' ? (
               <>
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">
+                  <label className="block text-[11px] font-bold text-[#57536E] mb-1.5 uppercase tracking-wider">
                     EMAIL ADDRESS
                   </label>
                   <div className="relative group/input">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-cyan-400 transition-colors">
-                      <Mail className="w-5 h-5" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8C87A6] group-focus-within/input:text-[#302B69] transition-colors">
+                      <Mail className="w-4 h-4" />
                     </div>
                     <input
                       type="email"
@@ -368,19 +338,18 @@ export default function LoginPage() {
                       value={citizenEmail}
                       onChange={(e) => setCitizenEmail(e.target.value)}
                       placeholder="citizen@example.com"
-                      className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/60 transition-all shadow-inner"
-                      style={{ backgroundColor: 'rgba(10, 17, 34, 0.85)' }}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E8E2E5] bg-white text-[#191636] text-xs sm:text-sm placeholder-[#8C87A6] focus:outline-none focus:border-[#302B69] transition-all shadow-xs"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">
+                  <label className="block text-[11px] font-bold text-[#57536E] mb-1.5 uppercase tracking-wider">
                     PASSWORD
                   </label>
                   <div className="relative group/input">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-cyan-400 transition-colors">
-                      <Lock className="w-5 h-5" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8C87A6] group-focus-within/input:text-[#302B69] transition-colors">
+                      <Lock className="w-4 h-4" />
                     </div>
                     <input
                       type="password"
@@ -388,8 +357,7 @@ export default function LoginPage() {
                       value={citizenPassword}
                       onChange={(e) => setCitizenPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/60 transition-all shadow-inner"
-                      style={{ backgroundColor: 'rgba(10, 17, 34, 0.85)' }}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E8E2E5] bg-white text-[#191636] text-xs sm:text-sm placeholder-[#8C87A6] focus:outline-none focus:border-[#302B69] transition-all shadow-xs"
                     />
                   </div>
                 </div>
@@ -397,12 +365,12 @@ export default function LoginPage() {
             ) : (
               <>
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">
+                  <label className="block text-[11px] font-bold text-[#57536E] mb-1.5 uppercase tracking-wider">
                     PHONE NUMBER
                   </label>
                   <div className="relative group/input">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-cyan-400 transition-colors">
-                      <Phone className="w-5 h-5" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8C87A6] group-focus-within/input:text-[#302B69] transition-colors">
+                      <Phone className="w-4 h-4" />
                     </div>
                     <input
                       type="tel"
@@ -411,20 +379,19 @@ export default function LoginPage() {
                       value={citizenPhone}
                       onChange={(e) => setCitizenPhone(e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/60 transition-all shadow-inner disabled:opacity-50"
-                      style={{ backgroundColor: 'rgba(10, 17, 34, 0.85)' }}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E8E2E5] bg-white text-[#191636] text-xs sm:text-sm placeholder-[#8C87A6] focus:outline-none focus:border-[#302B69] transition-all shadow-xs disabled:opacity-50"
                     />
                   </div>
                 </div>
                 
                 {otpSent && (
                   <div className="animate-fade-in">
-                    <label className="block text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wider">
+                    <label className="block text-[11px] font-bold text-[#57536E] mb-1.5 uppercase tracking-wider">
                       ONE-TIME PASSWORD
                     </label>
                     <div className="relative group/input">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within/input:text-cyan-400 transition-colors">
-                        <Lock className="w-5 h-5" />
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8C87A6] group-focus-within/input:text-[#302B69] transition-colors">
+                        <Lock className="w-4 h-4" />
                       </div>
                       <input
                         type="text"
@@ -433,8 +400,7 @@ export default function LoginPage() {
                         onChange={(e) => setOtp(e.target.value)}
                         placeholder="6-digit OTP"
                         maxLength={6}
-                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/60 transition-all shadow-inner tracking-widest font-mono text-lg"
-                        style={{ backgroundColor: 'rgba(10, 17, 34, 0.85)' }}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E8E2E5] bg-white text-[#191636] text-sm placeholder-[#8C87A6] focus:outline-none focus:border-[#302B69] transition-all shadow-xs tracking-widest font-mono"
                       />
                     </div>
                   </div>
@@ -447,10 +413,10 @@ export default function LoginPage() {
                 type="button"
                 onClick={handleRequestOtp}
                 disabled={loading || !citizenPhone}
-                className="w-full py-3.5 rounded-xl text-sm font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 flex items-center justify-center space-x-2 transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                className="w-full py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#302B69] hover:bg-[#242052] flex items-center justify-center space-x-2 transition-all shadow-xs active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
                 {loading ? (
-                  <div className="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <span>Send Verification Code</span>
                 )}
@@ -459,10 +425,10 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading || (loginMethod === 'phone' && !otpSent)}
-                className="w-full py-3.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/20 flex items-center justify-center space-x-2 transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                className="w-full py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#302B69] hover:bg-[#242052] shadow-xs flex items-center justify-center space-x-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
                 {loading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <>
                     <span>{loginMethod === 'phone' ? 'Verify & Sign In' : 'Sign In'}</span>
@@ -476,14 +442,14 @@ export default function LoginPage() {
           </form>
 
           {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-slate-800/80 flex items-center justify-between text-xs sm:text-sm">
-            <p className="text-slate-400">
+          <div className="mt-7 pt-5 border-t border-[#E8E2E5] flex items-center justify-between text-xs">
+            <p className="text-[#57536E]">
               New to Urban EYE?{' '}
-              <Link to="/register" className="text-cyan-400 hover:text-cyan-300 font-bold">
+              <Link to="/register" className="text-[#302B69] hover:text-[#242052] font-bold">
                 Create account
               </Link>
             </p>
-            <Link to="/admin-login" className="text-[11px] uppercase font-bold tracking-wider text-slate-500 hover:text-slate-300 transition-colors">
+            <Link to="/admin-login" className="text-[10px] uppercase font-bold tracking-wider text-[#57536E] hover:text-[#191636] transition-colors">
               OFFICIAL ACCESS
             </Link>
           </div>

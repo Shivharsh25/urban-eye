@@ -61,7 +61,7 @@ export default function CitizenActivityPage() {
   ];
 
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-10 relative overflow-hidden">
+    <div className="min-h-full p-4 sm:p-6 lg:p-10 relative overflow-hidden text-[#191636]">
       
       <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
@@ -70,42 +70,42 @@ export default function CitizenActivityPage() {
           
           {/* Header */}
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-xl bg-[#99775C]/10 border border-[#99775C]/25 flex items-center justify-center">
-                <Activity className="w-6 h-6 text-[#99775C]" />
+            <h1 className="text-2xl sm:text-3xl font-black text-[#191636] tracking-tight flex items-center space-x-3">
+              <div className="w-12 h-12 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center">
+                <Activity className="w-6 h-6 text-[#302B69]" />
               </div>
               <span>{t('cityActivityTitle', 'City Activity')}</span>
             </h1>
-            <p className="text-slate-600 mt-2 text-sm font-medium">{t('cityActivitySubtitle', 'Live feed of community reports and city crew resolutions.')}</p>
+            <p className="text-[#57536E] mt-2 text-sm font-medium">{t('cityActivitySubtitle', 'Live feed of community reports and city crew resolutions.')}</p>
           </div>
 
           {/* Timeline Feed */}
-          <div className="rounded-3xl bg-white/95 border border-[#EAE7DD] p-6 sm:p-8 relative shadow-sm">
+          <div className="rounded-3xl bg-white border border-[#E8E2E5] p-6 sm:p-8 relative shadow-xs">
             
             {/* Continuous Line */}
-            <div className="absolute left-[39px] sm:left-[47px] top-12 bottom-12 w-px bg-[#EAE7DD]"></div>
+            <div className="absolute left-[39px] sm:left-[47px] top-12 bottom-12 w-px bg-[#E8E2E5]"></div>
 
             <div className="space-y-8 relative z-10">
               {activities.map((item) => (
                 <div key={item.id} className="flex items-start space-x-4 sm:space-x-6 group">
-                  <div className={`w-12 h-12 rounded-full ${item.bg} border border-[#EAE7DD] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform relative z-10 bg-white shadow-xs`}>
+                  <div className={`w-12 h-12 rounded-full ${item.bg} border border-[#E8E2E5] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform relative z-10 bg-white shadow-xs`}>
                     <item.icon className={`w-5 h-5 ${item.color}`} />
                   </div>
                   <div className="flex-1 pt-1.5">
-                    <p className="text-slate-700 text-sm leading-relaxed">
-                      <span className="font-bold text-slate-900">{t(item.userKey, item.defaultUser)}</span>{' '}
+                    <p className="text-[#191636] text-sm leading-relaxed">
+                      <span className="font-bold text-[#191636]">{t(item.userKey, item.defaultUser)}</span>{' '}
                       {t(item.actionKey, item.defaultAction)}{' '}
                       {t('near', 'near')}{' '}
-                      <span className="text-[#99775C] font-semibold">{item.location}</span>.
+                      <span className="text-[#302B69] font-semibold">{item.location}</span>.
                     </p>
-                    <p className="text-xs text-slate-500 mt-1 font-mono font-medium">{t(item.timeKey, item.defaultTime)}</p>
+                    <p className="text-xs text-[#57536E] mt-1 font-mono font-medium">{t(item.timeKey, item.defaultTime)}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 pt-4 flex justify-center relative z-10 border-t border-[#EAE7DD]">
-              <button className="text-xs font-bold text-slate-600 hover:text-slate-900 uppercase tracking-widest transition-colors py-1 px-3 rounded-lg hover:bg-slate-50">
+            <div className="mt-8 pt-4 flex justify-center relative z-10 border-t border-[#E8E2E5]">
+              <button className="text-xs font-bold text-[#57536E] hover:text-[#191636] uppercase tracking-widest transition-colors py-1 px-3 rounded-lg hover:bg-[#F6F6FC] cursor-pointer">
                 {t('loadOlderActivity', 'Load Older Activity ↓')}
               </button>
             </div>
@@ -115,16 +115,16 @@ export default function CitizenActivityPage() {
 
         {/* Right Column: Stats */}
         <div className="space-y-6">
-          <div className="p-6 rounded-3xl bg-white/95 border border-[#EAE7DD] shadow-sm">
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-widest mb-6 flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4 text-[#99775C]" />
+          <div className="p-6 rounded-3xl bg-white border border-[#E8E2E5] shadow-xs">
+            <h3 className="text-xs font-bold text-[#57536E] uppercase tracking-widest mb-6 flex items-center space-x-2">
+              <TrendingUp className="w-4 h-4 text-[#302B69]" />
               <span>{t('todaysImpact', "Today's Impact")}</span>
             </h3>
             
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-[#FAF9F5] border border-[#EAE7DD]">
-                <div className="text-3xl font-black text-slate-900 mb-1">142</div>
-                <div className="text-xs text-slate-600 uppercase tracking-widest font-bold">{t('newReportsStat', 'New Reports')}</div>
+              <div className="p-4 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5]">
+                <div className="text-3xl font-black text-[#191636] mb-1">142</div>
+                <div className="text-xs text-[#57536E] uppercase tracking-widest font-bold">{t('newReportsStat', 'New Reports')}</div>
               </div>
               
               <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
@@ -132,12 +132,12 @@ export default function CitizenActivityPage() {
                 <div className="text-xs text-emerald-800 uppercase tracking-widest font-bold">{t('issuesResolved', 'Issues Resolved')}</div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#99775C]/10 border border-[#99775C]/25">
+              <div className="p-4 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5]">
                 <div className="flex items-center space-x-3 mb-1">
-                  <Users className="w-5 h-5 text-[#99775C]" />
-                  <span className="text-2xl font-black text-slate-900">12</span>
+                  <Users className="w-5 h-5 text-[#302B69]" />
+                  <span className="text-2xl font-black text-[#191636]">12</span>
                 </div>
-                <div className="text-xs text-slate-700 uppercase tracking-widest font-bold">{t('activeCityCrews', 'Active City Crews')}</div>
+                <div className="text-xs text-[#57536E] uppercase tracking-widest font-bold">{t('activeCityCrews', 'Active City Crews')}</div>
               </div>
             </div>
           </div>

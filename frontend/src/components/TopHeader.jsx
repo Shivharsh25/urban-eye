@@ -257,11 +257,11 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
   const pageInfo = getPageInfo();
 
   return (
-    <header className="sticky top-0 z-30 h-16 border-b border-[#EAE7DD] bg-white/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between transition-colors">
+    <header className="sticky top-0 z-30 h-16 border-b border-[#E8E2E5] bg-white/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between transition-colors">
       
       {/* Toast popup */}
       {feedbackToast && typeof document !== 'undefined' && createPortal(
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[99999] px-5 py-2.5 bg-slate-900 border border-[#EAE7DD] text-white font-semibold text-xs sm:text-sm rounded-2xl shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-top-3">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[99999] px-5 py-2.5 bg-[#191636] border border-[#E8E2E5] text-white font-semibold text-xs sm:text-sm rounded-2xl shadow-xl flex items-center gap-2.5 animate-in fade-in slide-in-from-top-3">
           <Check className="w-4 h-4 text-emerald-400" />
           <span>{feedbackToast}</span>
         </div>,
@@ -272,18 +272,18 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
       <div className="flex items-center space-x-3 min-w-0">
         <div className="flex flex-col min-w-0">
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#99775C] truncate hidden sm:inline">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#302B69] truncate hidden sm:inline">
               {pageInfo.section}
             </span>
-            <span className="text-slate-300 hidden sm:inline">•</span>
-            <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight truncate">
+            <span className="text-[#8C87A6] hidden sm:inline">•</span>
+            <h1 className="text-sm sm:text-base font-bold text-[#191636] tracking-tight truncate">
               {pageInfo.title}
             </h1>
           </div>
         </div>
 
         {/* Live Socket Feed Pill */}
-        <div className="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-[#FAF9F5] border border-[#EAE7DD] text-[11px]">
+        <div className="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-[#F6F6FC] border border-[#E8E2E5] text-[11px]">
           <span className="relative flex h-2 w-2">
             {socketConnected && (
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -302,14 +302,14 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
         {/* ================================================================= */}
         {/* 1. LANGUAGE SWITCHER: HINDI & ENGLISH SIDE BY SIDE                */}
         {/* ================================================================= */}
-        <div className="flex items-center p-0.5 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-xs font-semibold">
+        <div className="flex items-center p-0.5 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-xs font-semibold">
           <button
             type="button"
             onClick={(e) => handleSelectLang('en', e)}
             className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
               lang === 'en'
-                ? 'bg-white text-slate-900 border border-[#EAE7DD] shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-[#191636] border border-[#E8E2E5] shadow-xs'
+                : 'text-[#57536E] hover:text-[#191636]'
             }`}
             title="English"
           >
@@ -321,8 +321,8 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
             onClick={(e) => handleSelectLang('hi', e)}
             className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
               lang === 'hi'
-                ? 'bg-white text-slate-900 border border-[#EAE7DD] shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-[#191636] border border-[#E8E2E5] shadow-xs'
+                : 'text-[#57536E] hover:text-[#191636]'
             }`}
             title="हिन्दी (Hindi)"
           >
@@ -339,10 +339,10 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
           onClick={handleToggleTheme}
           title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           aria-label="Toggle Theme"
-          className="p-2 sm:p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center justify-center group cursor-pointer"
+          className="p-2 sm:p-2.5 rounded-xl text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC] transition-all flex items-center justify-center group cursor-pointer"
         >
           {isDarkMode ? (
-            <Moon className="w-5 h-5 text-slate-600 group-hover:text-amber-500 transition-colors" />
+            <Moon className="w-5 h-5 text-[#57536E] group-hover:text-[#302B69] transition-colors" />
           ) : (
             <Sun className="w-5 h-5 text-amber-500 group-hover:text-amber-600 transition-colors" />
           )}
@@ -357,13 +357,13 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
             onClick={() => setIsNotifOpen(!isNotifOpen)}
             title="Notifications"
             aria-label="View notifications"
-            className="p-2 sm:p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center justify-center relative group cursor-pointer"
+            className="p-2 sm:p-2.5 rounded-xl text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC] transition-all flex items-center justify-center relative group cursor-pointer"
           >
-            <Bell className="w-5 h-5 text-slate-600 group-hover:text-sky-600 transition-colors" />
+            <Bell className="w-5 h-5 text-[#57536E] group-hover:text-[#302B69] transition-colors" />
             
             {/* Dynamic badge - strictly reflects real unread count */}
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs border-2 border-white pointer-events-none animate-pulse">
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-[#302B69] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs border-2 border-white pointer-events-none">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -371,12 +371,12 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
 
           {/* Notifications Dropdown Panel */}
           {isNotifOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
-              <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-[#E8E2E5] rounded-2xl shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="p-3.5 bg-[#F6F6FC] border-b border-[#E8E2E5] flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs font-bold text-slate-900">{t('civicNotifications', 'Civic Notifications')}</span>
+                  <span className="text-xs font-bold text-[#191636]">{t('civicNotifications', 'Civic Notifications')}</span>
                   {unreadCount > 0 ? (
-                    <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-rose-50 text-rose-700 rounded border border-rose-200">
+                    <span className="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-[#302B69]/10 text-[#302B69] rounded border border-[#302B69]/20">
                       {unreadCount} {t('unread', 'Unread')}
                     </span>
                   ) : (
@@ -390,7 +390,7 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
                     <button
                       type="button"
                       onClick={handleMarkAllRead}
-                      className="text-[11px] font-semibold text-sky-600 hover:text-sky-700 transition-colors flex items-center gap-1 cursor-pointer"
+                      className="text-[11px] font-semibold text-[#302B69] hover:text-[#242052] transition-colors flex items-center gap-1 cursor-pointer"
                       title="Mark all as read"
                     >
                       <CheckCheck className="w-3.5 h-3.5" />
@@ -401,7 +401,7 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
                     <button
                       type="button"
                       onClick={handleClearNotifications}
-                      className="text-[11px] text-slate-400 hover:text-rose-600 transition-colors p-1 cursor-pointer"
+                      className="text-[11px] text-[#57536E] hover:text-rose-600 transition-colors p-1 cursor-pointer"
                       title={t('clearAllNotifs', 'Clear all')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -410,42 +410,42 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
                 </div>
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 custom-scrollbar">
+              <div className="max-h-80 overflow-y-auto divide-y divide-[#E8E2E5]/50 custom-scrollbar">
                 {notifications.length > 0 ? (
                   notifications.map(n => (
                     <div 
                       key={n.id} 
                       onClick={() => handleMarkItemRead(n.id)}
-                      className={`p-3.5 hover:bg-slate-50 transition-colors cursor-pointer relative ${n.unread ? 'bg-sky-50/40' : ''}`}
+                      className={`p-3.5 hover:bg-[#F6F6FC] transition-colors cursor-pointer relative ${n.unread ? 'bg-[#F6F6FC]/60' : ''}`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-1.5 min-w-0">
                           {n.unread && (
-                            <span className="w-2 h-2 rounded-full bg-sky-600 shrink-0" />
+                            <span className="w-2 h-2 rounded-full bg-[#302B69] shrink-0" />
                           )}
-                          <h4 className={`text-xs font-bold truncate ${n.unread ? 'text-slate-900' : 'text-slate-700'}`}>
+                          <h4 className={`text-xs font-bold truncate ${n.unread ? 'text-[#191636]' : 'text-[#57536E]'}`}>
                             {n.title}
                           </h4>
                         </div>
-                        <span className="text-[10px] text-slate-400 font-mono shrink-0">{n.time}</span>
+                        <span className="text-[10px] text-[#8C87A6] font-mono shrink-0">{n.time}</span>
                       </div>
-                      <p className="text-xs text-slate-600 mt-1 leading-relaxed pl-3.5">{n.desc}</p>
+                      <p className="text-xs text-[#57536E] mt-1 leading-relaxed pl-3.5">{n.desc}</p>
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center text-slate-400">
-                    <Bell className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-                    <p className="text-xs font-semibold text-slate-700">{t('noNotifications', 'No new civic notifications')}</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{t('allCaughtUpDesc', 'You are up-to-date with all community notices.')}</p>
+                  <div className="p-8 text-center text-[#57536E]">
+                    <Bell className="w-8 h-8 mx-auto text-[#8C87A6] mb-2" />
+                    <p className="text-xs font-semibold text-[#191636]">{t('noNotifications', 'No new civic notifications')}</p>
+                    <p className="text-[11px] text-[#8C87A6] mt-0.5">{t('allCaughtUpDesc', 'You are up-to-date with all community notices.')}</p>
                   </div>
                 )}
               </div>
 
-              <div className="p-2.5 bg-slate-50 border-t border-slate-200 text-center">
+              <div className="p-2.5 bg-[#F6F6FC] border-t border-[#E8E2E5] text-center">
                 <Link
                   to="/alerts"
                   onClick={() => setIsNotifOpen(false)}
-                  className="text-xs font-bold text-sky-600 hover:text-sky-700 transition-colors inline-flex items-center gap-1"
+                  className="text-xs font-bold text-[#302B69] hover:text-[#242052] transition-colors inline-flex items-center gap-1"
                 >
                   <span>{t('viewAllAlerts', 'View All Community Alerts')}</span>
                   <span>→</span>

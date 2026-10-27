@@ -284,21 +284,21 @@ export default function CitizenDashboardPage() {
   const resolutionPercentage = totalIncidentsCount > 0 ? Math.round((resolvedCount / totalIncidentsCount) * 100) : 100;
 
   return (
-    <div className="w-full text-slate-800 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-7 font-sans min-w-0 relative">
+    <div className="w-full text-[#191636] p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-7 font-sans min-w-0 relative">
       
       {/* 1. Header Section: Clean, Spacious Greeting */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#EAE7DD]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#E8E2E5]">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#191636] tracking-tight">
               {t('welcomeBack')}, {user?.name?.split(' ')[0] || t('citizen')}
             </h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FAF9F5] text-[#6B503B] border border-[#EAE7DD]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5]">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               {t('liveGridActive')}
             </span>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-[#57536E] mt-1">
             {t('dashboardSubtitle')}
           </p>
         </div>
@@ -307,16 +307,16 @@ export default function CitizenDashboardPage() {
           <button
             onClick={() => fetchData(true)}
             disabled={refreshing}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-[#FAF9F5] text-slate-700 border border-[#EAE7DD] hover:border-[#99775C]/40 transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-[#F6F6FC] text-[#191636] border border-[#E8E2E5] hover:border-[#302B69]/40 transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
             title="Refresh community feed"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#99775C] ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#302B69] ${refreshing ? 'animate-spin' : ''}`} />
             <span>{refreshing ? t('syncing') : t('syncLive')}</span>
           </button>
           
           <button
             onClick={() => navigate('/report')}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-[#99775C] hover:bg-[#84644B] text-white transition-all shadow-xs active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-[#302B69] hover:bg-[#242052] text-white transition-all shadow-xs active:scale-95 cursor-pointer"
           >
             <Camera className="w-3.5 h-3.5" />
             <span>{t('newReport')}</span>
@@ -327,58 +327,58 @@ export default function CitizenDashboardPage() {
       {/* 2. Key Metrics Bar: 4 Clean, Airy Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {/* Stat 1: Community Issues */}
-        <div className="bg-white/95 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#EAE7DD] hover:border-[#99775C]/50 shadow-xs hover:shadow-sm transition-all">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E8E2E5] hover:border-[#302B69]/50 shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{t('communityIssues')}</span>
-            <div className="w-8 h-8 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center">
+            <span className="text-xs font-semibold text-[#57536E] uppercase tracking-wider">{t('communityIssues')}</span>
+            <div className="w-8 h-8 rounded-lg bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5] flex items-center justify-center">
               <MapPin className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-3xl font-extrabold text-slate-900">{totalIncidentsCount}</div>
-            <p className="text-xs text-slate-500 mt-1">{t('inArea')}</p>
+            <div className="text-3xl font-extrabold text-[#191636]">{totalIncidentsCount}</div>
+            <p className="text-xs text-[#57536E] mt-1">{t('inArea')}</p>
           </div>
         </div>
 
         {/* Stat 2: Resolution Rate */}
-        <div className="bg-white/95 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#EAE7DD] hover:border-[#99775C]/50 shadow-xs hover:shadow-sm transition-all">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E8E2E5] hover:border-[#302B69]/50 shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{t('resolutionRate')}</span>
+            <span className="text-xs font-semibold text-[#57536E] uppercase tracking-wider">{t('resolutionRate')}</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-3xl font-extrabold text-slate-900">{resolutionPercentage}%</div>
+            <div className="text-3xl font-extrabold text-[#191636]">{resolutionPercentage}%</div>
             <p className="text-xs text-emerald-700 font-medium mt-1">{resolvedCount} {t('civicFixes')}</p>
           </div>
         </div>
 
         {/* Stat 3: My Submissions */}
-        <div className="bg-white/95 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#EAE7DD] hover:border-[#99775C]/50 shadow-xs hover:shadow-sm transition-all">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E8E2E5] hover:border-[#302B69]/50 shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{t('mySubmissions')}</span>
-            <div className="w-8 h-8 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center">
+            <span className="text-xs font-semibold text-[#57536E] uppercase tracking-wider">{t('mySubmissions')}</span>
+            <div className="w-8 h-8 rounded-lg bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5] flex items-center justify-center">
               <FileText className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-3xl font-extrabold text-slate-900">{userStats.totalReports}</div>
-            <p className="text-xs text-slate-500 mt-1">{userStats.resolvedReports} {t('done')}</p>
+            <div className="text-3xl font-extrabold text-[#191636]">{userStats.totalReports}</div>
+            <p className="text-xs text-[#57536E] mt-1">{userStats.resolvedReports} {t('done')}</p>
           </div>
         </div>
 
         {/* Stat 4: Civic Score */}
-        <div className="bg-white/95 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#EAE7DD] hover:border-[#99775C]/50 shadow-xs hover:shadow-sm transition-all">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#E8E2E5] hover:border-[#302B69]/50 shadow-xs hover:shadow-sm transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{t('trustScore')}</span>
-            <div className="w-8 h-8 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center">
+            <span className="text-xs font-semibold text-[#57536E] uppercase tracking-wider">{t('trustScore')}</span>
+            <div className="w-8 h-8 rounded-lg bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5] flex items-center justify-center">
               <Award className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-3xl font-extrabold text-slate-900">{userStats.civicScore}</div>
-            <p className="text-xs text-[#84644B] font-medium mt-1">{tier.name} • {tier.next - userStats.civicScore} {t('ptsToNextRank')}</p>
+            <div className="text-3xl font-extrabold text-[#191636]">{userStats.civicScore}</div>
+            <p className="text-xs text-[#302B69] font-medium mt-1">{tier.name} • {tier.next - userStats.civicScore} {t('ptsToNextRank')}</p>
           </div>
         </div>
       </div>
@@ -387,58 +387,58 @@ export default function CitizenDashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <button 
           onClick={() => navigate('/report')} 
-          className="bg-white/90 backdrop-blur-xs hover:bg-white border border-[#EAE7DD] hover:border-[#99775C]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
+          className="bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] hover:border-[#302B69]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
             <Camera className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate">{t('reportIssueAction')}</span>
-            <span className="text-[11px] text-slate-500 block truncate">{t('aiDetection')}</span>
+            <span className="text-xs sm:text-sm font-bold text-[#191636] block truncate">{t('reportIssueAction')}</span>
+            <span className="text-[11px] text-[#57536E] block truncate">{t('aiDetection')}</span>
           </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+          <ChevronRight className="w-4 h-4 text-[#8C87A6] group-hover:translate-x-0.5 transition-transform shrink-0" />
         </button>
 
         <button 
           onClick={() => navigate('/my-reports')} 
-          className="bg-white/90 backdrop-blur-xs hover:bg-white border border-[#EAE7DD] hover:border-[#99775C]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
+          className="bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] hover:border-[#302B69]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-lg bg-[#FAF9F5] text-[#99775C] border border-[#EAE7DD] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
             <Activity className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate">{t('myActivity')}</span>
-            <span className="text-[11px] text-slate-500 block truncate">{t('statusAndPdf')}</span>
+            <span className="text-xs sm:text-sm font-bold text-[#191636] block truncate">{t('myActivity')}</span>
+            <span className="text-[11px] text-[#57536E] block truncate">{t('statusAndPdf')}</span>
           </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+          <ChevronRight className="w-4 h-4 text-[#8C87A6] group-hover:translate-x-0.5 transition-transform shrink-0" />
         </button>
 
         <button 
           onClick={() => navigate('/map')} 
-          className="bg-white/90 backdrop-blur-xs hover:bg-white border border-[#EAE7DD] hover:border-[#99775C]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
+          className="bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] hover:border-[#302B69]/50 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
         >
           <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
             <Compass className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate">{t('liveMap')}</span>
-            <span className="text-[11px] text-slate-500 block truncate">{t('cityScanner')}</span>
+            <span className="text-xs sm:text-sm font-bold text-[#191636] block truncate">{t('liveMap')}</span>
+            <span className="text-[11px] text-[#57536E] block truncate">{t('cityScanner')}</span>
           </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+          <ChevronRight className="w-4 h-4 text-[#8C87A6] group-hover:translate-x-0.5 transition-transform shrink-0" />
         </button>
 
         <button 
           onClick={() => setShowEmergencyModal(true)} 
-          className="bg-white/90 backdrop-blur-xs hover:bg-white border border-[#EAE7DD] hover:border-rose-300 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
+          className="bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] hover:border-rose-300 p-3.5 rounded-xl flex items-center gap-3 transition-all shadow-xs group text-left cursor-pointer"
         >
           <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
             <PhoneCall className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate">{t('emergencySOS')}</span>
-            <span className="text-[11px] text-slate-500 block truncate">{t('hotlines')}</span>
+            <span className="text-xs sm:text-sm font-bold text-[#191636] block truncate">{t('emergencySOS')}</span>
+            <span className="text-[11px] text-[#57536E] block truncate">{t('hotlines')}</span>
           </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+          <ChevronRight className="w-4 h-4 text-[#8C87A6] group-hover:translate-x-0.5 transition-transform shrink-0" />
         </button>
       </div>
 
@@ -447,38 +447,38 @@ export default function CitizenDashboardPage() {
         
         {/* Left 2 Columns: Activity Feed */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white/95 backdrop-blur-xs border border-[#EAE7DD] rounded-2xl p-5 sm:p-6 shadow-xs">
+          <div className="bg-white border border-[#E8E2E5] rounded-2xl p-5 sm:p-6 shadow-xs">
             
             {/* Feed Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#EAE7DD]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E8E2E5]">
               <div>
-                <h2 className="text-base sm:text-lg font-bold text-slate-900">{t('recentAreaActivity')}</h2>
-                <p className="text-xs text-slate-500 mt-0.5">{t('tapIncidentHint')}</p>
+                <h2 className="text-base sm:text-lg font-bold text-[#191636]">{t('recentAreaActivity')}</h2>
+                <p className="text-xs text-[#57536E] mt-0.5">{t('tapIncidentHint')}</p>
               </div>
 
               {/* Status Filter Tabs (Unified, clean) */}
-              <div className="flex items-center p-1 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-xs font-semibold shrink-0">
+              <div className="flex items-center p-1 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-xs font-semibold shrink-0">
                 <button 
                   onClick={() => setFilter('ALL')} 
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'ALL' ? 'bg-[#99775C] text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'ALL' ? 'bg-[#302B69] text-white font-bold shadow-xs' : 'text-[#57536E] hover:text-[#191636]'}`}
                 >
                   {t('all')}
                 </button>
                 <button 
                   onClick={() => setFilter('IN_PROGRESS')} 
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'IN_PROGRESS' ? 'bg-[#99775C] text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'IN_PROGRESS' ? 'bg-[#302B69] text-white font-bold shadow-xs' : 'text-[#57536E] hover:text-[#191636]'}`}
                 >
                   {t('active')}
                 </button>
                 <button 
                   onClick={() => setFilter('RESOLVED')} 
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'RESOLVED' ? 'bg-[#99775C] text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'RESOLVED' ? 'bg-[#302B69] text-white font-bold shadow-xs' : 'text-[#57536E] hover:text-[#191636]'}`}
                 >
                   {t('resolved')}
                 </button>
                 <button 
                   onClick={() => setFilter('CRITICAL')} 
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'CRITICAL' ? 'bg-rose-600 text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${filter === 'CRITICAL' ? 'bg-rose-600 text-white font-bold shadow-xs' : 'text-[#57536E] hover:text-[#191636]'}`}
                 >
                   {t('critical')}
                 </button>
@@ -486,7 +486,7 @@ export default function CitizenDashboardPage() {
             </div>
 
             {/* Category Filter Chips (Single streamlined row) */}
-            <div className="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar border-b border-[#EAE7DD]/60">
+            <div className="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar border-b border-[#E8E2E5]">
               {[
                 { id: 'ALL', label: t('allCategories') },
                 { id: 'pothole', label: t('potholes') },
@@ -499,8 +499,8 @@ export default function CitizenDashboardPage() {
                   onClick={() => setCategoryFilter(cat.id)}
                   className={`shrink-0 px-3 py-1 rounded-lg text-xs transition-all cursor-pointer border ${
                     categoryFilter === cat.id 
-                      ? 'bg-[#FAF9F5] text-[#6B503B] border-[#99775C] font-semibold shadow-xs' 
-                      : 'bg-white text-slate-600 border-[#EAE7DD] hover:bg-[#FAF9F5]'
+                      ? 'bg-[#302B69] text-white border-[#302B69] font-semibold shadow-xs' 
+                      : 'bg-white text-[#57536E] border-[#E8E2E5] hover:bg-[#F6F6FC]'
                   }`}
                 >
                   {cat.label}
@@ -511,8 +511,8 @@ export default function CitizenDashboardPage() {
             {/* Feed List Items */}
             {loading ? (
               <div className="flex flex-col items-center justify-center p-12 space-y-3">
-                <div className="w-8 h-8 border-2 border-[#99775C]/30 border-t-[#99775C] rounded-full animate-spin"></div>
-                <p className="text-xs text-slate-500 font-medium">{t('scanningGrid')}</p>
+                <div className="w-8 h-8 border-2 border-[#302B69]/30 border-t-[#302B69] rounded-full animate-spin"></div>
+                <p className="text-xs text-[#57536E] font-medium">{t('scanningGrid')}</p>
               </div>
             ) : filteredReports.length > 0 ? (
               <div className="space-y-3 mt-3">
@@ -527,13 +527,13 @@ export default function CitizenDashboardPage() {
                   return (
                     <div 
                       key={report._id || report.id} 
-                      className="p-3.5 sm:p-4 rounded-xl border border-[#EAE7DD] hover:border-[#99775C]/60 hover:bg-[#FAF9F5]/40 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 group cursor-pointer shadow-xs"
+                      className="p-3.5 sm:p-4 rounded-xl border border-[#E8E2E5] hover:border-[#302B69]/60 hover:bg-[#F6F6FC] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 group cursor-pointer shadow-xs"
                       onClick={() => setSelectedDetection(report)}
                     >
                       <div className="flex items-start gap-3.5 flex-1 min-w-0">
                         {/* Thumbnail / Category Icon */}
                         {imgUrl ? (
-                          <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-[#EAE7DD] shadow-xs">
+                          <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-[#E8E2E5] shadow-xs">
                             <img src={imgUrl} alt={report.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                             <div className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60">
                               <Icon className="w-2.5 h-2.5 text-white" />
@@ -547,7 +547,7 @@ export default function CitizenDashboardPage() {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                            <span className="text-sm font-bold text-slate-900 capitalize group-hover:text-[#99775C] transition-colors truncate">
+                            <span className="text-sm font-bold text-[#191636] capitalize group-hover:text-[#302B69] transition-colors truncate">
                               {cat.label}
                             </span>
                             <div className="flex items-center gap-1.5 shrink-0">
@@ -556,12 +556,12 @@ export default function CitizenDashboardPage() {
                             </div>
                           </div>
 
-                          <p className="text-xs text-slate-600 flex items-center gap-1.5 min-w-0">
-                            <MapPin className="w-3.5 h-3.5 text-[#99775C] shrink-0" />
+                          <p className="text-xs text-[#57536E] flex items-center gap-1.5 min-w-0">
+                            <MapPin className="w-3.5 h-3.5 text-[#302B69] shrink-0" />
                             <span className="truncate">{summaryText}</span>
                           </p>
 
-                          <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-400 font-mono">
+                          <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-[#8C87A6] font-mono">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3 shrink-0" />
                               {new Date(report.createdAt).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -573,23 +573,23 @@ export default function CitizenDashboardPage() {
                       </div>
 
                       {/* Card Action Controls */}
-                      <div className="flex items-center justify-end gap-2.5 self-end sm:self-center shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t border-[#EAE7DD]/60 sm:border-t-0" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-2.5 self-end sm:self-center shrink-0 w-full sm:w-auto pt-2 sm:pt-0 border-t border-[#E8E2E5] sm:border-t-0" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleToggleUpvote(report._id || report.id)}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
                             isUpvoted 
-                              ? 'bg-[#FAF9F5] text-[#6B503B] border-[#99775C]' 
-                              : 'bg-white text-slate-600 border-[#EAE7DD] hover:bg-[#FAF9F5]'
+                              ? 'bg-[#302B69] text-white border-[#302B69]' 
+                              : 'bg-white text-[#57536E] border-[#E8E2E5] hover:bg-[#F6F6FC]'
                           }`}
                           title={t('confirmExistsTitle')}
                         >
-                          <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-[#99775C] text-[#99775C]' : ''}`} />
+                          <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-white text-white' : ''}`} />
                           <span>{currentUpvotes}</span>
                         </button>
 
                         <button
                           onClick={() => setSelectedDetection(report)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#84644B] hover:text-[#523D2C] hover:bg-[#FAF9F5] transition-colors cursor-pointer"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#302B69] hover:bg-[#F6F6FC] transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>{t('inspectPdf')}</span>
@@ -600,13 +600,13 @@ export default function CitizenDashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="p-8 text-center text-slate-500 border border-[#EAE7DD] border-dashed rounded-xl bg-[#FAF9F5]/50 mt-3">
-                <MapPin className="w-8 h-8 mx-auto text-[#99775C] mb-2" />
-                <p className="text-sm font-semibold text-slate-800">{t('noMatchingReports')}</p>
-                <p className="text-xs text-slate-500 mt-1">{t('clearFiltersHint')}</p>
+              <div className="p-8 text-center text-[#57536E] border border-[#E8E2E5] border-dashed rounded-xl bg-[#F6F6FC] mt-3">
+                <MapPin className="w-8 h-8 mx-auto text-[#302B69] mb-2" />
+                <p className="text-sm font-semibold text-[#191636]">{t('noMatchingReports')}</p>
+                <p className="text-xs text-[#57536E] mt-1">{t('clearFiltersHint')}</p>
                 <button
                   onClick={() => { setFilter('ALL'); setCategoryFilter('ALL'); }}
-                  className="mt-3 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-[#EAE7DD] text-slate-700 hover:bg-[#FAF9F5] transition-colors cursor-pointer"
+                  className="mt-3 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-[#E8E2E5] text-[#191636] hover:bg-[#F6F6FC] transition-colors cursor-pointer"
                 >
                   {t('resetFilters')}
                 </button>
@@ -619,13 +619,13 @@ export default function CitizenDashboardPage() {
         <div className="space-y-5">
           
           {/* Clean Civic Score Card */}
-          <div className="bg-white/95 backdrop-blur-xs border border-[#EAE7DD] rounded-2xl p-5 sm:p-6 shadow-xs">
+          <div className="bg-white border border-[#E8E2E5] rounded-2xl p-5 sm:p-6 shadow-xs">
             <div className="flex items-center justify-between mb-3.5">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Award className="w-5 h-5 text-[#99775C]" />
+              <h2 className="text-base font-bold text-[#191636] flex items-center gap-2">
+                <Award className="w-5 h-5 text-[#302B69]" />
                 <span>{t('civicEngagementScore')}</span>
               </h2>
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FAF9F5] text-[#6B503B] border border-[#EAE7DD]">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5]">
                 {tier.badge}
               </span>
             </div>
@@ -634,21 +634,21 @@ export default function CitizenDashboardPage() {
             <div className="py-2">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <span className="text-4xl font-extrabold text-slate-900">{userStats.civicScore}</span>
-                  <span className="text-xs font-medium text-slate-500 ml-1.5">{t('pointsShort')}</span>
+                  <span className="text-4xl font-extrabold text-[#191636]">{userStats.civicScore}</span>
+                  <span className="text-xs font-medium text-[#57536E] ml-1.5">{t('pointsShort')}</span>
                 </div>
-                <span className="text-xs font-bold text-[#84644B] uppercase">{tier.name}</span>
+                <span className="text-xs font-bold text-[#302B69] uppercase">{tier.name}</span>
               </div>
 
               {/* Progress bar to next rank */}
               <div className="mt-3">
-                <div className="flex justify-between text-xs text-slate-500 mb-1">
+                <div className="flex justify-between text-xs text-[#57536E] mb-1">
                   <span>{t('levelProgress')}</span>
-                  <span className="font-semibold text-slate-700">{tier.next - userStats.civicScore} {t('ptsToNextRank')}</span>
+                  <span className="font-semibold text-[#191636]">{tier.next - userStats.civicScore} {t('ptsToNextRank')}</span>
                 </div>
-                <div className="w-full h-2 bg-[#FAF9F5] border border-[#EAE7DD] rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-[#F6F6FC] border border-[#E8E2E5] rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-[#D7D2C0] to-[#99775C] rounded-full transition-all duration-500" 
+                    className="h-full bg-[#302B69] rounded-full transition-all duration-500" 
                     style={{ width: `${progressPercent}%` }} 
                   />
                 </div>
@@ -656,32 +656,32 @@ export default function CitizenDashboardPage() {
             </div>
 
             {/* Submissions Mini Grid */}
-            <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-[#EAE7DD]">
-              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-center">
-                <span className="text-xl font-bold text-slate-900 block">{userStats.totalReports}</span>
-                <span className="text-[11px] text-slate-500 font-medium">{t('reported')}</span>
+            <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-[#E8E2E5]">
+              <div className="p-3 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-center">
+                <span className="text-xl font-bold text-[#191636] block">{userStats.totalReports}</span>
+                <span className="text-[11px] text-[#57536E] font-medium">{t('reported')}</span>
               </div>
-              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-center">
-                <span className="text-xl font-bold text-slate-900 block">{userStats.resolvedReports}</span>
+              <div className="p-3 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-center">
+                <span className="text-xl font-bold text-[#191636] block">{userStats.resolvedReports}</span>
                 <span className="text-[11px] text-emerald-700 font-medium">{t('resolved')}</span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 mt-3 text-center">
+            <p className="text-xs text-[#57536E] mt-3 text-center">
               Earn +25 points for every verified hazard you report.
             </p>
           </div>
 
           {/* Municipal Announcements Card */}
-          <div className="bg-white/95 backdrop-blur-xs border border-[#EAE7DD] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col">
+          <div className="bg-white border border-[#E8E2E5] rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col">
             <div className="flex items-center justify-between mb-3.5">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#99775C]" />
+              <h2 className="text-base font-bold text-[#191636] flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#302B69]" />
                 <span>{t('activeAlerts')}</span>
               </h2>
               <Link
                 to="/alerts"
-                className="text-xs font-semibold text-[#84644B] hover:text-[#523D2C] transition-colors"
+                className="text-xs font-semibold text-[#302B69] hover:underline transition-colors"
               >
                 {t('viewAll', 'View All')} →
               </Link>
@@ -690,13 +690,13 @@ export default function CitizenDashboardPage() {
             <div className="space-y-3 flex-1">
               {announcements.length > 0 ? (
                 announcements.slice(0, 3).map(ann => {
-                  let alertStyle = 'bg-[#FAF9F5] border-[#EAE7DD] text-slate-800';
-                  let dotStyle = 'bg-[#99775C]';
+                  let alertStyle = 'bg-[#F6F6FC] border-[#E8E2E5] text-[#191636]';
+                  let dotStyle = 'bg-[#302B69]';
                   if (ann.type === 'error' || ann.type === 'critical') {
-                    alertStyle = 'bg-rose-50/70 border-rose-200 text-slate-800';
+                    alertStyle = 'bg-rose-50/70 border-rose-200 text-[#191636]';
                     dotStyle = 'bg-rose-500';
                   } else if (ann.type === 'warning') {
-                    alertStyle = 'bg-amber-50/70 border-amber-200 text-slate-800';
+                    alertStyle = 'bg-amber-50/70 border-amber-200 text-[#191636]';
                     dotStyle = 'bg-amber-500';
                   }
 
@@ -707,12 +707,12 @@ export default function CitizenDashboardPage() {
                       <div className="flex items-start gap-2.5">
                         <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${dotStyle}`} />
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold text-slate-900 leading-snug">{ann.title}</p>
-                          <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">{ann.message}</p>
+                          <p className="text-xs font-bold text-[#191636] leading-snug">{ann.title}</p>
+                          <p className="text-xs text-[#57536E] mt-0.5 leading-relaxed">{ann.message}</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-1 border-t border-[#EAE7DD]/60 text-[11px] text-slate-500">
+                      <div className="flex items-center justify-between pt-1 border-t border-[#E8E2E5] text-[11px] text-[#57536E]">
                         <span className="font-mono">
                           {new Date(ann.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
@@ -720,17 +720,17 @@ export default function CitizenDashboardPage() {
                         <button
                           type="button"
                           onClick={() => handlePlayAlertAudio(ann)}
-                          className="px-2 py-0.5 rounded-md bg-white border border-[#EAE7DD] text-slate-700 hover:bg-[#FAF9F5] text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                          className="px-2 py-0.5 rounded-md bg-white border border-[#E8E2E5] text-[#191636] hover:bg-[#F6F6FC] text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
                           title="Listen to broadcast"
                         >
                           {isPlaying ? (
                             <>
-                              <VolumeX className="w-3 h-3 text-[#99775C]" />
+                              <VolumeX className="w-3 h-3 text-[#302B69]" />
                               <span>{t('stopListening', 'Stop')}</span>
                             </>
                           ) : (
                             <>
-                              <Volume2 className="w-3 h-3 text-[#99775C]" />
+                              <Volume2 className="w-3 h-3 text-[#302B69]" />
                               <span>{t('listenAlert', 'Listen')}</span>
                             </>
                           )}
@@ -740,29 +740,29 @@ export default function CitizenDashboardPage() {
                   );
                 })
               ) : (
-                <div className="flex flex-col items-center justify-center p-6 text-center border border-dashed border-[#EAE7DD] rounded-xl bg-[#FAF9F5]/50">
-                  <ShieldCheck className="w-7 h-7 text-[#99775C] mb-2" />
-                  <p className="text-xs font-semibold text-slate-800">{t('allClearSector')}</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">{t('allClearDesc')}</p>
+                <div className="flex flex-col items-center justify-center p-6 text-center border border-dashed border-[#E8E2E5] rounded-xl bg-[#F6F6FC]">
+                  <ShieldCheck className="w-7 h-7 text-[#302B69] mb-2" />
+                  <p className="text-xs font-semibold text-[#191636]">{t('allClearSector')}</p>
+                  <p className="text-[11px] text-[#57536E] mt-0.5">{t('allClearDesc')}</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Emergency Helpline Access Card */}
-          <div className="bg-white/95 backdrop-blur-xs border border-[#EAE7DD] rounded-2xl p-4 flex items-center justify-between">
+          <div className="bg-white border border-[#E8E2E5] rounded-2xl p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center shrink-0">
                 <Phone className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-xs font-bold text-slate-900 block">{t('emergencyHotlines', 'Emergency Hotlines')}</span>
-                <span className="text-[11px] text-slate-500 block">Police 112 • Fire 101 • PWD</span>
+                <span className="text-xs font-bold text-[#191636] block">{t('emergencyHotlines', 'Emergency Hotlines')}</span>
+                <span className="text-[11px] text-[#57536E] block">Police 112 • Fire 101 • PWD</span>
               </div>
             </div>
             <button
               onClick={() => setShowEmergencyModal(true)}
-              className="px-3 py-1.5 rounded-lg bg-[#FAF9F5] border border-[#EAE7DD] text-slate-700 hover:bg-[#EAE7DD]/60 text-xs font-semibold transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-[#F6F6FC] border border-[#E8E2E5] text-[#191636] hover:bg-[#E8E2E5] text-xs font-semibold transition-all cursor-pointer"
             >
               View
             </button>
@@ -785,29 +785,29 @@ export default function CitizenDashboardPage() {
       {/* Emergency Hotlines Modal */}
       {showEmergencyModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[99999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150"
+          className="fixed inset-0 z-[99999] bg-[#191636]/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150"
           style={{ minHeight: '100vh', width: '100vw' }}
           onClick={() => setShowEmergencyModal(false)}
           role="dialog"
           aria-modal="true"
         >
           <div 
-            className="bg-white border border-[#EAE7DD] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 m-auto"
+            className="bg-white border border-[#E8E2E5] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 m-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#EAE7DD] pb-3">
+            <div className="flex items-center justify-between border-b border-[#E8E2E5] pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center">
                   <PhoneCall className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">{t('emergencyModalTitle')}</h3>
-                  <p className="text-xs text-slate-500">{t('emergencyModalSubtitle')}</p>
+                  <h3 className="text-base font-bold text-[#191636]">{t('emergencyModalTitle')}</h3>
+                  <p className="text-xs text-[#57536E]">{t('emergencyModalSubtitle')}</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowEmergencyModal(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-[#FAF9F5] transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -824,17 +824,17 @@ export default function CitizenDashboardPage() {
                 <a
                   key={line.number}
                   href={`tel:${line.number}`}
-                  className="flex items-center justify-between p-3 rounded-xl bg-[#FAF9F5] hover:bg-[#F5F3EC] border border-[#EAE7DD] transition-all group"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#F6F6FC] hover:bg-white border border-[#E8E2E5] transition-all group"
                 >
                   <div>
-                    <span className="text-xs font-bold text-slate-900 block group-hover:text-[#99775C] transition-colors">{line.name}</span>
-                    <span className="text-[11px] text-slate-500">{line.desc}</span>
+                    <span className="text-xs font-bold text-[#191636] block group-hover:text-[#302B69] transition-colors">{line.name}</span>
+                    <span className="text-[11px] text-[#57536E]">{line.desc}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-[#6B503B] bg-white px-2 py-0.5 rounded border border-[#EAE7DD]">
+                    <span className="text-xs font-mono font-bold text-[#302B69] bg-white px-2 py-0.5 rounded border border-[#E8E2E5]">
                       {line.number}
                     </span>
-                    <Phone className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#99775C] transition-colors" />
+                    <Phone className="w-3.5 h-3.5 text-[#57536E] group-hover:text-[#302B69] transition-colors" />
                   </div>
                 </a>
               ))}
@@ -842,7 +842,7 @@ export default function CitizenDashboardPage() {
 
             <button
               onClick={() => setShowEmergencyModal(false)}
-              className="w-full py-2.5 rounded-xl bg-[#FAF9F5] hover:bg-[#EAE7DD]/70 text-xs font-semibold text-slate-700 border border-[#EAE7DD] transition-colors cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-[#F6F6FC] hover:bg-[#E8E2E5] text-xs font-semibold text-[#191636] border border-[#E8E2E5] transition-colors cursor-pointer"
             >
               {t('close')}
             </button>

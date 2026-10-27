@@ -46,23 +46,23 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 glass-panel border-b border-stone-800/80">
+    <header className="sticky top-0 z-50 bg-white border-b border-[#E8E2E5] shadow-sm font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* Brand & Logo */}
           <div className="flex items-center space-x-3">
             <Link to={isAdmin ? "/admin" : "/report"} className="flex items-center space-x-2.5 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-rose-500 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-200">
-                <Eye className="w-5 h-5 text-white animate-pulse" />
+              <div className="w-10 h-10 rounded-xl bg-[#302B69] flex items-center justify-center shadow-sm group-hover:bg-[#242052] transition-colors">
+                <Eye className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
-                  <span className="text-lg font-bold tracking-tight text-white">
+                  <span className="text-lg font-extrabold tracking-tight text-[#191636]">
                     Urban EYE
                   </span>
                 </div>
-                <p className="text-[11px] text-stone-400">
+                <p className="text-[11px] text-[#57536E] font-medium">
                   City Infrastructure Tracker
                 </p>
               </div>
@@ -76,10 +76,10 @@ export default function Navbar() {
                 <>
                   <Link
                     to="/admin"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                       isActive('/admin')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                        ? 'bg-[#302B69] text-white shadow-sm'
+                        : 'text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC]'
                     }`}
                   >
                     <LayoutDashboard className="w-4 h-4" />
@@ -88,10 +88,10 @@ export default function Navbar() {
 
                   <Link
                     to="/report"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                       isActive('/report')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                        ? 'bg-[#302B69] text-white shadow-sm'
+                        : 'text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC]'
                     }`}
                   >
                     <Camera className="w-4 h-4" />
@@ -102,10 +102,10 @@ export default function Navbar() {
                 <>
                   <Link
                     to="/dashboard"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                       isActive('/dashboard')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                        ? 'bg-[#302B69] text-white shadow-sm'
+                        : 'text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC]'
                     }`}
                   >
                     <LayoutDashboard className="w-4 h-4" />
@@ -113,10 +113,10 @@ export default function Navbar() {
                   </Link>
                   <Link
                     to="/report"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                       isActive('/report')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                        ? 'bg-[#302B69] text-white shadow-sm'
+                        : 'text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC]'
                     }`}
                   >
                     <Camera className="w-4 h-4" />
@@ -125,10 +125,10 @@ export default function Navbar() {
 
                   <Link
                     to="/my-reports"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                       isActive('/my-reports')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                        ? 'bg-[#302B69] text-white shadow-sm'
+                        : 'text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC]'
                     }`}
                   >
                     <FileText className="w-4 h-4" />
@@ -143,14 +143,11 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             
             {/* Live Socket Status Beacon */}
-            <div className="flex items-center space-x-2 px-2.5 py-1 rounded-full bg-stone-900/80 border border-stone-800 text-xs font-mono">
+            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-[#F6F6FC] border border-[#E8E2E5] text-xs font-medium">
               <span className="relative flex h-2 w-2">
-                {socketConnected && (
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                )}
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${socketConnected ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${socketConnected ? 'bg-[#302B69]' : 'bg-[#8C87A6]'}`}></span>
               </span>
-              <span className={socketConnected ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
+              <span className="text-[#191636] font-semibold text-[11px]">
                 {socketConnected ? 'LIVE FEED' : 'OFFLINE'}
               </span>
             </div>

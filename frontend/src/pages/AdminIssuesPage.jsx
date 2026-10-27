@@ -100,29 +100,16 @@ export default function AdminIssuesPage() {
   });
 
   const severityBadge = (sev) => {
-    const s = (sev || 'medium').toLowerCase();
-    const styles = {
-      high: 'bg-rose-500/20 text-rose-400 border-rose-500/40',
-      critical: 'bg-rose-500/20 text-rose-400 border-rose-500/40',
-      medium: 'bg-amber-500/20 text-amber-400 border-amber-500/40',
-      low: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-    };
     return (
-      <span className={`px-2 py-0.5 rounded text-xs font-semibold uppercase border ${styles[s] || styles.medium}`}>
+      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase border border-[#E8E2E5] bg-[#F6F6FC] text-[#302B69]">
         {sev}
       </span>
     );
   };
 
   const statusBadge = (st) => {
-    const s = (st || 'new').toLowerCase();
-    const styles = {
-      new: 'bg-sky-500/20 text-sky-400 border-sky-500/40',
-      assigned: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40',
-      resolved: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-    };
     return (
-      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase border ${styles[s] || styles.new}`}>
+      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase border border-[#E8E2E5] bg-white text-[#191636]">
         {st}
       </span>
     );
@@ -157,20 +144,20 @@ export default function AdminIssuesPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6 animate-fade-in font-sans">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6 animate-fade-in font-sans bg-[#F6EBE8]">
       
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#E8E2E5]">
         <div>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-              <Layers className="w-5 h-5 text-cyan-400" />
+            <div className="w-10 h-10 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center text-[#302B69] shadow-xs">
+              <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-[#191636] tracking-tight">
                 Reported Issues
               </h1>
-              <p className="text-xs text-slate-400 font-medium">
+              <p className="text-xs text-[#57536E] font-medium">
                 Centralized municipal infrastructure defect registry & status triage
               </p>
             </div>
@@ -181,10 +168,10 @@ export default function AdminIssuesPage() {
           <button
             type="button"
             onClick={handleExportCSV}
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs font-bold transition-all shadow-sm"
+            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-[#F6F6FC] text-[#191636] border border-[#E8E2E5] text-xs font-bold transition-all shadow-xs"
             title="Export filtered records to CSV"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-[#302B69]" />
             <span>Export CSV</span>
           </button>
 
@@ -192,128 +179,124 @@ export default function AdminIssuesPage() {
             type="button"
             onClick={fetchDetections}
             disabled={loading}
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-[#F6F6FC] text-[#191636] border border-[#E8E2E5] text-xs font-bold transition-all shadow-xs disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#302B69] ${loading ? 'animate-spin' : ''}`} />
             <span>Sync Feeds</span>
           </button>
         </div>
       </div>
 
-      {/* 4 Glowing Telemetry KPI Cards */}
+      {/* 4 Telemetry KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Issues */}
-        <div className="relative overflow-hidden rounded-2xl p-4 bg-slate-900/60 border border-slate-800/80 shadow-lg backdrop-blur-xl group hover:border-cyan-500/40 transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-cyan-500/20 transition-all"></div>
+        <div className="rounded-2xl p-4 bg-white border border-[#E8E2E5] shadow-xs transition-all duration-300">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Issues</span>
-            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+            <span className="text-xs font-bold text-[#57536E] uppercase tracking-wider">Total Issues</span>
+            <div className="p-2 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-[#302B69]">
               <Layers className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">{detections.length}</span>
-            <span className="text-[10px] font-mono text-cyan-400 font-semibold">Live Mongo Feed</span>
+            <span className="text-2xl sm:text-3xl font-black text-[#191636] tracking-tight">{detections.length}</span>
+            <span className="text-[10px] font-mono text-[#302B69] font-semibold">Live Mongo Feed</span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-400 flex items-center gap-1">
+          <div className="mt-2 text-[11px] text-[#57536E] flex items-center gap-1">
             <span>Filtered count:</span>
-            <span className="font-bold text-slate-200">{filteredDetections.length}</span>
+            <span className="font-bold text-[#191636]">{filteredDetections.length}</span>
           </div>
         </div>
 
         {/* Critical & High Priority */}
-        <div className="relative overflow-hidden rounded-2xl p-4 bg-slate-900/60 border border-rose-500/30 shadow-lg shadow-rose-950/20 backdrop-blur-xl group hover:border-rose-500/50 transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-rose-500/20 transition-all"></div>
+        <div className="rounded-2xl p-4 bg-white border border-[#E8E2E5] shadow-xs transition-all duration-300">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-rose-300 uppercase tracking-wider">High / Critical</span>
-            <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+            <span className="text-xs font-bold text-[#57536E] uppercase tracking-wider">High / Critical</span>
+            <div className="p-2 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-[#302B69]">
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-rose-400 tracking-tight">
+            <span className="text-2xl sm:text-3xl font-black text-[#191636] tracking-tight">
               {detections.filter(d => ['high', 'critical'].includes((d.severity || '').toLowerCase())).length}
             </span>
-            <span className="text-[10px] font-mono text-rose-400/80 font-bold px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">Action Required</span>
+            <span className="text-[10px] font-mono text-[#302B69] font-bold px-1.5 py-0.5 rounded bg-[#F6F6FC] border border-[#E8E2E5]">Action Required</span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-400">
+          <div className="mt-2 text-[11px] text-[#57536E]">
             Urgent road hazards & safety defects
           </div>
         </div>
 
         {/* In Triage / Assigned */}
-        <div className="relative overflow-hidden rounded-2xl p-4 bg-slate-900/60 border border-amber-500/30 shadow-lg shadow-amber-950/20 backdrop-blur-xl group hover:border-amber-500/50 transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all"></div>
+        <div className="rounded-2xl p-4 bg-white border border-[#E8E2E5] shadow-xs transition-all duration-300">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">Active Triage</span>
-            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+            <span className="text-xs font-bold text-[#57536E] uppercase tracking-wider">Active Triage</span>
+            <div className="p-2 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-[#302B69]">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-amber-400 tracking-tight">
+            <span className="text-2xl sm:text-3xl font-black text-[#191636] tracking-tight">
               {detections.filter(d => ['new', 'assigned'].includes((d.status || '').toLowerCase())).length}
             </span>
-            <span className="text-[10px] font-mono text-amber-400/80 font-bold">Assigned to Depts</span>
+            <span className="text-[10px] font-mono text-[#302B69] font-bold">Assigned to Depts</span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-400">
+          <div className="mt-2 text-[11px] text-[#57536E]">
             Pending field crew resolution
           </div>
         </div>
 
         {/* Resolved */}
-        <div className="relative overflow-hidden rounded-2xl p-4 bg-slate-900/60 border border-emerald-500/30 shadow-lg shadow-emerald-950/20 backdrop-blur-xl group hover:border-emerald-500/50 transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all"></div>
+        <div className="rounded-2xl p-4 bg-white border border-[#E8E2E5] shadow-xs transition-all duration-300">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">Resolved Cases</span>
-            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+            <span className="text-xs font-bold text-[#57536E] uppercase tracking-wider">Resolved Cases</span>
+            <div className="p-2 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-[#302B69]">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight">
+            <span className="text-2xl sm:text-3xl font-black text-[#191636] tracking-tight">
               {detections.filter(d => (d.status || '').toLowerCase() === 'resolved').length}
             </span>
-            <span className="text-[10px] font-mono text-emerald-400/80 font-bold">
+            <span className="text-[10px] font-mono text-[#302B69] font-bold">
               {detections.length > 0 ? `${Math.round((detections.filter(d => (d.status || '').toLowerCase() === 'resolved').length / detections.length) * 100)}% Rate` : '0%'}
             </span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-400">
+          <div className="mt-2 text-[11px] text-[#57536E]">
             Successfully closed & verified
           </div>
         </div>
       </div>
 
       {/* Main Table Container */}
-      <div className="rounded-3xl glass-card border border-slate-800/80 flex flex-col shadow-2xl overflow-hidden bg-slate-900/40">
+      <div className="rounded-3xl bg-white border border-[#E8E2E5] flex flex-col shadow-xs overflow-hidden">
         
         {/* Search & Filter Controls Header */}
-        <div className="p-5 border-b border-slate-800/60 bg-slate-950/60 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="p-5 border-b border-[#E8E2E5] bg-[#F6F6FC] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-bold text-white uppercase tracking-wider">
+            <span className="text-sm font-bold text-[#191636] uppercase tracking-wider">
               Filter Records
             </span>
-            <span className="text-xs text-slate-400 font-mono">
+            <span className="text-xs text-[#57536E] font-mono">
               ({filteredDetections.length} of {detections.length})
             </span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#8C87A6] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search address, ID, dept..."
-                className="pl-9 pr-4 py-2 rounded-xl bg-slate-900/90 border border-slate-700/60 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-full sm:w-56 font-mono shadow-inner"
+                className="pl-9 pr-4 py-2 rounded-xl bg-white border border-[#E8E2E5] text-xs text-[#191636] placeholder-[#8C87A6] focus:outline-none focus:border-[#302B69] w-full sm:w-56 font-mono shadow-xs"
               />
             </div>
 
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-700/60 text-xs text-slate-300 font-mono focus:outline-none focus:border-cyan-500"
+              className="px-3 py-2 rounded-xl bg-white border border-[#E8E2E5] text-xs text-[#191636] font-mono focus:outline-none focus:border-[#302B69]"
             >
               <option value="all">All Types</option>
               <option value="pothole">Potholes</option>
@@ -325,7 +308,7 @@ export default function AdminIssuesPage() {
             <select
               value={filterSeverity}
               onChange={(e) => setFilterSeverity(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-700/60 text-xs text-slate-300 font-mono focus:outline-none focus:border-cyan-500"
+              className="px-3 py-2 rounded-xl bg-white border border-[#E8E2E5] text-xs text-[#191636] font-mono focus:outline-none focus:border-[#302B69]"
             >
               <option value="all">All Severities</option>
               <option value="high">High / Critical</option>
@@ -336,7 +319,7 @@ export default function AdminIssuesPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-700/60 text-xs text-slate-300 font-mono focus:outline-none focus:border-cyan-500"
+              className="px-3 py-2 rounded-xl bg-white border border-[#E8E2E5] text-xs text-[#191636] font-mono focus:outline-none focus:border-[#302B69]"
             >
               <option value="all">All Statuses</option>
               <option value="new">New</option>
@@ -352,7 +335,7 @@ export default function AdminIssuesPage() {
                   setFilterSeverity('all');
                   setFilterStatus('all');
                 }}
-                className="px-2.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+                className="px-2.5 py-2 rounded-xl text-xs font-bold text-[#57536E] hover:text-[#191636] bg-white border border-[#E8E2E5] transition-colors"
               >
                 Clear
               </button>
@@ -363,7 +346,7 @@ export default function AdminIssuesPage() {
         {/* Data Table */}
         <div className="overflow-x-auto flex-1">
           <table className="w-full text-left text-xs font-sans whitespace-nowrap">
-            <thead className="bg-slate-950/80 border-b border-slate-800/80 text-[11px] text-slate-400 uppercase tracking-wider font-bold">
+            <thead className="bg-[#F6F6FC] border-b border-[#E8E2E5] text-[11px] text-[#57536E] uppercase tracking-wider font-bold">
               <tr>
                 <th className="px-6 py-4">Ref ID & Photo</th>
                 <th className="px-6 py-4">Category</th>
@@ -375,23 +358,23 @@ export default function AdminIssuesPage() {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50">
+            <tbody className="divide-y divide-[#E8E2E5]">
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="px-6 py-16 text-center text-slate-400">
+                  <td colSpan="8" className="px-6 py-16 text-center text-[#57536E]">
                     <div className="flex flex-col items-center justify-center space-y-2">
-                      <div className="w-6 h-6 border-2 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+                      <div className="w-6 h-6 border-2 border-[#302B69]/20 border-t-[#302B69] rounded-full animate-spin"></div>
                       <span>Loading reported issues...</span>
                     </div>
                   </td>
                 </tr>
               ) : filteredDetections.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="px-6 py-16 text-center text-slate-500">
+                  <td colSpan="8" className="px-6 py-16 text-center text-[#57536E]">
                     <div className="flex flex-col items-center justify-center space-y-1">
-                      <Layers className="w-8 h-8 text-slate-600 mb-1" />
-                      <span className="font-bold text-slate-400">No issues found</span>
-                      <span className="text-slate-500 text-[11px]">Try adjusting your search criteria or filters</span>
+                      <Layers className="w-8 h-8 text-[#8C87A6] mb-1" />
+                      <span className="font-bold text-[#191636]">No issues found</span>
+                      <span className="text-[#57536E] text-[11px]">Try adjusting your search criteria or filters</span>
                     </div>
                   </td>
                 </tr>
@@ -399,13 +382,13 @@ export default function AdminIssuesPage() {
                 filteredDetections.map((d) => (
                   <tr
                     key={d.id || d._id}
-                    className="hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                    className="hover:bg-[#F6F6FC] transition-colors group cursor-pointer"
                     onClick={() => setSelectedDetection(d)}
                   >
                     {/* Ref ID & Image Thumbnail */}
                     <td className="px-6 py-3.5">
                       <div className="flex items-center space-x-3.5">
-                        <div className="w-11 h-11 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0 shadow-sm">
+                        <div className="w-11 h-11 rounded-xl overflow-hidden bg-[#F6F6FC] border border-[#E8E2E5] shrink-0 shadow-xs">
                           {d.imageUrl ? (
                             <img 
                               src={d.imageUrl.startsWith('http') ? d.imageUrl : `https://urban-eye-wi2j.onrender.com${d.imageUrl}`} 
@@ -413,17 +396,17 @@ export default function AdminIssuesPage() {
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-600 font-mono">N/A</div>
+                            <div className="w-full h-full flex items-center justify-center text-[10px] text-[#8C87A6] font-mono">N/A</div>
                           )}
                         </div>
-                        <span className="font-bold text-slate-200 group-hover:text-cyan-400 transition-colors font-mono">
+                        <span className="font-bold text-[#191636] group-hover:text-[#302B69] transition-colors font-mono">
                           #{d.id ? d.id.slice(-8).toUpperCase() : (d._id ? d._id.slice(-8).toUpperCase() : 'NEW')}
                         </span>
                       </div>
                     </td>
 
                     {/* Category */}
-                    <td className="px-6 py-3.5 uppercase font-bold tracking-wider text-cyan-400 text-xs">
+                    <td className="px-6 py-3.5 uppercase font-bold tracking-wider text-[#302B69] text-xs">
                       {d.type?.replace('_', ' ') || 'UNKNOWN'}
                     </td>
 
@@ -433,21 +416,21 @@ export default function AdminIssuesPage() {
                     </td>
 
                     {/* Assigned Dept */}
-                    <td className="px-6 py-3.5 text-slate-300 font-medium">
+                    <td className="px-6 py-3.5 text-[#191636] font-medium">
                       {d.assignedDepartment || 'Municipal Operations'}
                     </td>
 
                     {/* Address */}
-                    <td className="px-6 py-3.5 text-slate-400 max-w-xs truncate font-medium">
+                    <td className="px-6 py-3.5 text-[#57536E] max-w-xs truncate font-medium">
                       <span className="flex items-center gap-1.5 truncate" title={d.address}>
-                        <MapPin className="w-3 h-3 text-cyan-400 shrink-0" />
+                        <MapPin className="w-3 h-3 text-[#302B69] shrink-0" />
                         <span className="truncate">{d.address || `${Number(d.lat).toFixed(4)}, ${Number(d.lng).toFixed(4)}`}</span>
                       </span>
                     </td>
 
                     {/* Reports Count */}
                     <td className="px-6 py-3.5 text-center">
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-950/70 border border-slate-800 font-mono font-bold text-slate-300 text-xs">
+                      <span className="px-2.5 py-1 rounded-lg bg-[#F6F6FC] border border-[#E8E2E5] font-mono font-bold text-[#191636] text-xs">
                         {d.reportCount || 1}
                       </span>
                     </td>
@@ -462,14 +445,14 @@ export default function AdminIssuesPage() {
                       <div className="flex items-center justify-end space-x-2">
                         <button
                           onClick={() => setSelectedDetection(d)}
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950/50 border border-slate-700 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-400 transition-colors"
+                          className="p-1.5 rounded-lg bg-white hover:bg-[#302B69] border border-[#E8E2E5] text-[#302B69] hover:text-white transition-colors"
                           title="Inspect AI Details & Formal Letter"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => generateReportPDF(d)}
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-indigo-950/50 border border-slate-700 hover:border-indigo-500/40 text-slate-400 hover:text-indigo-400 transition-colors"
+                          className="p-1.5 rounded-lg bg-white hover:bg-[#302B69] border border-[#E8E2E5] text-[#302B69] hover:text-white transition-colors"
                           title="Download Formal PDF Report"
                         >
                           <Download className="w-4 h-4" />

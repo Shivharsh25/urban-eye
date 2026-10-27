@@ -19,8 +19,7 @@ import {
   Edit3,
   Save,
   RotateCcw,
-  FileText,
-  Sparkles
+  FileText
 } from 'lucide-react';
 import client from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -99,32 +98,33 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
       const res = await client.patch(`/api/detections/${currentDetection.id || currentDetection._id}/status`, {
         status: newStatus
       });
-      setCurrentDetection(res.data.detection);
-      if (onStatusUpdated) onStatusUpdated(res.data.detection);
+      setCurrentDetection(res.data);
+      if (onStatusUpdated) onStatusUpdated(res.data);
     } catch (err) {
-      alert(`Failed to update status: ${err.response?.data?.error || err.message}`);
+      console.error('Status update error:', err);
+      alert('Failed to update status.');
     } finally {
       setUpdatingStatus(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to completely delete this report? This action cannot be undone.")) return;
-    
+    if (!window.confirm(t('confirmDeleteReport', 'Are you sure you want to permanently delete this report?'))) return;
     try {
       setUpdatingStatus(true);
       await client.delete(`/api/detections/${currentDetection.id || currentDetection._id}`);
+      if (onStatusUpdated) onStatusUpdated({ ...currentDetection, deleted: true });
       onClose();
     } catch (err) {
-      alert(`Failed to delete report: ${err.response?.data?.error || err.message}`);
+      console.error('Delete error:', err);
+      alert('Failed to delete report.');
     } finally {
       setUpdatingStatus(false);
     }
   };
 
   const copyReportText = () => {
-    const textToCopy = isEditingReport ? editedReportText : (currentDetection.reportText || editedReportText);
-    if (!textToCopy) return;
+    const textToCopy = currentDetection.reportText || editedReportText;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -136,14 +136,13 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
       const res = await client.patch(`/api/detections/${currentDetection.id || currentDetection._id}`, {
         reportText: editedReportText
       });
-      setCurrentDetection(res.data.detection);
-      if (onStatusUpdated) onStatusUpdated(res.data.detection);
+      setCurrentDetection(res.data);
       setIsEditingReport(false);
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      setTimeout(() => setSaveSuccess(false), 2500);
     } catch (err) {
-      console.error('Failed to update report text:', err);
-      alert('Failed to save changes to the report letter.');
+      console.error('Failed to save updated complaint text:', err);
+      alert('Failed to save updated text.');
     } finally {
       setSavingReport(false);
     }
@@ -166,44 +165,26 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
     }
   };
 
-  const getModalSeverityColor = (sev) => {
-    if (!sev) return 'text-cyan-400 bg-cyan-950/60 border-cyan-500/40';
-    if (typeof sev === 'string' && sev.includes('%')) {
-      const val = parseInt(sev, 10);
-      if (val >= 70) return 'text-rose-400 bg-rose-950/60 border-rose-500/40';
-      if (val >= 40) return 'text-amber-400 bg-amber-950/60 border-amber-500/40';
-      return 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40';
-    }
-    const colorMap = {
-      high: 'text-rose-400 bg-rose-950/60 border-rose-500/40',
-      medium: 'text-amber-400 bg-amber-950/60 border-amber-500/40',
-      low: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40'
-    };
-    return colorMap[String(sev).toLowerCase()] || 'text-cyan-400 bg-cyan-950/60 border-cyan-500/40';
-  };
-
-  const severityColor = getModalSeverityColor(currentDetection.severity);
-
   return createPortal(
     <div 
-      className="fixed inset-0 z-[99998] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-[99998] bg-[#191636]/50 backdrop-blur-xs flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
       style={{ minHeight: '100vh', width: '100vw' }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div 
-        className="relative w-full max-w-4xl bg-slate-900/98 border border-slate-700/60 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden m-auto flex flex-col max-h-[92vh] glass-panel"
+        className="relative w-full max-w-4xl bg-white border border-[#E8E2E5] rounded-3xl shadow-2xl overflow-hidden m-auto flex flex-col max-h-[92vh] text-[#191636]"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 bg-slate-950/70 gap-2">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#E8E2E5] bg-[#F6F6FC] gap-2">
           <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
-            <span className="text-[10px] sm:text-xs font-mono px-2 sm:px-3 py-1 rounded-lg bg-slate-900 border border-slate-700 text-cyan-400 font-bold shadow-inner shrink-0">
+            <span className="text-[10px] sm:text-xs font-mono px-2.5 sm:px-3 py-1 rounded-lg bg-white border border-[#E8E2E5] text-[#302B69] font-bold shadow-xs shrink-0">
               #{String(currentDetection.id || currentDetection._id).slice(-6)}
             </span>
-            <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-slate-100 uppercase tracking-wide truncate">
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-[#191636] uppercase tracking-wide truncate">
               {currentDetection.type?.replace('_', ' ')} {t('incidentRecord', 'Record')}
             </h3>
           </div>
@@ -212,7 +193,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               type="button"
               disabled={downloadingPdf}
               onClick={handleDownloadPdf}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-500 shadow-md transition-all active:scale-95 disabled:opacity-50"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#302B69] hover:bg-[#242052] shadow-xs transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{downloadingPdf ? t('generatingPdf', 'Exporting...') : t('downloadPdf', 'Export PDF')}</span>
@@ -221,7 +202,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-lg text-[#57536E] hover:text-[#191636] hover:bg-white transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -229,14 +210,14 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto space-y-6 custom-scrollbar">
+        <div className="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto space-y-5 custom-scrollbar">
           
           {/* Top Section: Annotated Image + Quick Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
             
-            {/* Annotated Image with Bounding Box Overlay */}
+            {/* Annotated Image */}
             <div className="md:col-span-7">
-              <div className="relative aspect-video rounded-2xl overflow-hidden bg-black border border-slate-700/50 shadow-inner group">
+              <div className="relative aspect-video rounded-2xl overflow-hidden bg-[#F6F6FC] border border-[#E8E2E5] shadow-xs">
                 {currentDetection.imageUrl ? (
                   <div ref={imageContainerRef} className="relative w-full h-full">
                     <img 
@@ -246,7 +227,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                     />
                     {/* Visual Bounding Box Indicator */}
                     <div 
-                      className="absolute border-2 border-cyan-400 bg-cyan-400/10 pointer-events-none rounded-sm transition-all"
+                      className="absolute border-2 border-[#302B69] bg-[#302B69]/10 pointer-events-none rounded-sm transition-all"
                       style={{
                         top: '20%',
                         left: '20%',
@@ -254,13 +235,13 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                         height: '55%'
                       }}
                     >
-                      <span className="absolute -top-5 left-0 px-1.5 py-0.5 rounded bg-cyan-500 text-slate-950 text-[10px] font-mono font-bold uppercase shadow">
+                      <span className="absolute -top-5 left-0 px-1.5 py-0.5 rounded bg-[#302B69] text-white text-[10px] font-mono font-bold uppercase shadow-xs">
                         {currentDetection.type} ({(Number(currentDetection.confidence || 0.9) * 100).toFixed(0)}%)
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-600 font-mono text-xs">
+                  <div className="w-full h-full flex items-center justify-center text-[#57536E] font-mono text-xs">
                     {t('noImageCaptured', 'NO IMAGE ASSET AVAILABLE')}
                   </div>
                 )}
@@ -269,40 +250,42 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
 
             {/* Quick Metrics & Parameters */}
             <div className="md:col-span-5 flex flex-col justify-between space-y-3">
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 
                 {/* Severity Card */}
-                <div className={`p-3 rounded-xl border flex items-center justify-between ${severityColor}`}>
-                  <span className="text-xs font-bold font-mono">{t('severityLevel', 'SEVERITY LEVEL')}</span>
-                  <span className="text-sm font-black uppercase tracking-wider">{t(currentDetection.severity, currentDetection.severity)}</span>
+                <div className="p-3 rounded-xl border border-[#E8E2E5] bg-[#F6F6FC] flex items-center justify-between">
+                  <span className="text-xs font-bold font-mono text-[#57536E]">{t('severityLevel', 'SEVERITY LEVEL')}</span>
+                  <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded-full bg-white border border-[#E8E2E5] text-[#191636]">
+                    {t(currentDetection.severity, currentDetection.severity)}
+                  </span>
                 </div>
 
                 {/* Status Card */}
-                <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
-                  <span className="text-xs font-bold font-mono text-slate-400">{t('incidentStatus', 'INCIDENT STATUS')}</span>
-                  <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                <div className="p-3 rounded-xl border border-[#E8E2E5] bg-[#F6F6FC] flex items-center justify-between">
+                  <span className="text-xs font-bold font-mono text-[#57536E]">{t('incidentStatus', 'INCIDENT STATUS')}</span>
+                  <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded-full bg-[#302B69]/10 text-[#302B69] border border-[#302B69]/20">
                     {t(currentDetection.status, currentDetection.status)}
                   </span>
                 </div>
 
-                {/* Report Count (Community Surge) */}
-                <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
+                {/* Report Count */}
+                <div className="p-3 rounded-xl border border-[#E8E2E5] bg-[#F6F6FC] flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4 text-cyan-400" />
-                    <span className="text-xs font-bold font-mono text-slate-400">{t('citizenReportsCount', 'CITIZEN REPORTS')}</span>
+                    <Users className="w-4 h-4 text-[#302B69]" />
+                    <span className="text-xs font-bold font-mono text-[#57536E]">{t('citizenReportsCount', 'CITIZEN REPORTS')}</span>
                   </div>
-                  <span className="text-sm font-bold text-slate-100 font-mono">
+                  <span className="text-xs font-bold text-[#191636] font-mono">
                     {currentDetection.reportCount || 1} {t('verifiedReports', 'verified reports')}
                   </span>
                 </div>
 
                 {/* Department Info */}
-                <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
+                <div className="p-3 rounded-xl border border-[#E8E2E5] bg-[#F6F6FC] flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Building2 className="w-4 h-4 text-cyan-400" />
-                    <span className="text-xs font-bold font-mono text-slate-400">{t('assignedDept', 'ASSIGNED DEPT')}</span>
+                    <Building2 className="w-4 h-4 text-[#302B69]" />
+                    <span className="text-xs font-bold font-mono text-[#57536E]">{t('assignedDept', 'ASSIGNED DEPT')}</span>
                   </div>
-                  <span className="text-xs font-semibold text-slate-200">
+                  <span className="text-xs font-semibold text-[#191636]">
                     {currentDetection.assignedDepartment || 'Municipal Operations'}
                   </span>
                 </div>
@@ -310,8 +293,8 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               </div>
 
               {/* Timestamp */}
-              <div className="text-[11px] text-slate-400 font-mono flex items-center space-x-1.5 pt-2 border-t border-slate-800">
-                <Calendar className="w-3.5 h-3.5" />
+              <div className="text-[11px] text-[#57536E] font-mono flex items-center space-x-1.5 pt-2 border-t border-[#E8E2E5]">
+                <Calendar className="w-3.5 h-3.5 text-[#302B69]" />
                 <span>{t('dateReported', 'Detected')}: {new Date(currentDetection.createdAt).toLocaleString()}</span>
               </div>
             </div>
@@ -319,15 +302,15 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
           </div>
 
           {/* Location & Address Bar */}
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start space-x-3">
-              <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center shrink-0">
-                <MapPin className="w-5 h-5 text-cyan-400" />
+              <div className="w-9 h-9 rounded-xl bg-white border border-[#E8E2E5] flex items-center justify-center shrink-0 text-[#302B69]">
+                <MapPin className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-400 font-mono">{t('locationCoordinates', 'LOCATION & ADDRESS')}</p>
-                <p className="text-sm text-slate-200 font-medium">{currentDetection.address}</p>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
+                <p className="text-[10px] font-bold text-[#57536E] font-mono uppercase tracking-wider">{t('locationCoordinates', 'LOCATION & ADDRESS')}</p>
+                <p className="text-xs sm:text-sm text-[#191636] font-medium mt-0.5">{currentDetection.address}</p>
+                <p className="text-[11px] text-[#8C87A6] font-mono mt-0.5">
                   LAT: {Number(currentDetection.lat).toFixed(6)} | LNG: {Number(currentDetection.lng).toFixed(6)}
                 </p>
               </div>
@@ -337,55 +320,26 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               href={`https://www.openstreetmap.org/?mlat=${currentDetection.lat}&mlon=${currentDetection.lng}#map=18/${currentDetection.lat}/${currentDetection.lng}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-cyan-400 hover:text-cyan-300 bg-cyan-950/60 hover:bg-cyan-950 border border-cyan-500/30 transition-colors"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#302B69] hover:text-[#242052] bg-white border border-[#E8E2E5] hover:bg-[#F6F6FC] transition-colors shadow-xs"
             >
               <span>{t('viewOnGoogleMaps', 'View on Map')}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
 
-          {/* Verifiable Dispatch Email Preview Link (Nodemailer Ethereal) */}
-          {currentDetection.dispatchPreviewUrl && (
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-cyan-950/40 to-blue-900/20 border border-cyan-500/30 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center shadow-inner">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <div>
-                  <h5 className="text-xs font-bold text-cyan-300 font-mono">
-                    {t('verifiableDispatchSent', 'VERIFIABLE DISPATCH EMAIL SENT')}
-                  </h5>
-                  <p className="text-xs text-slate-400">
-                    Real email dispatched via Nodemailer Ethereal to {currentDetection.assignedDepartment}
-                  </p>
-                </div>
-              </div>
-
-              <a
-                href={currentDetection.dispatchPreviewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-lg text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 shadow-md shadow-cyan-500/20 transition-all"
-              >
-                <span>{t('openEmailPreview', 'Open Email Preview')}</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          )}
-
-          {/* Official Formal Grievance Complaint Letter (View & Edit Mode) */}
-          <div className="p-5 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-3 shadow-inner">
-            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+          {/* Official Formal Grievance Complaint Letter */}
+          <div className="p-5 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5] space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#E8E2E5]">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-cyan-400" />
-                <h4 className="text-xs font-bold font-mono text-slate-200 uppercase tracking-wider">
+                <FileText className="w-4 h-4 text-[#302B69]" />
+                <h4 className="text-xs font-bold text-[#191636] uppercase tracking-wider">
                   {t('generatedComplaintLetter', 'Official Formal Municipal Grievance Letter')}
                 </h4>
               </div>
 
               <div className="flex items-center gap-2">
                 {saveSuccess && (
-                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 animate-fade-in">
+                  <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     {t('saved', 'Saved Successfully')}
                   </span>
@@ -396,17 +350,17 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                     <button
                       type="button"
                       onClick={() => setIsEditingReport(true)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-colors shadow-sm"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#191636] bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] transition-colors shadow-xs cursor-pointer"
                     >
-                      <Edit3 className="w-3.5 h-3.5" />
+                      <Edit3 className="w-3.5 h-3.5 text-[#302B69]" />
                       <span>{t('editLetter', 'Edit Letter')}</span>
                     </button>
                     <button
                       type="button"
                       onClick={copyReportText}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-colors shadow-sm"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#191636] bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] transition-colors shadow-xs cursor-pointer"
                     >
-                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-[#302B69]" />}
                       <span>{copied ? t('copied', 'Copied') : t('copyLetter', 'Copy Letter')}</span>
                     </button>
                   </>
@@ -415,11 +369,11 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                     <button
                       type="button"
                       onClick={handleResetTemplate}
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700 transition-colors"
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-[#57536E] bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] transition-colors cursor-pointer"
                       title="Reset to standard formal template"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">{t('resetOfficialTemplate', 'Reset Template')}</span>
+                      <span className="hidden sm:inline">{t('resetOfficialTemplate', 'Reset')}</span>
                     </button>
                     <button
                       type="button"
@@ -427,7 +381,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                         setEditedReportText(currentDetection.reportText || '');
                         setIsEditingReport(false);
                       }}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold text-[#57536E] bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] transition-colors cursor-pointer"
                     >
                       {t('cancel', 'Cancel')}
                     </button>
@@ -435,7 +389,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                       type="button"
                       disabled={savingReport}
                       onClick={handleSaveReportText}
-                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold text-white bg-[#302B69] hover:bg-[#242052] transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>{savingReport ? t('saving', 'Saving...') : t('saveFormalLetter', 'Save Letter')}</span>
@@ -447,19 +401,16 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
 
             {isEditingReport ? (
               <div className="space-y-2">
-                <p className="text-[11px] text-amber-400/90 font-medium">
-                  ✏️ {t('editLetterHelp', 'You can edit any part of this formal complaint letter, add specific landmark notes, or adjust the problem description before exporting the PDF.')}
-                </p>
                 <textarea
                   value={editedReportText}
                   onChange={(e) => setEditedReportText(e.target.value)}
-                  rows={15}
-                  className="w-full p-4 rounded-xl bg-slate-900 border border-cyan-500/40 text-xs font-mono text-slate-200 focus:outline-none focus:ring-1 focus:ring-cyan-500 leading-relaxed custom-scrollbar shadow-inner"
+                  rows={12}
+                  className="w-full p-4 rounded-xl bg-white border border-[#E8E2E5] text-xs font-mono text-[#191636] focus:outline-none focus:border-[#302B69] leading-relaxed custom-scrollbar shadow-xs"
                   placeholder="Enter formal complaint letter text..."
                 />
               </div>
             ) : (
-              <pre className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-mono text-slate-300 overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-inner">
+              <pre className="p-4 rounded-xl bg-white border border-[#E8E2E5] text-xs font-mono text-[#191636] overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-xs">
                 {currentDetection.reportText || editedReportText}
               </pre>
             )}
@@ -467,17 +418,14 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
 
           {/* Admin-Only Status Triage Controls */}
           {isAdmin && (
-            <div className="p-5 rounded-2xl bg-slate-950/60 border border-amber-500/30 shadow-inner">
+            <div className="p-4 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5]">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <ShieldCheck className="w-4 h-4 text-amber-400" />
-                  <h5 className="text-xs font-bold text-amber-300 font-mono">
+                  <ShieldCheck className="w-4 h-4 text-[#302B69]" />
+                  <h5 className="text-xs font-bold text-[#191636] font-mono">
                     {t('adminStatusTriage', 'ADMINISTRATIVE STATUS TRIAGE')}
                   </h5>
                 </div>
-                <span className="text-[11px] text-slate-400">
-                  Resolving triggers automatic citizen notification emails
-                </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5">
@@ -485,10 +433,10 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                   type="button"
                   disabled={updatingStatus || currentDetection.status === 'new'}
                   onClick={() => handleStatusChange('new')}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     currentDetection.status === 'new'
-                      ? 'bg-blue-600 text-white ring-2 ring-blue-400'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                      ? 'bg-[#302B69] text-white shadow-xs'
+                      : 'bg-white text-[#57536E] hover:text-[#191636] border border-[#E8E2E5]'
                   }`}
                 >
                   {t('markNew', 'Mark New')}
@@ -498,10 +446,10 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                   type="button"
                   disabled={updatingStatus || currentDetection.status === 'assigned'}
                   onClick={() => handleStatusChange('assigned')}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     currentDetection.status === 'assigned'
-                      ? 'bg-cyan-600 text-white ring-2 ring-cyan-400'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                      ? 'bg-[#302B69] text-white shadow-xs'
+                      : 'bg-white text-[#57536E] hover:text-[#191636] border border-[#E8E2E5]'
                   }`}
                 >
                   {t('markAssigned', 'Mark Assigned')}
@@ -511,14 +459,14 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
                   type="button"
                   disabled={updatingStatus || currentDetection.status === 'resolved'}
                   onClick={() => handleStatusChange('resolved')}
-                  className={`flex items-center space-x-1.5 px-5 py-2 rounded-lg text-xs font-bold transition-all ${
+                  className={`flex items-center space-x-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     currentDetection.status === 'resolved'
-                      ? 'bg-emerald-600 text-white ring-2 ring-emerald-400'
-                      : 'bg-emerald-600/80 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
                   }`}
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{t('markResolved', 'Mark Resolved (Notify All Reporters)')}</span>
+                  <span>{t('markResolved', 'Mark Resolved')}</span>
                 </button>
               </div>
             </div>
@@ -527,14 +475,14 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between">
+        <div className="px-6 py-3.5 border-t border-[#E8E2E5] bg-[#F6F6FC] flex items-center justify-between">
           <div>
             {(isAdmin || (currentDetection.reporterIds && currentDetection.reporterIds.includes(user?.id))) && (
               <button
                 type="button"
                 disabled={updatingStatus}
                 onClick={handleDelete}
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-lg text-xs font-bold text-rose-400 hover:text-white bg-rose-950/40 hover:bg-rose-600 border border-rose-500/30 transition-colors"
+                className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-rose-700 bg-white hover:bg-rose-50 border border-rose-200 transition-colors cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>{t('deleteReport', 'Delete Report')}</span>
@@ -546,16 +494,16 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
               type="button"
               disabled={downloadingPdf}
               onClick={handleDownloadPdf}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-md transition-all active:scale-95 disabled:opacity-50"
+              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#302B69] hover:bg-[#242052] shadow-xs transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>{downloadingPdf ? t('generatingPdf', 'Generating PDF...') : t('downloadPdfReport', 'Download Official PDF')}</span>
             </button>
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-[#57536E] hover:text-[#191636] bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] transition-colors cursor-pointer shadow-xs"
             >
-              {t('closeInspector', 'Close Inspector')}
+              {t('closeInspector', 'Close')}
             </button>
           </div>
         </div>

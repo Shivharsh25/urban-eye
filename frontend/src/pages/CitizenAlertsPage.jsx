@@ -304,11 +304,11 @@ export default function CitizenAlertsPage() {
   };
 
   return (
-    <div className="min-h-full p-4 sm:p-6 lg:p-10 relative overflow-hidden">
+    <div className="min-h-full p-4 sm:p-6 lg:p-10 relative overflow-hidden text-[#191636]">
       
       {/* Floating Feedback Toast */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-slate-900 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-2xl flex items-center gap-2 backdrop-blur-md animate-in fade-in slide-in-from-top-3 border border-[#99775C]/40">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-[#191636] text-white font-bold text-xs sm:text-sm rounded-2xl shadow-2xl flex items-center gap-2 backdrop-blur-md animate-in fade-in slide-in-from-top-3 border border-[#302B69]">
           <Check className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
@@ -317,15 +317,15 @@ export default function CitizenAlertsPage() {
       <div className="max-w-5xl mx-auto relative z-10 space-y-6">
         
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EAE7DD]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E8E2E5]">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#99775C]/10 border border-[#99775C]/25 flex items-center justify-center shrink-0 shadow-sm">
-                <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-[#99775C]" />
+            <h1 className="text-2xl sm:text-3xl font-black text-[#191636] tracking-tight flex items-center gap-3">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center shrink-0 shadow-xs">
+                <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-[#302B69]" />
               </div>
               <span>{t('communityAlertsTitle', 'Community Alerts & Broadcasts')}</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1.5 font-medium">
+            <p className="text-xs sm:text-sm text-[#57536E] mt-1.5 font-medium">
               {t('communityAlertsSubtitle', 'Stay informed with real-time city broadcasts, hazardous condition advisories, and emergency updates.')}
             </p>
           </div>
@@ -334,14 +334,14 @@ export default function CitizenAlertsPage() {
             <button
               onClick={() => fetchAlerts(true)}
               disabled={refreshing}
-              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-white border border-[#EAE7DD] text-slate-700 hover:text-slate-900 hover:border-[#99775C] transition-all flex items-center gap-1.5 text-xs font-semibold shadow-sm"
+              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-white border border-[#E8E2E5] text-[#191636] hover:bg-[#F6F6FC] hover:border-[#302B69] transition-all flex items-center gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
               title="Refresh alerts"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-[#99775C]' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-[#302B69]' : ''}`} />
               <span className="hidden sm:inline">{refreshing ? 'Syncing...' : 'Sync'}</span>
             </button>
 
-            <div className="flex items-center space-x-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 shadow-sm">
+            <div className="flex items-center space-x-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 shadow-xs">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
               <span className="text-[11px] font-mono font-bold text-emerald-700 uppercase tracking-widest">{t('liveNetwork', 'LIVE NETWORK')}</span>
             </div>
@@ -349,22 +349,22 @@ export default function CitizenAlertsPage() {
         </div>
 
         {/* Search & Category Filter Controls */}
-        <div className="p-4 rounded-2xl bg-white/95 border border-[#EAE7DD] shadow-sm space-y-3">
+        <div className="p-4 rounded-2xl bg-white border border-[#E8E2E5] shadow-xs space-y-3">
           
           {/* Search Box */}
           <div className="relative w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#8C87A6] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input 
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('searchAlertsPlaceholder', 'Search alerts by keyword, ward or topic...')}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-xs sm:text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#99775C] transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-xs sm:text-sm text-[#191636] placeholder-[#8C87A6] focus:outline-none focus:border-[#302B69] transition-colors"
             />
             {searchQuery && (
               <button 
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700 px-1.5 py-0.5"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#8C87A6] hover:text-[#191636] px-1.5 py-0.5 cursor-pointer"
               >
                 ✕
               </button>
@@ -385,12 +385,12 @@ export default function CitizenAlertsPage() {
                 onClick={() => setFilter(tab.id)}
                 className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all border flex items-center gap-1.5 cursor-pointer ${
                   filter === tab.id
-                    ? 'bg-[#99775C] text-white border-[#99775C] shadow-sm font-bold'
-                    : 'bg-white text-slate-600 border-[#EAE7DD] hover:text-slate-900 hover:border-[#99775C]/50'
+                    ? 'bg-[#302B69] text-white border-[#302B69] shadow-xs font-bold'
+                    : 'bg-white text-[#57536E] border-[#E8E2E5] hover:text-[#191636] hover:bg-[#F6F6FC]'
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${filter === tab.id ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${filter === tab.id ? 'bg-white/25 text-white' : 'bg-[#F6F6FC] text-[#57536E]'}`}>
                   {tab.count}
                 </span>
               </button>
@@ -402,8 +402,8 @@ export default function CitizenAlertsPage() {
         {/* Alerts Feed */}
         {loading ? (
           <div className="flex flex-col items-center justify-center p-16 space-y-3">
-            <div className="w-9 h-9 border-3 border-[#99775C]/20 border-t-[#99775C] rounded-full animate-spin"></div>
-            <p className="text-xs text-slate-600 font-medium">Scanning civic broadcast frequencies...</p>
+            <div className="w-9 h-9 border-3 border-[#302B69]/20 border-t-[#302B69] rounded-full animate-spin"></div>
+            <p className="text-xs text-[#57536E] font-medium">Scanning civic broadcast frequencies...</p>
           </div>
         ) : filteredAlerts.length > 0 ? (
           <div className="space-y-4">
@@ -417,7 +417,7 @@ export default function CitizenAlertsPage() {
               return (
                 <div 
                   key={alert.id} 
-                  className="group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white/95 border border-[#EAE7DD] hover:border-[#99775C]/50 transition-all p-4 sm:p-6 shadow-sm hover:shadow-md"
+                  className="group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white border border-[#E8E2E5] hover:border-[#302B69]/50 transition-all p-4 sm:p-6 shadow-xs hover:shadow-sm"
                 >
                   {/* Left accent strip */}
                   <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${visuals.strip}`}></div>
@@ -440,14 +440,14 @@ export default function CitizenAlertsPage() {
                           </span>
                           
                           {alert.zone && (
-                            <span className="text-[11px] font-mono text-slate-600 flex items-center gap-1 truncate font-semibold">
-                              <MapPin className="w-3 h-3 text-[#99775C] shrink-0" />
+                            <span className="text-[11px] font-mono text-[#57536E] flex items-center gap-1 truncate font-semibold">
+                              <MapPin className="w-3 h-3 text-[#302B69] shrink-0" />
                               {alert.zone}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center space-x-1.5 text-slate-500 font-mono text-[11px]">
+                        <div className="flex items-center space-x-1.5 text-[#57536E] font-mono text-[11px]">
                           <Clock className="w-3.5 h-3.5" />
                           <span>
                             {new Date(alert.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -455,16 +455,16 @@ export default function CitizenAlertsPage() {
                         </div>
                       </div>
 
-                      <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-[#99775C] transition-colors mb-1.5 leading-snug">
+                      <h3 className="text-base sm:text-lg font-bold text-[#191636] group-hover:text-[#302B69] transition-colors mb-1.5 leading-snug">
                         {alert.title}
                       </h3>
 
-                      <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-4 font-normal">
+                      <p className="text-xs sm:text-sm text-[#57536E] leading-relaxed mb-4 font-normal">
                         {alert.desc}
                       </p>
 
                       {/* Interactive Actions Toolbar */}
-                      <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-[#EAE7DD]">
+                      <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-[#E8E2E5]">
                         
                         {/* Audio & Community Ack */}
                         <div className="flex items-center gap-2">
@@ -473,8 +473,8 @@ export default function CitizenAlertsPage() {
                             onClick={() => handleToggleAudio(alert)}
                             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
                               isPlaying
-                                ? 'bg-[#99775C] text-white border-[#99775C] animate-pulse'
-                                : 'bg-[#FAF9F5] text-slate-700 border-[#EAE7DD] hover:text-[#99775C] hover:border-[#99775C]'
+                                ? 'bg-[#302B69] text-white border-[#302B69] animate-pulse'
+                                : 'bg-[#F6F6FC] text-[#191636] border-[#E8E2E5] hover:text-[#302B69] hover:border-[#302B69]'
                             }`}
                             title="Listen to broadcast audio"
                           >
@@ -497,13 +497,13 @@ export default function CitizenAlertsPage() {
                             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
                               isAck
                                 ? 'bg-emerald-50 text-emerald-700 border-emerald-300 shadow-xs'
-                                : 'bg-[#FAF9F5] text-slate-600 border-[#EAE7DD] hover:text-emerald-700 hover:border-emerald-300'
+                                : 'bg-[#F6F6FC] text-[#57536E] border-[#E8E2E5] hover:text-emerald-700 hover:border-emerald-300'
                             }`}
                             title="Confirm safe & acknowledged"
                           >
                             <ShieldCheck className={`w-3.5 h-3.5 ${isAck ? 'fill-emerald-500 text-emerald-600' : ''}`} />
                             <span>{isAck ? t('staySafeAcknowledged', 'Acknowledged') : 'Stay Safe'}</span>
-                            <span className="font-mono text-[10px] text-slate-500">({totalAck})</span>
+                            <span className="font-mono text-[10px] text-[#57536E]">({totalAck})</span>
                           </button>
                         </div>
 
@@ -521,7 +521,7 @@ export default function CitizenAlertsPage() {
 
                           <button
                             onClick={() => handleShare(alert)}
-                            className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-xs font-semibold bg-white text-slate-700 hover:text-slate-900 border border-[#EAE7DD] hover:border-[#99775C] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                            className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-xs font-semibold bg-white text-[#191636] hover:bg-[#F6F6FC] border border-[#E8E2E5] hover:border-[#302B69] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                             title="Share alert with neighbors"
                           >
                             <Share2 className="w-3.5 h-3.5" />
@@ -539,15 +539,15 @@ export default function CitizenAlertsPage() {
             })}
           </div>
         ) : (
-          <div className="p-12 text-center text-slate-600 border border-[#EAE7DD] border-dashed rounded-3xl bg-white/80 space-y-3">
+          <div className="p-12 text-center text-[#57536E] border border-[#E8E2E5] border-dashed rounded-3xl bg-white space-y-3">
             <ShieldCheck className="w-10 h-10 mx-auto text-emerald-600 mb-1" />
-            <h3 className="text-base font-bold text-slate-900">No alerts matching your filter</h3>
-            <p className="text-xs text-slate-600 max-w-sm mx-auto">
+            <h3 className="text-base font-bold text-[#191636]">No alerts matching your filter</h3>
+            <p className="text-xs text-[#57536E] max-w-sm mx-auto">
               All sectors currently operational without active emergency broadcast notices for this category.
             </p>
             <button
               onClick={() => { setFilter('ALL'); setSearchQuery(''); }}
-              className="mt-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#99775C] text-white hover:bg-[#85654c] transition-colors shadow-sm"
+              className="mt-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#302B69] text-white hover:bg-[#242052] transition-colors shadow-xs cursor-pointer"
             >
               Reset Filters
             </button>
