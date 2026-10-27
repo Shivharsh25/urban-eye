@@ -18,7 +18,7 @@ export default function CitizenLayout({ children }) {
 
   return (
     <div className="h-screen h-[100dvh] text-slate-800 flex flex-col lg:flex-row font-sans selection:bg-[#99775C] selection:text-white relative overflow-hidden">
-      {/* Universal Watermark Background with Narvik (#EAE7DD) and Sorrell Brown (#99775C) */}
+      {/* Clean Ambient Background with Narvik (#EAE7DD) and Sorrell Brown (#99775C) */}
       <WatermarkBackground />
 
       {/* Mobile Header with tap avatar dropdown */}
