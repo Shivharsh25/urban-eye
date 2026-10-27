@@ -72,23 +72,23 @@ export default function CitizenReportsPage() {
   });
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 text-[#191636]">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 border-b border-[#E8E2E5]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 border-b border-[#EAE7DD]">
         <div>
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#F6F6FC] flex items-center justify-center border border-[#E8E2E5] shadow-xs shrink-0">
-              <CheckCircle2 className="w-5 h-5 text-[#302B69]" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF9F5] flex items-center justify-center border border-[#EAE7DD] shadow-xs shrink-0">
+              <CheckCircle2 className="w-5 h-5 text-[#99775C]" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#191636] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               {t('mySubmittedReports')}
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-[#F6F6FC] text-[#302B69] border border-[#E8E2E5] text-[10px] font-mono font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#FAF9F5] text-[#6B503B] border border-[#EAE7DD] text-[10px] font-mono font-bold">
               {t('liveTracking')}
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#57536E] mt-1 font-medium">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">
             {t('reportsSubtitle')}
           </p>
         </div>
@@ -97,15 +97,15 @@ export default function CitizenReportsPage() {
           <button
             type="button"
             onClick={fetchReports}
-            className="p-2.5 sm:p-3 rounded-xl bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] hover:border-[#302B69]/40 text-[#191636] transition-colors shadow-xs shrink-0 cursor-pointer"
+            className="p-2.5 sm:p-3 rounded-xl bg-white hover:bg-[#FAF9F5] border border-[#EAE7DD] hover:border-[#99775C]/40 text-slate-700 transition-colors shadow-xs shrink-0 cursor-pointer"
             title="Refresh list"
           >
-            <RefreshCw className={`w-4 h-4 text-[#302B69] ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 text-[#99775C] ${loading ? 'animate-spin' : ''}`} />
           </button>
 
           <Link
             to="/report"
-            className="flex-1 sm:flex-initial flex items-center justify-center space-x-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#302B69] hover:bg-[#242052] shadow-xs transition-all active:scale-95"
+            className="flex-1 sm:flex-initial flex items-center justify-center space-x-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#99775C] hover:bg-[#84644B] shadow-xs transition-all active:scale-95"
           >
             <Camera className="w-4 h-4" />
             <span>{t('reportNewIssue')}</span>
@@ -121,8 +121,8 @@ export default function CitizenReportsPage() {
             onClick={() => setFilterStatus(status)}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
               filterStatus === status
-                ? 'bg-[#302B69] text-white border-[#302B69] shadow-xs'
-                : 'bg-white text-[#57536E] hover:bg-[#F6F6FC] border-[#E8E2E5]'
+                ? 'bg-[#99775C] text-white border-[#99775C] shadow-xs'
+                : 'bg-white text-slate-700 hover:bg-[#FAF9F5] border-[#EAE7DD]'
             }`}
           >
             {status === 'all' ? `${t('allReports')} (${reports.length})` : t(status, status)}
@@ -133,8 +133,8 @@ export default function CitizenReportsPage() {
       {/* Content Grid */}
       {loading && reports.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-20 space-y-4">
-          <div className="w-10 h-10 border-3 border-[#302B69]/20 border-t-[#302B69] rounded-full animate-spin"></div>
-          <p className="text-xs font-mono font-bold text-[#302B69] tracking-wider">{t('syncing')}</p>
+          <div className="w-10 h-10 border-3 border-[#99775C]/20 border-t-[#99775C] rounded-full animate-spin"></div>
+          <p className="text-xs font-mono font-bold text-[#84644B] tracking-wider">{t('syncing')}</p>
         </div>
       ) : error ? (
         <div className="p-5 rounded-2xl bg-white border border-rose-200 text-rose-700 text-sm flex items-center space-x-3 shadow-xs">
@@ -142,19 +142,19 @@ export default function CitizenReportsPage() {
           <span className="font-semibold">{error}</span>
         </div>
       ) : filteredReports.length === 0 ? (
-        <div className="text-center py-16 px-4 rounded-3xl bg-white border border-[#E8E2E5] flex flex-col items-center shadow-xs relative overflow-hidden">
-          <div className="w-16 h-16 bg-[#F6F6FC] rounded-2xl flex items-center justify-center mb-4 border border-[#E8E2E5]">
-            <FileText className="w-8 h-8 text-[#302B69]" />
+        <div className="text-center py-16 px-4 rounded-3xl bg-white/95 border border-[#EAE7DD] flex flex-col items-center shadow-xs relative overflow-hidden">
+          <div className="w-16 h-16 bg-[#FAF9F5] rounded-2xl flex items-center justify-center mb-4 border border-[#EAE7DD]">
+            <FileText className="w-8 h-8 text-[#99775C]" />
           </div>
-          <h3 className="text-xl font-bold text-[#191636]">{t('noReportsFound')}</h3>
-          <p className="text-xs sm:text-sm text-[#57536E] mt-1 max-w-sm mx-auto font-medium">
+          <h3 className="text-xl font-bold text-slate-900">{t('noReportsFound')}</h3>
+          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-sm mx-auto font-medium">
             {filterStatus === 'all'
               ? t('noReportsSubmittedYet')
               : `${t('noReportsFound')} (${t(filterStatus, filterStatus)}).`}
           </p>
           <Link
             to="/report"
-            className="mt-6 inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#302B69] hover:bg-[#242052] transition-all shadow-xs active:scale-95"
+            className="mt-6 inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#99775C] hover:bg-[#84644B] transition-all shadow-xs active:scale-95"
           >
             <Camera className="w-4 h-4" />
             <span>{t('submitFirstReport')}</span>

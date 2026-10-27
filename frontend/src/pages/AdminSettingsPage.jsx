@@ -30,55 +30,53 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-8 animate-fade-in relative z-10 font-sans">
+    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-8 animate-fade-in relative z-10">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#E8E2E5]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#191636] tracking-tight">System Settings</h1>
-          <p className="text-xs text-[#57536E] mt-1 font-medium">Configure global platform parameters, automated triage, and emergency dispatch alerts.</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">System Settings</h1>
+          <p className="text-slate-400 mt-1">Configure global platform parameters and notifications.</p>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-6 py-2.5 rounded-xl bg-[#302B69] hover:bg-[#242052] text-white text-xs font-semibold transition-colors flex items-center space-x-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition-colors flex items-center space-x-2 shadow-lg shadow-cyan-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? (
-            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
           ) : (
-            <Save className="w-4 h-4" />
+            <Save className="w-5 h-5" />
           )}
           <span>{saving ? 'Saving...' : 'Save Changes'}</span>
         </button>
       </div>
 
       {saved && (
-        <div className="p-4 rounded-xl bg-white border border-[#E8E2E5] text-[#191636] flex items-center space-x-3 shadow-sm">
-          <Shield className="w-5 h-5 text-[#302B69]" />
-          <span className="text-xs font-semibold">Settings updated and synchronized across all cluster nodes.</span>
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center space-x-3">
+          <Shield className="w-5 h-5" />
+          <span className="font-medium">Settings saved successfully.</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         
         {/* Core System */}
-        <div className="bg-white rounded-2xl p-6 border border-[#E8E2E5] shadow-sm space-y-6">
-          <div className="flex items-center space-x-3 border-b border-[#E8E2E5] pb-4">
-            <div className="w-9 h-9 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center text-[#302B69]">
-              <Database className="w-5 h-5" />
-            </div>
-            <h2 className="text-base font-bold text-[#191636]">Core Engine & Telemetry</h2>
+        <div className="glass-card rounded-3xl p-6 border-t border-t-white/5 space-y-6">
+          <div className="flex items-center space-x-3 border-b border-slate-800/60 pb-4">
+            <Database className="w-6 h-6 text-cyan-400" />
+            <h2 className="text-xl font-semibold text-slate-200">Core System</h2>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold text-[#191636]">AI Vision Auto-Triage</p>
-                <p className="text-xs text-[#57536E] mt-0.5">Automatically categorize and score defect priority using YOLOv8.</p>
+                <p className="text-slate-200 font-medium">AI Auto-Triage</p>
+                <p className="text-xs text-slate-400 mt-1">Automatically categorize and prioritize new reports using AI.</p>
               </div>
               <button 
                 onClick={() => handleToggle('autoTriage')}
-                className={`w-12 h-6 rounded-full transition-colors relative ${settings.autoTriage ? 'bg-[#302B69]' : 'bg-[#E8E2E5]'}`}
+                className={`w-12 h-6 rounded-full transition-colors relative ${settings.autoTriage ? 'bg-cyan-500' : 'bg-slate-700'}`}
               >
                 <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${settings.autoTriage ? 'translate-x-7' : 'translate-x-1'}`} />
               </button>
@@ -86,12 +84,12 @@ export default function AdminSettingsPage() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold text-[#191636]">Maintenance Mode</p>
-                <p className="text-xs text-[#57536E] mt-0.5">Pause citizen report ingestion for scheduled platform maintenance.</p>
+                <p className="text-slate-200 font-medium">Maintenance Mode</p>
+                <p className="text-xs text-slate-400 mt-1">Disable citizen reporting temporarily. Admins can still access.</p>
               </div>
               <button 
                 onClick={() => handleToggle('maintenanceMode')}
-                className={`w-12 h-6 rounded-full transition-colors relative ${settings.maintenanceMode ? 'bg-[#191636]' : 'bg-[#E8E2E5]'}`}
+                className={`w-12 h-6 rounded-full transition-colors relative ${settings.maintenanceMode ? 'bg-rose-500' : 'bg-slate-700'}`}
               >
                 <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${settings.maintenanceMode ? 'translate-x-7' : 'translate-x-1'}`} />
               </button>
@@ -99,40 +97,38 @@ export default function AdminSettingsPage() {
             
             <div className="flex items-center justify-between pt-2">
               <div>
-                <p className="text-xs font-bold text-[#191636]">Audit Log Retention (Days)</p>
-                <p className="text-xs text-[#57536E] mt-0.5">Lifespan before archiving resolved infrastructure reports.</p>
+                <p className="text-slate-200 font-medium">Data Retention (Days)</p>
+                <p className="text-xs text-slate-400 mt-1">How long to keep resolved reports before archiving.</p>
               </div>
               <input 
                 type="number" 
                 value={settings.dataRetentionDays}
                 onChange={(e) => { setSettings({...settings, dataRetentionDays: e.target.value}); setSaved(false); }}
-                className="w-20 px-3 py-1.5 rounded-xl bg-white border border-[#E8E2E5] text-[#191636] font-semibold text-xs text-center focus:outline-none focus:border-[#302B69] shadow-sm"
+                className="w-20 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 text-center focus:outline-none focus:border-cyan-500"
               />
             </div>
           </div>
         </div>
 
         {/* Notifications & Visibility */}
-        <div className="bg-white rounded-2xl p-6 border border-[#E8E2E5] shadow-sm space-y-6">
-          <div className="flex items-center space-x-3 border-b border-[#E8E2E5] pb-4">
-            <div className="w-9 h-9 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center text-[#302B69]">
-              <Globe className="w-5 h-5" />
-            </div>
-            <h2 className="text-base font-bold text-[#191636]">Visibility & Alerts</h2>
+        <div className="glass-card rounded-3xl p-6 border-t border-t-white/5 space-y-6">
+          <div className="flex items-center space-x-3 border-b border-slate-800/60 pb-4">
+            <Globe className="w-6 h-6 text-indigo-400" />
+            <h2 className="text-xl font-semibold text-slate-200">Visibility & Alerts</h2>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold text-[#191636] flex items-center space-x-2">
-                  <Bell className="w-3.5 h-3.5 text-[#302B69]" />
-                  <span>Admin Email Notifications</span>
+                <p className="text-slate-200 font-medium flex items-center space-x-2">
+                  <Bell className="w-4 h-4 text-slate-400" />
+                  <span>Admin Email Alerts</span>
                 </p>
-                <p className="text-xs text-[#57536E] mt-0.5">Receive immediate digests for critical severity reports.</p>
+                <p className="text-xs text-slate-400 mt-1">Receive emails for critical incidents immediately.</p>
               </div>
               <button 
                 onClick={() => handleToggle('emailAlerts')}
-                className={`w-12 h-6 rounded-full transition-colors relative ${settings.emailAlerts ? 'bg-[#302B69]' : 'bg-[#E8E2E5]'}`}
+                className={`w-12 h-6 rounded-full transition-colors relative ${settings.emailAlerts ? 'bg-emerald-500' : 'bg-slate-700'}`}
               >
                 <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${settings.emailAlerts ? 'translate-x-7' : 'translate-x-1'}`} />
               </button>
@@ -140,15 +136,15 @@ export default function AdminSettingsPage() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold text-[#191636] flex items-center space-x-2">
-                  <Smartphone className="w-3.5 h-3.5 text-[#302B69]" />
+                <p className="text-slate-200 font-medium flex items-center space-x-2">
+                  <Smartphone className="w-4 h-4 text-slate-400" />
                   <span>SMS Dispatch Alerts</span>
                 </p>
-                <p className="text-xs text-[#57536E] mt-0.5">Send high-priority SMS notifications to municipal field crews.</p>
+                <p className="text-xs text-slate-400 mt-1">Send SMS to on-call city teams for high priority items.</p>
               </div>
               <button 
                 onClick={() => handleToggle('smsAlerts')}
-                className={`w-12 h-6 rounded-full transition-colors relative ${settings.smsAlerts ? 'bg-[#302B69]' : 'bg-[#E8E2E5]'}`}
+                className={`w-12 h-6 rounded-full transition-colors relative ${settings.smsAlerts ? 'bg-emerald-500' : 'bg-slate-700'}`}
               >
                 <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${settings.smsAlerts ? 'translate-x-7' : 'translate-x-1'}`} />
               </button>
@@ -156,12 +152,12 @@ export default function AdminSettingsPage() {
 
             <div className="flex items-center justify-between pt-2">
               <div>
-                <p className="text-xs font-bold text-[#191636]">Public Geospatial Map Visibility</p>
-                <p className="text-xs text-[#57536E] mt-0.5">Display anonymized community reports on public city dashboards.</p>
+                <p className="text-slate-200 font-medium">Public Map Visibility</p>
+                <p className="text-xs text-slate-400 mt-1">Allow citizens to see anonymized reports from others on maps.</p>
               </div>
               <button 
                 onClick={() => handleToggle('publicMapVisibility')}
-                className={`w-12 h-6 rounded-full transition-colors relative ${settings.publicMapVisibility ? 'bg-[#302B69]' : 'bg-[#E8E2E5]'}`}
+                className={`w-12 h-6 rounded-full transition-colors relative ${settings.publicMapVisibility ? 'bg-blue-500' : 'bg-slate-700'}`}
               >
                 <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${settings.publicMapVisibility ? 'translate-x-7' : 'translate-x-1'}`} />
               </button>

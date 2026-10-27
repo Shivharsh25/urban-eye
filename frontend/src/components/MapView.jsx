@@ -65,24 +65,24 @@ const IncidentMarker = ({ detection, onSelect }) => {
           onCloseClick={handleClose}
           pixelOffset={[0, -20]}
         >
-            <div className="p-1 font-sans" style={{ minWidth: '220px', color: '#191636' }}>
+          <div className="p-1 font-sans" style={{ minWidth: '220px', color: '#1e293b' }}>
             {detection.imageUrl && (
-              <img src={detection.imageUrl.startsWith('http') ? detection.imageUrl : `https://urban-eye-wi2j.onrender.com${detection.imageUrl}`} alt="Issue" style={{ width: '100%', height: '110px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px', border: '1px solid #E8E2E5' }} />
+              <img src={detection.imageUrl.startsWith('http') ? detection.imageUrl : `https://urban-eye-wi2j.onrender.com${detection.imageUrl}`} alt="Issue" style={{ width: '100%', height: '110px', objectFit: 'cover', borderRadius: '6px', marginBottom: '8px' }} />
             )}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', color: '#191636' }}>{detection.type?.replace('_', ' ') || 'UNKNOWN'}</span>
-              <span style={{ fontSize: '10px', fontWeight: 800, padding: '2px 8px', borderRadius: '9999px', background: '#F6F6FC', border: '1px solid #E8E2E5', color: '#302B69', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', color: '#0284c7' }}>{detection.type?.replace('_', ' ') || 'UNKNOWN'}</span>
+              <span style={{ fontSize: '10px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: detection.severity === 'high' ? '#fee2e2' : detection.severity === 'medium' ? '#fef3c7' : '#d1fae5', color: detection.severity === 'high' ? '#991b1b' : detection.severity === 'medium' ? '#92400e' : '#065f46', textTransform: 'uppercase' }}>
                 {detection.severity}
               </span>
             </div>
-            <p style={{ fontSize: '11px', color: '#57536E', margin: '0 0 6px 0' }}>{detection.address || `${detection.lat}, ${detection.lng}`}</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#8C87A6', borderTop: '1px solid #E8E2E5', paddingTop: '6px' }}>
-              <span>Reports: <strong style={{ color: '#191636' }}>{detection.reportCount || 1}</strong></span>
-              <span style={{ textTransform: 'capitalize' }}>Status: <strong style={{ color: '#191636' }}>{detection.status}</strong></span>
+            <p style={{ fontSize: '11px', color: '#64748b', margin: '0 0 6px 0' }}>{detection.address || `${detection.lat}, ${detection.lng}`}</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#94a3b8', borderTop: '1px solid #e2e8f0', paddingTop: '6px' }}>
+              <span>Reports: <strong>{detection.reportCount || 1}</strong></span>
+              <span style={{ textTransform: 'capitalize' }}>Status: <strong>{detection.status}</strong></span>
             </div>
             <button 
               onClick={() => { onSelect(detection); handleClose(); }} 
-              style={{ width: '100%', marginTop: '8px', padding: '7px 12px', background: '#302B69', color: '#FFFFFF', fontSize: '11px', fontWeight: 700, border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              style={{ width: '100%', marginTop: '8px', padding: '6px 10px', background: '#0284c7', color: '#fff', fontSize: '11px', fontWeight: 700, border: 'none', borderRadius: '4px', cursor: 'pointer' }}
             >
               {t('inspectIncidentDetails', 'Inspect Incident Details')}
             </button>
@@ -190,12 +190,12 @@ export default function MapView({
 
   if (!API_KEY) {
     return (
-      <div className="relative w-full rounded-2xl border border-[#E8E2E5] shadow-xs bg-white flex items-center justify-center p-8 text-center" style={{ height }}>
+      <div className="relative w-full rounded-2xl border border-slate-800 shadow-2xl bg-slate-900 flex items-center justify-center p-8 text-center" style={{ height }}>
         <div>
-          <MapPin className="w-12 h-12 text-[#302B69] mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-[#191636] mb-2">Google Maps Setup Required</h3>
-          <p className="text-[#57536E] text-sm max-w-md mx-auto">
-            Please add your Google Maps API Key to the <code className="bg-[#F6F6FC] px-1 py-0.5 rounded text-[#302B69] border border-[#E8E2E5]">VITE_GOOGLE_MAPS_API_KEY</code> environment variable in the frontend <code className="bg-[#F6F6FC] px-1 py-0.5 rounded text-[#302B69] border border-[#E8E2E5]">.env</code> file.
+          <MapPin className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-white mb-2">Google Maps Setup Required</h3>
+          <p className="text-slate-400 text-sm max-w-md mx-auto">
+            Please add your Google Maps API Key to the <code className="bg-slate-800 px-1 py-0.5 rounded text-rose-400">VITE_GOOGLE_MAPS_API_KEY</code> environment variable in the frontend <code className="bg-slate-800 px-1 py-0.5 rounded text-rose-400">.env</code> file.
           </p>
         </div>
       </div>
@@ -203,7 +203,7 @@ export default function MapView({
   }
 
   return (
-    <div className={`relative w-full overflow-hidden shadow-xs group ${height === '100%' ? 'h-full rounded-none border-0' : 'rounded-2xl sm:rounded-3xl border border-[#E8E2E5] bg-white'}`} style={{ height }}>
+    <div className={`relative w-full overflow-hidden shadow-2xl glass-panel group ${height === '100%' ? 'h-full rounded-none border-0' : 'rounded-2xl sm:rounded-3xl border border-slate-800/80'}`} style={{ height }}>
         <Map
           defaultCenter={mapCenter}
           defaultZoom={zoom}
@@ -260,7 +260,7 @@ export default function MapView({
             <button
               onClick={fetchLiveLocation}
               disabled={isLocating}
-              className="flex items-center space-x-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs bg-[#302B69] text-white hover:bg-[#242052] border border-[#302B69] disabled:opacity-50"
+              className="flex items-center space-x-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-all backdrop-blur-xl shadow-lg bg-cyan-500/90 text-white hover:bg-cyan-400 border border-cyan-400/50 disabled:opacity-50"
             >
               <Navigation className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : ''}`} />
               <span>{isLocating ? 'LOCATING...' : 'LIVE'}</span>
@@ -272,7 +272,7 @@ export default function MapView({
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-white text-[#191636] border border-[#E8E2E5] shadow-xs outline-none cursor-pointer focus:border-[#302B69] transition-colors"
+                className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-900/90 text-slate-200 border border-slate-700/60 backdrop-blur-xl shadow-lg outline-none cursor-pointer focus:border-cyan-500 transition-colors"
               >
                 <option value="all">{t('allCategories', 'All Categories')}</option>
                 <option value="pothole">{t('potholes', 'Potholes')}</option>
@@ -284,7 +284,7 @@ export default function MapView({
               <select
                 value={selectedSeverity}
                 onChange={(e) => setSelectedSeverity(e.target.value)}
-                className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-white text-[#191636] border border-[#E8E2E5] shadow-xs outline-none cursor-pointer focus:border-[#302B69] transition-colors"
+                className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-900/90 text-slate-200 border border-slate-700/60 backdrop-blur-xl shadow-lg outline-none cursor-pointer focus:border-cyan-500 transition-colors"
               >
                 <option value="all">{t('allSeverities', 'All Severities')}</option>
                 <option value="high">{t('highSeverity', 'High Severity')}</option>
@@ -299,19 +299,19 @@ export default function MapView({
           {enableHeatmapToggle && (
             <button
               onClick={() => setShowHeatmap(!showHeatmap)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs border ${
+              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all backdrop-blur-xl shadow-lg border ${
                 showHeatmap 
-                  ? 'bg-[#302B69] text-white border-[#302B69]' 
-                  : 'bg-white text-[#191636] border-[#E8E2E5] hover:bg-[#F6F6FC]'
+                  ? 'bg-rose-500/90 text-white border-rose-400 shadow-rose-500/25' 
+                  : 'bg-slate-900/80 text-slate-300 border-slate-700/50 hover:bg-slate-800'
               }`}
             >
-              {showHeatmap ? <MapIcon className="w-4 h-4" /> : <Flame className="w-4 h-4 text-[#302B69]" />}
+              {showHeatmap ? <MapIcon className="w-4 h-4" /> : <Flame className="w-4 h-4 text-rose-400" />}
               <span>{showHeatmap ? t('viewPins', 'VIEW PINS') : t('heatmap', 'HEATMAP')}</span>
             </button>
           )}
           
           {allowPinDrop && (
-            <div className="px-3 py-2 rounded-xl bg-white border border-[#E8E2E5] text-[#302B69] text-xs font-bold shadow-xs flex items-center space-x-2 pointer-events-none">
+            <div className="px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold backdrop-blur-xl shadow-lg flex items-center space-x-2 pointer-events-none">
               <MapPin className="w-3.5 h-3.5 animate-bounce" />
               <span>{t('clickMapToPin', 'Click map to pin')}</span>
             </div>
@@ -325,32 +325,32 @@ export default function MapView({
           <button
             type="button"
             onClick={() => setIsLegendCollapsed(false)}
-            className="absolute bottom-4 left-4 z-[400] px-3 py-1.5 rounded-xl bg-white/95 hover:bg-[#F6F6FC] border border-[#E8E2E5] text-[10px] font-mono font-bold text-[#191636] hover:text-[#302B69] shadow-xs pointer-events-auto transition-all flex items-center gap-1.5 group"
+            className="absolute bottom-4 left-4 z-[400] px-3 py-1.5 rounded-xl bg-slate-950/85 hover:bg-slate-900 border border-slate-800 text-[10px] font-mono font-bold text-slate-300 hover:text-cyan-400 shadow-xl pointer-events-auto transition-all flex items-center gap-1.5 group"
             title="Expand Severity Legend"
           >
-            <span className="w-2 h-2 rounded-full bg-[#302B69]"></span>
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
             <span>{t('severityTitle', 'SEVERITY')}</span>
-            <ChevronUp className="w-3 h-3 text-[#57536E] group-hover:text-[#302B69]" />
+            <ChevronUp className="w-3 h-3 text-slate-400 group-hover:text-cyan-400" />
           </button>
         ) : (
-          <div className="absolute bottom-4 left-4 z-[400] px-3.5 py-2 rounded-2xl bg-white/95 border border-[#E8E2E5] text-[11px] font-bold flex items-center space-x-3.5 shadow-xs pointer-events-auto transition-all">
-            <span className="text-[#57536E] font-bold text-[10px] uppercase tracking-wider">{t('severityTitle', 'SEVERITY')}:</span>
+          <div className="absolute bottom-4 left-4 z-[400] px-3.5 py-2 rounded-2xl bg-slate-950/85 border border-slate-800/80 backdrop-blur-xl text-[11px] font-bold flex items-center space-x-3.5 shadow-xl pointer-events-auto transition-all">
+            <span className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">{t('severityTitle', 'SEVERITY')}:</span>
             <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#191636]"></span>
-              <span className="text-[#191636] text-[11px]">{t('high', 'High')}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              <span className="text-slate-300 text-[11px]">{t('high', 'High')}</span>
             </div>
             <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#302B69]"></span>
-              <span className="text-[#191636] text-[11px]">{t('medium', 'Medium')}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <span className="text-slate-300 text-[11px]">{t('medium', 'Medium')}</span>
             </div>
             <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#8C87A6]"></span>
-              <span className="text-[#191636] text-[11px]">{t('low', 'Low')}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span className="text-slate-300 text-[11px]">{t('low', 'Low')}</span>
             </div>
             <button
               type="button"
               onClick={() => setIsLegendCollapsed(true)}
-              className="text-[#8C87A6] hover:text-[#191636] p-0.5 ml-1 transition-colors rounded hover:bg-[#F6F6FC]"
+              className="text-slate-500 hover:text-slate-300 p-0.5 ml-1 transition-colors rounded hover:bg-slate-800/60"
               title="Minimize Legend"
             >
               <ChevronDown className="w-3.5 h-3.5" />

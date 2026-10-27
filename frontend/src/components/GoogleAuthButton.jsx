@@ -272,10 +272,10 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
         type="button"
         onClick={handleGoogleAuth}
         disabled={loading}
-        className={`w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-[#191636] bg-white hover:bg-[#F6F6FC] border border-[#E8E2E5] shadow-xs transition-all active:scale-[0.98] flex items-center justify-center space-x-3 group cursor-pointer disabled:opacity-50 disabled:pointer-events-none ${className}`}
+        className={`w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-100 bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-slate-600 shadow-md hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center space-x-3 group cursor-pointer disabled:opacity-50 disabled:pointer-events-none ${className}`}
       >
         {loading ? (
-          <div className="w-5 h-5 border-2 border-[#8C87A6]/30 border-t-[#302B69] rounded-full animate-spin"></div>
+          <div className="w-5 h-5 border-2 border-slate-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
         ) : (
           <>
             {/* Google Logo SVG */}
@@ -298,7 +298,7 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
               />
             </svg>
 
-            <span className="font-semibold text-[#191636] group-hover:text-[#302B69] transition-colors">
+            <span className="font-semibold text-slate-200 group-hover:text-white transition-colors">
               {mode === 'signup' 
                 ? t('googleSignUp', 'Sign up with Google') 
                 : t('continueWithGoogle', 'Continue with Google')}
@@ -307,25 +307,25 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
         )}
       </button>
 
-      {/* Fallback Direct Google Account Modal */}
+      {/* Fallback Direct Google Account Modal (Portaled to body, dead center) */}
       {showFallbackModal && createPortal(
         <div 
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-[#191636]/50 backdrop-blur-xs animate-in fade-in"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-in fade-in"
           onClick={() => setShowFallbackModal(false)}
         >
           <div 
-            className="relative w-full max-w-md bg-white border border-[#E8E2E5] rounded-3xl p-6 sm:p-7 shadow-2xl text-[#191636] m-auto"
+            className="relative w-full max-w-md bg-slate-900 border border-slate-700/90 rounded-3xl p-6 sm:p-7 shadow-2xl text-white m-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setShowFallbackModal(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-xl text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC] transition-colors cursor-pointer"
+              className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -334,18 +334,18 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
                 </svg>
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#191636]">Google Account Sign-In</h3>
-                <p className="text-xs text-[#57536E]">Direct Google Identity Verification</p>
+                <h3 className="text-base font-bold text-white">Google Account Sign-In</h3>
+                <p className="text-xs text-slate-400">Direct Google Identity Verification</p>
               </div>
             </div>
 
-            <p className="text-xs text-[#57536E] leading-relaxed mb-4">
+            <p className="text-xs text-slate-300 leading-relaxed mb-4">
               Enter your Google email address below. A 6-digit OTP code will be sent to verify your identity.
             </p>
 
             <form onSubmit={handleFallbackSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#57536E] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                   Google Email
                 </label>
                 <input
@@ -354,12 +354,12 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
                   value={fallbackEmail}
                   onChange={(e) => setFallbackEmail(e.target.value)}
                   placeholder="your.name@gmail.com"
-                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E8E2E5] text-[#191636] text-xs sm:text-sm placeholder-[#8C87A6] focus:outline-none focus:border-[#302B69]"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-950/70 border border-slate-700 text-white text-xs sm:text-sm placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#57536E] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                   Full Name (Optional)
                 </label>
                 <input
@@ -367,7 +367,7 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
                   value={fallbackName}
                   onChange={(e) => setFallbackName(e.target.value)}
                   placeholder="Your Full Name"
-                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E8E2E5] text-[#191636] text-xs sm:text-sm placeholder-[#8C87A6] focus:outline-none focus:border-[#302B69]"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-950/70 border border-slate-700 text-white text-xs sm:text-sm placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                 />
               </div>
 
@@ -375,14 +375,14 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
                 <button
                   type="button"
                   onClick={() => setShowFallbackModal(false)}
-                  className="w-1/3 py-2.5 rounded-xl text-xs font-bold text-[#57536E] bg-white border border-[#E8E2E5] hover:bg-[#F6F6FC] hover:text-[#191636] transition-colors cursor-pointer"
+                  className="w-1/3 py-3 rounded-xl text-xs font-bold text-slate-400 bg-slate-800 hover:bg-slate-700 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading || !fallbackEmail}
-                  className="w-2/3 py-2.5 rounded-xl text-xs font-bold text-white bg-[#302B69] hover:bg-[#242052] shadow-xs flex items-center justify-center space-x-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                  className="w-2/3 py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
                 >
                   {loading ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -400,74 +400,74 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
         document.body
       )}
 
-      {/* Centered Email OTP Verification Modal */}
+      {/* Centered Email OTP Verification Modal (Portaled to body, dead center) */}
       {showOtpModal && createPortal(
         <div 
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-[#191636]/50 backdrop-blur-xs animate-in fade-in"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-in fade-in"
           onClick={() => setShowOtpModal(false)}
         >
           <div 
-            className="relative w-full max-w-md bg-white border border-[#E8E2E5] rounded-3xl p-6 sm:p-7 shadow-2xl text-[#191636] m-auto"
+            className="relative w-full max-w-md bg-slate-900 border border-slate-700/90 rounded-3xl p-6 sm:p-7 shadow-2xl text-white m-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Close Button */}
             <button
               onClick={() => setShowOtpModal(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-xl text-[#57536E] hover:text-[#191636] hover:bg-[#F6F6FC] transition-colors cursor-pointer"
+              className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
             {/* Header Badge */}
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-11 h-11 rounded-2xl bg-[#F6F6FC] border border-[#E8E2E5] flex items-center justify-center text-[#302B69]">
+              <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-[#191636]">
+                <h3 className="text-base sm:text-lg font-bold text-white">
                   {t('verifyEmailTitle', 'Verify Your Email Address')}
                 </h3>
-                <p className="text-xs text-[#57536E]">
+                <p className="text-xs text-slate-400">
                   Urban EYE Smart Security Check
                 </p>
               </div>
             </div>
 
             {/* Subtitle with email */}
-            <div className="mb-5 bg-[#F6F6FC] rounded-2xl p-3 border border-[#E8E2E5]">
-              <p className="text-xs text-[#57536E] leading-relaxed">
+            <div className="mb-5 bg-slate-950/60 rounded-2xl p-3 border border-slate-800/80">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 {t('verifyEmailSubtitle', 'We sent a 6-digit verification code to:')}
               </p>
-              <div className="flex items-center space-x-2 mt-1 font-mono text-[#302B69] text-xs sm:text-sm font-semibold break-all">
-                <Mail className="w-3.5 h-3.5 shrink-0 text-[#302B69]" />
+              <div className="flex items-center space-x-2 mt-1 font-mono text-cyan-300 text-xs sm:text-sm font-semibold break-all">
+                <Mail className="w-3.5 h-3.5 shrink-0 text-cyan-400" />
                 <span>{pendingGoogleData?.email}</span>
               </div>
             </div>
 
             {/* Dev / Test Mode Helpers */}
             {(pendingGoogleData?.previewUrl || pendingGoogleData?.devOtp) && (
-              <div className="mb-4 p-2.5 rounded-xl bg-[#F6F6FC] border border-[#E8E2E5] text-xs text-[#57536E] flex flex-col gap-1.5">
+              <div className="mb-4 p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs text-cyan-200 flex flex-col gap-1.5">
                 {pendingGoogleData.devOtp && (
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-[#57536E]">Test OTP Code:</span>
+                    <span className="font-semibold text-slate-300">Test OTP Code:</span>
                     <button
                       type="button"
                       onClick={handleAutoFillDevOtp}
-                      className="px-2 py-0.5 rounded-lg bg-white border border-[#E8E2E5] font-mono font-bold text-[#302B69] text-xs transition-colors flex items-center gap-1 cursor-pointer shadow-xs"
+                      className="px-2 py-0.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 font-mono font-bold text-cyan-300 text-xs transition-colors flex items-center gap-1 cursor-pointer"
                     >
                       <span>{pendingGoogleData.devOtp}</span>
-                      <span className="text-[10px] text-[#57536E]">(Auto-fill)</span>
+                      <span className="text-[10px] text-cyan-400/80">(Auto-fill)</span>
                     </button>
                   </div>
                 )}
                 {pendingGoogleData.previewUrl && (
-                  <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#E8E2E5]">
-                    <span className="text-[#57536E]">Sent via test inbox:</span>
+                  <div className="flex items-center justify-between text-[11px] pt-1 border-t border-cyan-500/20">
+                    <span className="text-slate-400">Sent via test inbox:</span>
                     <a
                       href={pendingGoogleData.previewUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#302B69] hover:text-[#242052] underline font-medium flex items-center gap-1"
+                      className="text-cyan-400 hover:text-cyan-300 underline font-medium flex items-center gap-1"
                     >
                       <span>Open Preview Email</span>
                       <ExternalLink className="w-3 h-3" />
@@ -477,24 +477,25 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
               </div>
             )}
 
+            {/* Error & Success Alerts */}
             {otpError && (
-              <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center space-x-2 animate-in fade-in">
+              <div className="mb-4 p-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-300 text-xs flex items-center space-x-2 animate-in fade-in">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{otpError}</span>
               </div>
             )}
 
             {otpSuccessMsg && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center space-x-2 animate-in fade-in">
+              <div className="mb-4 p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-xs flex items-center space-x-2 animate-in fade-in">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>{otpSuccessMsg}</span>
               </div>
             )}
 
             {/* 6-Digit OTP Input Form */}
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
+            <form onSubmit={handleVerifyOtp} className="space-y-5">
               <div>
-                <label className="block text-center text-xs font-bold text-[#57536E] uppercase tracking-wider mb-2.5">
+                <label className="block text-center text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
                   {t('enterOtpCode', 'Enter 6-digit OTP Code')}
                 </label>
 
@@ -511,10 +512,10 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
                       value={digit}
                       onChange={(e) => handleDigitChange(idx, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(idx, e)}
-                      className={`w-11 h-13 sm:w-12 sm:h-14 rounded-2xl bg-white border text-center font-mono text-xl sm:text-2xl font-bold transition-all outline-none ${
+                      className={`w-11 h-13 sm:w-12 sm:h-14 rounded-2xl bg-slate-950/90 border text-center font-mono text-xl sm:text-2xl font-bold transition-all outline-none ${
                         digit
-                          ? 'border-[#302B69] text-[#302B69] ring-2 ring-[#302B69]/15 shadow-xs'
-                          : 'border-[#E8E2E5] text-[#191636] focus:border-[#302B69]'
+                          ? 'border-cyan-400 text-cyan-300 ring-2 ring-cyan-500/20 shadow-md shadow-cyan-500/10'
+                          : 'border-slate-700 text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20'
                       }`}
                     />
                   ))}
@@ -522,10 +523,10 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
               </div>
 
               {/* Resend Link and Timer */}
-              <div className="flex items-center justify-between text-xs pt-1 px-1 text-[#57536E]">
+              <div className="flex items-center justify-between text-xs pt-1 px-1 text-slate-400">
                 <span>{t('didNotReceiveCode', "Didn't receive code?")}</span>
                 {resendCooldown > 0 ? (
-                  <span className="font-mono text-[#8C87A6]">
+                  <span className="font-mono text-slate-500">
                     {t('resendIn', 'Resend in')} {resendCooldown}s
                   </span>
                 ) : (
@@ -533,7 +534,7 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
                     type="button"
                     onClick={handleResendOtp}
                     disabled={isResending}
-                    className="text-[#302B69] hover:text-[#242052] font-bold transition-colors flex items-center space-x-1 cursor-pointer disabled:opacity-50"
+                    className="text-cyan-400 hover:text-cyan-300 font-bold transition-colors flex items-center space-x-1 cursor-pointer disabled:opacity-50"
                   >
                     <RefreshCw className={`w-3 h-3 ${isResending ? 'animate-spin' : ''}`} />
                     <span>{t('resendOtp', 'Resend Code')}</span>
@@ -546,14 +547,14 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
                 <button
                   type="button"
                   onClick={() => setShowOtpModal(false)}
-                  className="w-1/3 py-2.5 rounded-xl text-xs font-bold text-[#57536E] bg-white border border-[#E8E2E5] hover:bg-[#F6F6FC] hover:text-[#191636] transition-colors cursor-pointer"
+                  className="w-1/3 py-3 rounded-xl text-xs font-bold text-slate-400 bg-slate-800 hover:bg-slate-700 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isVerifying || !isOtpComplete}
-                  className="w-2/3 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#302B69] hover:bg-[#242052] shadow-xs flex items-center justify-center space-x-2 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                  className="w-2/3 py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                 >
                   {isVerifying ? (
                     <div className="flex items-center space-x-2">
