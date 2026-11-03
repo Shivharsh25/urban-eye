@@ -360,38 +360,38 @@ export default function CitizenReportPage() {
           </p>
         </div>
 
-        {/* 3-Step Wizard Progress Bar matching screenshot */}
-        <div className="py-2 flex items-center max-w-2xl">
+        {/* 3-Step Wizard Progress Bar extending full width with proper magnification */}
+        <div className="w-full py-3 sm:py-4 flex items-center justify-between">
           {/* Step 1: Issue Details (Active) */}
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-[#00897B] text-white flex items-center justify-center text-xs font-bold shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#00897B] text-white flex items-center justify-center text-sm sm:text-base font-bold shadow-xs shrink-0 ring-4 ring-[#E6F8F5]">
               1
             </span>
-            <span className="text-xs sm:text-sm font-bold text-[#0B2027] whitespace-nowrap">
+            <span className="text-sm sm:text-base font-bold text-[#0B2027] whitespace-nowrap tracking-tight">
               Issue Details
             </span>
           </div>
 
-          <div className="h-px flex-1 bg-[#D5EFEA] mx-4"></div>
+          <div className="h-0.5 flex-1 bg-gradient-to-r from-[#00897B]/60 to-[#D5EFEA] mx-3 sm:mx-6 md:mx-8"></div>
 
           {/* Step 2: Location */}
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-[#E6F3F0] text-[#00897B] flex items-center justify-center text-xs font-bold shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#E6F3F0] text-[#00897B] flex items-center justify-center text-sm sm:text-base font-bold shrink-0">
               2
             </span>
-            <span className="text-xs sm:text-sm font-medium text-slate-500 whitespace-nowrap">
+            <span className="text-sm sm:text-base font-semibold text-slate-600 whitespace-nowrap tracking-tight">
               Location
             </span>
           </div>
 
-          <div className="h-px flex-1 bg-[#D5EFEA] mx-4"></div>
+          <div className="h-0.5 flex-1 bg-[#D5EFEA] mx-3 sm:mx-6 md:mx-8"></div>
 
           {/* Step 3: Review & Submit */}
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-[#E6F3F0] text-[#00897B] flex items-center justify-center text-xs font-bold shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#E6F3F0] text-[#00897B] flex items-center justify-center text-sm sm:text-base font-bold shrink-0">
               3
             </span>
-            <span className="text-xs sm:text-sm font-medium text-slate-500 whitespace-nowrap">
+            <span className="text-sm sm:text-base font-semibold text-slate-600 whitespace-nowrap tracking-tight">
               Review & Submit
             </span>
           </div>
