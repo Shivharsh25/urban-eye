@@ -17,15 +17,41 @@ const { emitDetectionUpdated } = require('../services/socketService');
 // All routes strictly require an authenticated Department Administrator
 router.use(requireAuth, requireDepartmentAdmin);
 
-// Helper for departmental query scoping
-function getDepartmentScope(req) {
+// Helper for comprehensive departmental query scoping (supports ID, UUID, ObjectId, name alias, code and issue categories)
+async function getDepartmentScope(req) {
   const deptId = req.user.departmentId;
   const deptName = req.user.departmentName;
-  const conditions = [{ departmentId: deptId }];
+  const conditions = [];
+
+  if (deptId) {
+    conditions.push({ departmentId: deptId });
+  }
+
+  const mongooseMod = require('mongoose');
+  const orFind = [{ id: deptId }];
+  if (deptId && mongooseMod.Types.ObjectId.isValid(deptId)) {
+    orFind.push({ _id: deptId });
+  }
   if (deptName) {
+    orFind.push({ name: deptName });
+  }
+
+  const dept = await Department.findOne({ $or: orFind });
+  if (dept) {
+    if (dept.id) conditions.push({ departmentId: dept.id });
+    if (dept._id) conditions.push({ departmentId: dept._id.toString() });
+    conditions.push({ assignedDepartment: dept.name });
+    if (dept.code) {
+      conditions.push({ assignedDepartment: new RegExp(dept.code, 'i') });
+    }
+    if (dept.categories && dept.categories.length > 0) {
+      conditions.push({ type: { $in: dept.categories.map(c => new RegExp(`^${c}$`, 'i')) } });
+    }
+  } else if (deptName) {
     conditions.push({ assignedDepartment: deptName });
   }
-  return { $or: conditions };
+
+  return conditions.length > 0 ? { $or: conditions } : {};
 }
 
 /**
@@ -34,8 +60,14 @@ function getDepartmentScope(req) {
  */
 router.get('/dashboard', async (req, res) => {
   try {
-    const scope = getDepartmentScope(req);
-    const dept = await Department.findById(req.user.departmentId);
+    const scope = await getDepartmentScope(req);
+    const deptId = req.user.departmentId;
+    const mongooseMod = require('mongoose');
+    const orFind = [{ id: deptId }];
+    if (deptId && mongooseMod.Types.ObjectId.isValid(deptId)) {
+      orFind.push({ _id: deptId });
+    }
+    const dept = await Department.findOne({ $or: orFind });
     const slaHours = dept ? dept.slaHours : 48;
     const slaCutoff = new Date(Date.now() - slaHours * 60 * 60 * 1000);
 
@@ -45,10 +77,12 @@ router.get('/dashboard', async (req, res) => {
       inProgressReports,
       resolvedReports,
       overdueReports,
-      recentReports
+      recentReports,
+      inProgressWorkOrders,
+      flaggedForReview
     ] = await Promise.all([
       Detection.countDocuments(scope),
-      Detection.countDocuments({ ...scope, status: { $in: ['new', 'assigned'] } }),
+      Detection.countDocuments({ ...scope, status: { $in: ['new', 'assigned', 'pending'] } }),
       Detection.countDocuments({ ...scope, status: 'in_progress' }),
       Detection.countDocuments({ ...scope, status: 'resolved' }),
       Detection.countDocuments({
@@ -56,7 +90,9 @@ router.get('/dashboard', async (req, res) => {
         status: { $ne: 'resolved' },
         createdAt: { $lt: slaCutoff }
       }),
-      Detection.find(scope).sort({ createdAt: -1 }).limit(8)
+      Detection.find(scope).sort({ createdAt: -1 }).limit(8),
+      Detection.find({ ...scope, status: 'in_progress' }).sort({ updatedAt: -1 }).limit(6),
+      Detection.find({ ...scope, $or: [{ needsReview: true }, { status: 'needs_review' }] }).sort({ createdAt: -1 }).limit(6)
     ]);
 
     const resolutionRate = totalAssigned > 0 
@@ -70,6 +106,13 @@ router.get('/dashboard', async (req, res) => {
         code: dept?.code || '',
         slaHours
       },
+      counts: {
+        total: totalAssigned,
+        pending: newReports,
+        inProgress: inProgressReports,
+        resolved: resolvedReports,
+        overdue: overdueReports
+      },
       stats: {
         totalAssigned,
         newReports,
@@ -79,6 +122,8 @@ router.get('/dashboard', async (req, res) => {
         resolutionRate: `${resolutionRate}%`,
         averageResolutionHours: 18.5
       },
+      inProgressWorkOrders,
+      flaggedForReview,
       recentReports
     });
   } catch (err) {
@@ -93,13 +138,13 @@ router.get('/dashboard', async (req, res) => {
  */
 router.get('/reports', async (req, res) => {
   try {
-    const scope = getDepartmentScope(req);
+    const scope = await getDepartmentScope(req);
     const { status, severity, search } = req.query;
     const query = { ...scope };
 
     if (status && status !== 'all') {
-      if (status === 'open') {
-        query.status = { $in: ['new', 'assigned'] };
+      if (status === 'open' || status === 'pending') {
+        query.status = { $in: ['new', 'assigned', 'pending'] };
       } else {
         query.status = status;
       }
@@ -134,7 +179,7 @@ router.get('/reports', async (req, res) => {
  */
 router.get('/reports/in-progress', async (req, res) => {
   try {
-    const scope = getDepartmentScope(req);
+    const scope = await getDepartmentScope(req);
     const reports = await Detection.find({ ...scope, status: 'in_progress' }).sort({ updatedAt: -1 });
     return res.json({ count: reports.length, reports });
   } catch (err) {
@@ -149,7 +194,7 @@ router.get('/reports/in-progress', async (req, res) => {
  */
 router.get('/reports/resolved', async (req, res) => {
   try {
-    const scope = getDepartmentScope(req);
+    const scope = await getDepartmentScope(req);
     const reports = await Detection.find({ ...scope, status: 'resolved' }).sort({ updatedAt: -1 });
     return res.json({ count: reports.length, reports });
   } catch (err) {

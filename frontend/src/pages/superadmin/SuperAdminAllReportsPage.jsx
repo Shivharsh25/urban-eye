@@ -63,12 +63,17 @@ export default function SuperAdminAllReportsPage() {
   }, [selectedDept, selectedStatus, needsReviewOnly]);
 
   const filteredReports = reports.filter((r) => {
-    const q = searchQuery.toLowerCase();
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    const idStr = String(r.id || r.reportId || r._id || '');
+    const typeStr = String(r.type || r.category || '');
+    const deptStr = String(r.assignedDepartment || '');
+    const addrStr = typeof r.address === 'string' ? r.address : String(r.location?.address || '');
     return (
-      r.reportId?.toLowerCase().includes(q) ||
-      r.category?.toLowerCase().includes(q) ||
-      r.assignedDepartment?.toLowerCase().includes(q) ||
-      r.location?.address?.toLowerCase().includes(q)
+      idStr.toLowerCase().includes(q) ||
+      typeStr.toLowerCase().includes(q) ||
+      deptStr.toLowerCase().includes(q) ||
+      addrStr.toLowerCase().includes(q)
     );
   });
 
@@ -182,12 +187,12 @@ export default function SuperAdminAllReportsPage() {
                   return (
                     <tr key={report._id} className="hover:bg-[#0b252b]/50 transition-colors">
                       <td className="py-3.5 px-4">
-                        <span className="font-mono text-teal-300 font-bold block">{report.reportId || report._id.slice(-6)}</span>
+                        <span className="font-mono text-teal-300 font-bold block">{report.id || report.reportId || String(report._id).slice(-6)}</span>
                         <span className="text-[10px] text-slate-400">{new Date(report.createdAt).toLocaleDateString()}</span>
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <div className="font-semibold text-white">{report.category}</div>
+                        <div className="font-semibold text-white">{report.type || report.category}</div>
                         <div className="text-[10px] font-mono text-slate-400">
                           {Math.round((report.confidence || 0) * 100)}% confidence
                         </div>
@@ -201,8 +206,8 @@ export default function SuperAdminAllReportsPage() {
                       </td>
 
                       <td className="py-3.5 px-4 max-w-[200px]">
-                        <span className="truncate block text-slate-300" title={report.location?.address}>
-                          {report.location?.address || 'GPS Coordinates Stored'}
+                        <span className="truncate block text-slate-300" title={typeof report.address === "string" ? report.address : report.location?.address}>
+                          {typeof report.address === "string" ? report.address : (report.location?.address || "GPS Coordinates Stored")}
                         </span>
                       </td>
 
@@ -250,9 +255,9 @@ export default function SuperAdminAllReportsPage() {
             <div className="flex items-center justify-between pb-4 border-b border-teal-900 mb-6">
               <div>
                 <span className="text-[10px] font-mono uppercase text-teal-400 font-bold block">
-                  Report Dossier &bull; {selectedReport.reportId || selectedReport._id}
+                  Report Dossier &bull; {selectedReport.id || selectedReport.reportId || selectedReport._id}
                 </span>
-                <h2 className="text-lg font-bold text-white">{selectedReport.category}</h2>
+                <h2 className="text-lg font-bold text-white">{selectedReport.type || selectedReport.category}</h2>
               </div>
               <button onClick={() => setSelectedReport(null)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
@@ -308,7 +313,7 @@ export default function SuperAdminAllReportsPage() {
                 </div>
                 <div className="flex justify-between py-1 border-b border-teal-950">
                   <span className="text-slate-400">Location Address:</span>
-                  <span className="text-white text-right max-w-xs">{selectedReport.location?.address || 'N/A'}</span>
+                  <span className="text-white text-right max-w-xs">{typeof selectedReport.address === "string" ? selectedReport.address : (selectedReport.location?.address || "N/A")}</span>
                 </div>
                 {selectedReport.needsReview && (
                   <div className="flex justify-between py-1 text-amber-300">

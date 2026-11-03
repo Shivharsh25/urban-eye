@@ -107,9 +107,9 @@ export default function DeptAdminResolvedPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <span className="font-mono text-teal-300 font-bold text-xs">
-                      {report.reportId || report._id.slice(-6)}
+                      {report.id || report.reportId || String(report._id).slice(-6)}
                     </span>
-                    <h3 className="text-sm font-bold text-white mt-0.5">{report.category}</h3>
+                    <h3 className="text-sm font-bold text-white mt-0.5">{report.type || report.category}</h3>
                   </div>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                     RESOLVED

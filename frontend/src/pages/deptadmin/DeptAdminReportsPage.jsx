@@ -62,11 +62,15 @@ export default function DeptAdminReportsPage() {
   };
 
   const filteredReports = reports.filter((r) => {
-    const q = searchQuery.toLowerCase();
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    const idStr = String(r.id || r.reportId || r._id || '');
+    const typeStr = String(r.type || r.category || '');
+    const addrStr = typeof r.address === 'string' ? r.address : String(r.location?.address || '');
     return (
-      r.reportId?.toLowerCase().includes(q) ||
-      r.category?.toLowerCase().includes(q) ||
-      r.location?.address?.toLowerCase().includes(q)
+      idStr.toLowerCase().includes(q) ||
+      typeStr.toLowerCase().includes(q) ||
+      addrStr.toLowerCase().includes(q)
     );
   });
 
@@ -165,18 +169,18 @@ export default function DeptAdminReportsPage() {
                   return (
                     <tr key={report._id} className="hover:bg-[#0b2830]/50 transition-colors">
                       <td className="py-3.5 px-4 font-mono font-bold text-teal-300">
-                        {report.reportId || report._id.slice(-6)}
+                        {report.id || report.reportId || String(report._id).slice(-6)}
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <div className="font-semibold text-white">{report.category}</div>
+                        <div className="font-semibold text-white">{report.type || report.category}</div>
                         <div className="text-[10px] font-mono text-slate-400">
                           {Math.round((report.confidence || 0) * 100)}% conf
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 max-w-[200px] truncate text-slate-300" title={report.location?.address}>
-                        {report.location?.address || 'Location on map'}
+                      <td className="py-3.5 px-4 max-w-[200px] truncate text-slate-300" title={typeof report.address === "string" ? report.address : report.location?.address}>
+                        {typeof report.address === "string" ? report.address : (report.location?.address || "Location on map")}
                       </td>
 
                       <td className="py-3.5 px-4">
@@ -236,9 +240,9 @@ export default function DeptAdminReportsPage() {
             <div className="flex items-center justify-between pb-3 border-b border-teal-900 mb-4">
               <div>
                 <span className="text-[10px] font-mono uppercase text-teal-400 font-bold block">
-                  Report ID: {selectedReport.reportId || selectedReport._id}
+                  Report ID: {selectedReport.id || selectedReport.reportId || selectedReport._id}
                 </span>
-                <h2 className="text-lg font-bold text-white">{selectedReport.category}</h2>
+                <h2 className="text-lg font-bold text-white">{selectedReport.type || selectedReport.category}</h2>
               </div>
               <button onClick={() => setSelectedReport(null)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
@@ -261,7 +265,7 @@ export default function DeptAdminReportsPage() {
                 </div>
                 <div className="flex justify-between py-1 border-b border-teal-950">
                   <span className="text-slate-400">Location:</span>
-                  <span className="text-white text-right max-w-xs">{selectedReport.location?.address || 'GPS'}</span>
+                  <span className="text-white text-right max-w-xs">{typeof selectedReport.address === "string" ? selectedReport.address : (selectedReport.location?.address || "GPS")}</span>
                 </div>
                 <div className="flex justify-between py-1">
                   <span className="text-slate-400">AI Confidence:</span>

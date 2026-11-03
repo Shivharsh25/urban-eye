@@ -48,13 +48,15 @@ router.get('/stats', async (req, res) => {
       departments,
       activeAdmins,
       pendingRequests,
-      detections
+      detections,
+      flaggedReports
     ] = await Promise.all([
       Detection.countDocuments(),
       Department.find(),
       User.countDocuments({ role: 'department_admin', status: 'active' }),
       AdminRequest.countDocuments({ status: 'pending' }),
-      Detection.find().select('status assignedDepartment needsReview createdAt')
+      Detection.find().select('status assignedDepartment departmentId type needsReview createdAt reviewReason confidence address location id imageUrl'),
+      Detection.find({ $or: [{ needsReview: true }, { status: 'needs_review' }] }).sort({ createdAt: -1 }).limit(10)
     ]);
 
     // Calculate auto-routing success rate
@@ -63,18 +65,35 @@ router.get('/stats', async (req, res) => {
       ? Math.round((routedCount / detections.length) * 100)
       : 100;
 
-    // Reports by department
-    const deptCounts = {};
-    for (const d of detections) {
-      const name = d.assignedDepartment || 'Unassigned';
-      deptCounts[name] = (deptCounts[name] || 0) + 1;
+    // Reports by department breakdown
+    const deptStats = {};
+    for (const dept of departments) {
+      deptStats[dept.id] = { total: 0, open: 0, inProgress: 0, resolved: 0 };
     }
 
-    const reportsByDepartment = departments.map(dept => ({
+    for (const d of detections) {
+      const matchedDept = departments.find(dept => 
+        (d.departmentId && (dept.id === d.departmentId || dept._id.toString() === d.departmentId)) ||
+        (d.assignedDepartment && dept.name === d.assignedDepartment) ||
+        (d.type && dept.categories && dept.categories.includes(d.type.toLowerCase()))
+      );
+      if (matchedDept && deptStats[matchedDept.id]) {
+        deptStats[matchedDept.id].total++;
+        if (d.status === 'resolved') deptStats[matchedDept.id].resolved++;
+        else if (d.status === 'in_progress') deptStats[matchedDept.id].inProgress++;
+        else deptStats[matchedDept.id].open++;
+      }
+    }
+
+    const departmentBreakdown = departments.map(dept => ({
       id: dept.id || dept._id,
       name: dept.name,
       code: dept.code,
-      count: deptCounts[dept.name] || 0,
+      total: deptStats[dept.id]?.total || 0,
+      open: deptStats[dept.id]?.open || 0,
+      inProgress: deptStats[dept.id]?.inProgress || 0,
+      resolved: deptStats[dept.id]?.resolved || 0,
+      count: deptStats[dept.id]?.total || 0,
       slaHours: dept.slaHours,
       status: dept.status
     }));
@@ -88,8 +107,36 @@ router.get('/stats', async (req, res) => {
       needs_review: detections.filter(d => d.needsReview || d.status === 'needs_review').length
     };
 
+    const resolvedCount = statusCounts.resolved;
+    const inProgressCount = statusCounts.in_progress;
+    const pendingCount = statusCounts.new + statusCounts.assigned;
+    const needsReviewCount = statusCounts.needs_review;
+
     return res.json({
       success: true,
+      reports: {
+        total: totalReports,
+        resolved: resolvedCount,
+        inProgress: inProgressCount,
+        pending: pendingCount,
+        needsReview: needsReviewCount
+      },
+      departments: {
+        total: departments.length,
+        active: departments.filter(d => d.status === 'active').length
+      },
+      admins: {
+        total: activeAdmins,
+        active: activeAdmins,
+        pendingRequests
+      },
+      routing: {
+        successRate: autoRoutingRate,
+        autoRoutedRate: `${autoRoutingRate}%`,
+        flaggedForReview: needsReviewCount
+      },
+      departmentBreakdown,
+      flaggedReports,
       metrics: {
         totalReports,
         totalDepartments: departments.length,
@@ -98,7 +145,7 @@ router.get('/stats', async (req, res) => {
         pendingRequests,
         autoRoutingRate: `${autoRoutingRate}%`,
         statusCounts,
-        reportsByDepartment,
+        reportsByDepartment: departmentBreakdown,
         platformHealth: {
           status: 'healthy',
           yoloModelReady: isModelAvailable(),
@@ -415,20 +462,44 @@ router.patch('/admins/:id/status', async (req, res) => {
  */
 router.get('/reports', async (req, res) => {
   try {
-    const { department, status, severity, search, needsReview } = req.query;
+    const { department, departmentId, status, severity, search, needsReview } = req.query;
+    const deptParam = departmentId || department;
     const query = {};
 
-    if (department && department !== 'all') {
-      query.$or = [{ departmentId: department }, { assignedDepartment: department }];
+    if (deptParam && deptParam !== 'all') {
+      const mongooseMod = require('mongoose');
+      const orFind = [{ id: deptParam }];
+      if (mongooseMod.Types.ObjectId.isValid(deptParam)) {
+        orFind.push({ _id: deptParam });
+      }
+      orFind.push({ name: deptParam });
+      orFind.push({ code: deptParam });
+
+      const deptDoc = await Department.findOne({ $or: orFind });
+      if (deptDoc) {
+        query.$or = [
+          { departmentId: deptDoc.id },
+          { departmentId: deptDoc._id.toString() },
+          { assignedDepartment: deptDoc.name },
+          { assignedDepartment: new RegExp(deptDoc.code, 'i') },
+          { type: { $in: deptDoc.categories || [] } }
+        ];
+      } else {
+        query.$or = [{ departmentId: deptParam }, { assignedDepartment: deptParam }];
+      }
     }
     if (status && status !== 'all') {
-      query.status = status;
+      if (status === 'pending' || status === 'open') {
+        query.status = { $in: ['new', 'assigned', 'pending'] };
+      } else {
+        query.status = status;
+      }
     }
     if (severity && severity !== 'all') {
       query.severity = severity;
     }
     if (needsReview === 'true') {
-      query.needsReview = true;
+      query.$or = [{ needsReview: true }, { status: 'needs_review' }];
     }
 
     const reports = await Detection.find(query).sort({ createdAt: -1 });

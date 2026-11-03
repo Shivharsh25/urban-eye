@@ -135,9 +135,9 @@ export default function DeptAdminInProgressPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <span className="font-mono text-teal-300 font-bold text-xs">
-                      {report.reportId || report._id.slice(-6)}
+                      {report.id || report.reportId || String(report._id).slice(-6)}
                     </span>
-                    <h3 className="text-sm font-bold text-white mt-0.5">{report.category}</h3>
+                    <h3 className="text-sm font-bold text-white mt-0.5">{report.type || report.category}</h3>
                   </div>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-300 border border-sky-500/30">
                     IN REPAIR
@@ -154,7 +154,7 @@ export default function DeptAdminInProgressPage() {
 
                 <div className="flex items-center space-x-2 text-xs text-slate-400 mb-3">
                   <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span className="truncate">{report.location?.address || 'GPS Coordinates Registered'}</span>
+                  <span className="truncate">{typeof report.address === "string" ? report.address : (report.location?.address || "GPS Coordinates Registered")}</span>
                 </div>
 
                 {/* Latest Note preview */}

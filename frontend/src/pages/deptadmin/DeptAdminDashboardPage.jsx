@@ -68,10 +68,14 @@ export default function DeptAdminDashboardPage() {
     );
   }
 
-  const counts = data?.counts || {};
+  const counts = data?.counts || data?.stats || {};
   const dept = data?.department || {};
-  const inProgress = data?.inProgressWorkOrders || [];
-  const flagged = data?.flaggedForReview || [];
+  const inProgress = (data?.inProgressWorkOrders && data.inProgressWorkOrders.length > 0)
+    ? data.inProgressWorkOrders
+    : (data?.recentReports || []).filter(r => r.status === 'in_progress');
+  const flagged = (data?.flaggedForReview && data.flaggedForReview.length > 0)
+    ? data.flaggedForReview
+    : (data?.recentReports || []).filter(r => r.needsReview || r.status === 'needs_review');
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -110,7 +114,7 @@ export default function DeptAdminDashboardPage() {
               <FileText className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">{counts.total || 0}</div>
+          <div className="text-3xl font-black text-white tracking-tight">{counts.total || counts.totalAssigned || 0}</div>
           <div className="mt-2 text-[11px] text-slate-400">
             Civic issues routed to this department
           </div>
@@ -124,7 +128,7 @@ export default function DeptAdminDashboardPage() {
               <Clock className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">{counts.pending || 0}</div>
+          <div className="text-3xl font-black text-white tracking-tight">{counts.pending || counts.newReports || 0}</div>
           <div className="mt-2 text-[11px] text-amber-300 font-semibold">
             {counts.pending > 0 ? 'Awaiting crew dispatch' : 'Queue clear'}
           </div>
@@ -138,7 +142,7 @@ export default function DeptAdminDashboardPage() {
               <Wrench className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">{counts.inProgress || 0}</div>
+          <div className="text-3xl font-black text-white tracking-tight">{counts.inProgress || counts.inProgressReports || 0}</div>
           <div className="mt-2 text-[11px] text-sky-300">
             Active repair teams on site
           </div>
@@ -152,7 +156,7 @@ export default function DeptAdminDashboardPage() {
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white tracking-tight">{counts.resolved || 0}</div>
+          <div className="text-3xl font-black text-white tracking-tight">{counts.resolved || counts.resolvedReports || 0}</div>
           <div className="mt-2 text-[11px] text-emerald-400 font-semibold">
             Verified with photo proof
           </div>
@@ -191,12 +195,12 @@ export default function DeptAdminDashboardPage() {
                 <div key={item._id} className="p-4 rounded-xl bg-[#06181D] border border-teal-950 flex items-center justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-mono text-teal-300 font-bold text-xs">{item.reportId || item._id.slice(-6)}</span>
-                      <span className="font-semibold text-white text-xs">{item.category}</span>
+                      <span className="font-mono text-teal-300 font-bold text-xs">{item.id || item.reportId || String(item._id).slice(-6)}</span>
+                      <span className="font-semibold text-white text-xs">{item.type || item.category}</span>
                     </div>
                     <div className="flex items-center space-x-2 text-[11px] text-slate-400">
                       <MapPin className="w-3 h-3 text-slate-500" />
-                      <span className="truncate max-w-xs">{item.location?.address || 'GPS Location'}</span>
+                      <span className="truncate max-w-xs">{typeof item.address === "string" ? item.address : (item.location?.address || "GPS Location")}</span>
                     </div>
                   </div>
 
@@ -237,10 +241,10 @@ export default function DeptAdminDashboardPage() {
               {flagged.slice(0, 3).map((item) => (
                 <div key={item._id} className="p-3 rounded-xl bg-[#06181D] border border-teal-950 text-xs">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="font-semibold text-white truncate">{item.category}</span>
+                    <span className="font-semibold text-white truncate">{item.type || item.category}</span>
                     <span className="font-mono text-amber-400 text-[10px]">{Math.round((item.confidence || 0) * 100)}%</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 truncate">{item.location?.address}</p>
+                  <p className="text-[11px] text-slate-400 truncate">{typeof item.address === "string" ? item.address : (item.location?.address || "Location detected")}</p>
                 </div>
               ))}
               {flagged.length === 0 && (
