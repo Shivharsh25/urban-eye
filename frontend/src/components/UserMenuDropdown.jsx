@@ -305,7 +305,7 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
           {/* 5. Settings */}
           <button
             type="button"
-            onClick={() => handleNavigate(isAdmin ? '/admin/settings' : '/settings')}
+            onClick={() => handleNavigate('/settings')}
             className="w-full text-left px-5 py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-100 hover:text-slate-950 transition-colors"
             role="menuitem"
           >

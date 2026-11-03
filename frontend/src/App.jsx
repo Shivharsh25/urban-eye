@@ -359,6 +359,9 @@ export default function App() {
             />
 
             {/* Default Index Route */}
+            {/* Explicit legacy admin redirect */}
+            <Route path="/admin" element={<Navigate to="/admin-login" replace />} />
+            <Route path="/admin/*" element={<Navigate to="/admin-login" replace />} />
             <Route path="/" element={<HomeRedirect />} />
           </Routes>
         </ErrorBoundary>

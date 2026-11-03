@@ -72,70 +72,40 @@ export default function Navbar() {
           {/* Navigation Links */}
           {user && (
             <nav className="hidden md:flex items-center space-x-2">
-              {isAdmin ? (
-                <>
-                  <Link
-                    to="/admin"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                      isActive('/admin')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
-                    }`}
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    <span>City Dashboard</span>
-                  </Link>
+              <Link
+                to="/dashboard"
+                className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  isActive('/dashboard')
+                    ? 'bg-amber-500/10 text-amber-500'
+                    : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                to="/report"
+                className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  isActive('/report')
+                    ? 'bg-amber-500/10 text-amber-500'
+                    : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                }`}
+              >
+                <Camera className="w-4 h-4" />
+                <span>New Report</span>
+              </Link>
 
-                  <Link
-                    to="/report"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                      isActive('/report')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
-                    }`}
-                  >
-                    <Camera className="w-4 h-4" />
-                    <span>Report Issue</span>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/dashboard"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                      isActive('/dashboard')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
-                    }`}
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                  <Link
-                    to="/report"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                      isActive('/report')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
-                    }`}
-                  >
-                    <Camera className="w-4 h-4" />
-                    <span>New Report</span>
-                  </Link>
-
-                  <Link
-                    to="/my-reports"
-                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                      isActive('/my-reports')
-                        ? 'bg-amber-500/10 text-amber-500'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
-                    }`}
-                  >
-                    <FileText className="w-4 h-4" />
-                    <span>My Tracking</span>
-                  </Link>
-                </>
-              )}
+              <Link
+                to="/my-reports"
+                className={`flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  isActive('/my-reports')
+                    ? 'bg-amber-500/10 text-amber-500'
+                    : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                <span>My Tracking</span>
+              </Link>
             </nav>
           )}
 
