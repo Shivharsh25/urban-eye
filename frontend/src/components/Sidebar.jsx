@@ -17,6 +17,7 @@ import {
   Radio,
   PanelLeftClose,
   PanelLeftOpen,
+  PlusCircle,
   X
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -170,6 +171,14 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   icon={FileText} 
                   label={t('reports', 'Reports')} 
                   isActive={isActive('/my-reports')} 
+                  isCollapsed={isCollapsed} 
+                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+                />
+                <SidebarItem 
+                  to="/report" 
+                  icon={PlusCircle} 
+                  label={t('reportIssue', 'Report Issue')} 
+                  isActive={isActive('/report')} 
                   isCollapsed={isCollapsed} 
                   onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
                 />

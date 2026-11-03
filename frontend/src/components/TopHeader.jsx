@@ -8,6 +8,8 @@ import {
   Sun, 
   CheckCheck, 
   ChevronDown,
+  ChevronRight,
+  Home,
   Trash2
 } from 'lucide-react';
 import UserMenuDropdown from './UserMenuDropdown';
@@ -204,50 +206,60 @@ export default function TopHeader() {
     <header className="h-16 px-6 lg:px-8 flex items-center justify-between border-b border-[#E2F1EE] bg-transparent relative z-20">
       
       {/* ================================================================= */}
-      {/* 1. LEFT: NAVIGATION TABS (Overview, Activity, Reports, Analytics)  */}
+      {/* 1. LEFT: BREADCRUMB OR NAVIGATION TABS                           */}
       {/* ================================================================= */}
-      <div className="flex items-center space-x-1 sm:space-x-2">
-        <Link
-          to="/dashboard"
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
-            currentPath === '/dashboard'
-              ? 'bg-[#003840] text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-          }`}
-        >
-          {t('overview', 'Overview')}
-        </Link>
-        <Link
-          to="/activity"
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
-            currentPath === '/activity'
-              ? 'bg-[#003840] text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-          }`}
-        >
-          {t('activity', 'Activity')}
-        </Link>
-        <Link
-          to="/my-reports"
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
-            currentPath === '/my-reports' || currentPath === '/report'
-              ? 'bg-[#003840] text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-          }`}
-        >
-          {t('reports', 'Reports')}
-        </Link>
-        <Link
-          to={isAdmin ? "/admin" : "/activity"}
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
-            currentPath === '/analytics' || currentPath === '/admin'
-              ? 'bg-[#003840] text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-          }`}
-        >
-          {t('analytics', 'Analytics')}
-        </Link>
-      </div>
+      {currentPath === '/report' ? (
+        <div className="flex items-center space-x-2 text-xs font-semibold text-slate-700">
+          <Link to="/dashboard" className="p-1 text-slate-500 hover:text-[#005C66] transition-colors flex items-center" title="Dashboard">
+            <Home className="w-4 h-4" />
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          <span className="font-bold text-[#0B2027]">Report Issue</span>
+        </div>
+      ) : (
+        <div className="flex items-center space-x-1 sm:space-x-2">
+          <Link
+            to="/dashboard"
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+              currentPath === '/dashboard'
+                ? 'bg-[#003840] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            {t('overview', 'Overview')}
+          </Link>
+          <Link
+            to="/activity"
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+              currentPath === '/activity'
+                ? 'bg-[#003840] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            {t('activity', 'Activity')}
+          </Link>
+          <Link
+            to="/my-reports"
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+              currentPath === '/my-reports'
+                ? 'bg-[#003840] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            {t('reports', 'Reports')}
+          </Link>
+          <Link
+            to={isAdmin ? "/admin" : "/activity"}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+              currentPath === '/analytics' || currentPath === '/admin'
+                ? 'bg-[#003840] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            {t('analytics', 'Analytics')}
+          </Link>
+        </div>
+      )}
 
       {/* ================================================================= */}
       {/* 2. RIGHT: LANGUAGE DROPDOWN, MOON THEME, NOTIFICATION BELL, AVATAR*/}
