@@ -264,3 +264,4 @@ export default function DeptAdminDashboardPage() {
     </div>
   );
 }
+

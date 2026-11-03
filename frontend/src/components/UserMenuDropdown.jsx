@@ -312,6 +312,30 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
             {t('settings')}
           </button>
 
+          {/* Elevated Role Portal Switcher */}
+          {user?.role === 'super_admin' && (
+            <button
+              type="button"
+              onClick={() => handleNavigate('/super-admin')}
+              className="w-full text-left px-5 py-2.5 text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors flex items-center justify-between border-t border-slate-100"
+              role="menuitem"
+            >
+              <span>Super Admin Portal</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-teal-600 text-white font-bold">EXECUTIVE</span>
+            </button>
+          )}
+          {user?.role === 'department_admin' && (
+            <button
+              type="button"
+              onClick={() => handleNavigate('/dept-admin')}
+              className="w-full text-left px-5 py-2.5 text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors flex items-center justify-between border-t border-slate-100"
+              role="menuitem"
+            >
+              <span>Department Portal</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-teal-600 text-white font-bold">OFFICER</span>
+            </button>
+          )}
+
           {/* 6. Sign Out or Sign In (based on auth state) */}
           {user ? (
             <button

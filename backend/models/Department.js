@@ -87,3 +87,4 @@ DepartmentSchema.statics.updateById = async function(id, updates) {
 };
 
 module.exports = mongoose.model('Department', DepartmentSchema);
+

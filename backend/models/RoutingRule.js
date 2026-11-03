@@ -52,3 +52,4 @@ RoutingRuleSchema.pre('validate', function() {
 });
 
 module.exports = mongoose.model('RoutingRule', RoutingRuleSchema);
+

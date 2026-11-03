@@ -77,11 +77,7 @@ export default function LoginPage() {
           throw new Error('Authentication service unavailable. Please try again.');
         }
         const user = await authLogin(citizenEmail, citizenPassword);
-        if (user?.role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/dashboard');
-        }
+        navigate('/dashboard');
       } else {
         if (!otpSent) {
           setCitizenError('Please request an OTP first.');

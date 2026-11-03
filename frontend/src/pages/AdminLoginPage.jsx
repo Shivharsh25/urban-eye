@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, Lock, Mail, AlertTriangle, Fingerprint, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 
@@ -171,7 +171,13 @@ export default function AdminLoginPage() {
           </form>
 
           {/* Clean Minimalist Footer */}
-          <div className="mt-8 pt-6 border-t border-slate-800/80 text-center">
+          <div className="mt-8 pt-6 border-t border-slate-800/80 flex flex-col items-center space-y-3">
+            <Link 
+              to="/apply-dept-admin"
+              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+            >
+              Municipal Officer? Apply for Department Access &rarr;
+            </Link>
             <button 
               type="button"
               onClick={() => navigate('/login')}

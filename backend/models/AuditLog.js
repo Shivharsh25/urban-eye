@@ -51,3 +51,4 @@ AuditLogSchema.pre('validate', function() {
 });
 
 module.exports = mongoose.model('AuditLog', AuditLogSchema);
+

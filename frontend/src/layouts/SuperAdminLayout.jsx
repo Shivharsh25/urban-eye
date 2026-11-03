@@ -262,3 +262,4 @@ export default function SuperAdminLayout({ children }) {
     </div>
   );
 }
+

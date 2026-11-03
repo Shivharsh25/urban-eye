@@ -567,3 +567,4 @@ export default function DeptAdminApplyPage() {
     </div>
   );
 }
+
