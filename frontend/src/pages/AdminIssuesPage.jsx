@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import AdminTriagePage from './AdminTriagePage';
 import { 
   Layers, 
   Search, 
@@ -23,6 +25,11 @@ import DetectionModal from '../components/DetectionModal';
 import { generateReportPDF } from '../utils/pdfGenerator';
 
 export default function AdminIssuesPage() {
+  const location = useLocation();
+  if (location.search.includes('view=triage')) {
+    return <AdminTriagePage />;
+  }
+
   const [detections, setDetections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

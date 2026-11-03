@@ -21,7 +21,8 @@ import {
   PanelLeftOpen,
   Shield,
   Layers,
-  Users
+  Users,
+  UserCheck
 } from 'lucide-react';
 import client from '../api/client';
 
@@ -132,7 +133,7 @@ export default function AdminLayout({ children }) {
     { 
       name: 'Triage & Assign', 
       path: '/admin/triage', 
-      icon: CheckSquare,
+      icon: UserCheck,
       active: location.pathname === '/admin/triage' || location.search.includes('view=triage')
     },
     { 
