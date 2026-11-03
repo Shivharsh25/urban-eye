@@ -394,7 +394,7 @@ export default function UserProfilePage() {
             </button>
 
             <Link
-              to="/tracking"
+              to="/my-reports"
               className="px-4 py-2 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all flex items-center gap-1.5 shrink-0"
             >
               <FileText className="w-3.5 h-3.5" />
@@ -487,7 +487,7 @@ export default function UserProfilePage() {
                 </h3>
               </div>
               <Link
-                to="/tracking"
+                to="/my-reports"
                 className="text-xs font-bold text-[#005C66] hover:text-[#00897B] transition-colors flex items-center gap-1"
               >
                 <span>View All</span>

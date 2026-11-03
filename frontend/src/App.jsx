@@ -10,6 +10,7 @@ import RegisterPage from './pages/RegisterPage';
 import CitizenDashboardPage from './pages/CitizenDashboardPage';
 import CitizenReportPage from './pages/CitizenReportPage';
 import CitizenReportsPage from './pages/CitizenReportsPage';
+import CitizenTrackingPage from './pages/CitizenTrackingPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminIssuesPage from './pages/AdminIssuesPage';
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
@@ -79,11 +80,21 @@ export default function App() {
               }
             />
             <Route
-              path="/tracking"
+              path="/reports"
               element={
                 <ProtectedRoute>
                   <CitizenLayout>
                     <CitizenReportsPage />
+                  </CitizenLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tracking"
+              element={
+                <ProtectedRoute>
+                  <CitizenLayout>
+                    <CitizenTrackingPage />
                   </CitizenLayout>
                 </ProtectedRoute>
               }

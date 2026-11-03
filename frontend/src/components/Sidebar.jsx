@@ -171,7 +171,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   to="/my-reports" 
                   icon={FileText} 
                   label={t('reports', 'Reports')} 
-                  isActive={isActive('/my-reports')} 
+                  isActive={isActive('/my-reports') || isActive('/reports')} 
                   isCollapsed={isCollapsed} 
                   onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
                 />
@@ -187,7 +187,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   to="/tracking" 
                   icon={Layers} 
                   label={t('myTracking', 'My Tracking')} 
-                  isActive={isActive('/tracking') || isActive('/my-reports')} 
+                  isActive={isActive('/tracking')} 
                   isCollapsed={isCollapsed} 
                   onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
                 />

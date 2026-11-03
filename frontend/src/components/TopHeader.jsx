@@ -218,13 +218,21 @@ export default function TopHeader() {
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="font-bold text-[#0B2027]">Report Issue</span>
         </div>
-      ) : (currentPath === '/my-reports' || currentPath === '/tracking') ? (
+      ) : currentPath === '/tracking' ? (
         <div className="flex items-center space-x-2 text-xs font-semibold text-slate-700">
           <Link to="/dashboard" className="p-1 text-slate-500 hover:text-[#005C66] transition-colors flex items-center" title="Dashboard">
             <Home className="w-4 h-4" />
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="font-bold text-[#0B2027]">My Tracking</span>
+        </div>
+      ) : (currentPath === '/my-reports' || currentPath === '/reports') ? (
+        <div className="flex items-center space-x-2 text-xs font-semibold text-slate-700">
+          <Link to="/dashboard" className="p-1 text-slate-500 hover:text-[#005C66] transition-colors flex items-center" title="Dashboard">
+            <Home className="w-4 h-4" />
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          <span className="font-bold text-[#0B2027]">Reports</span>
         </div>
       ) : currentPath === '/alerts' ? (
         <div className="flex items-center gap-3">
@@ -293,7 +301,7 @@ export default function TopHeader() {
           <Link
             to="/my-reports"
             className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
-              currentPath === '/my-reports'
+              currentPath === '/my-reports' || currentPath === '/reports'
                 ? 'bg-[#003840] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}
