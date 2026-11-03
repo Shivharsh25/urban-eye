@@ -79,6 +79,16 @@ export default function App() {
               }
             />
             <Route
+              path="/tracking"
+              element={
+                <ProtectedRoute>
+                  <CitizenLayout>
+                    <CitizenReportsPage />
+                  </CitizenLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/profile"
               element={
                 <ProtectedRoute>

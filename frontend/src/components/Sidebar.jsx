@@ -5,7 +5,8 @@ import {
   Home,
   LayoutDashboard, 
   Camera, 
-  FileText, 
+  FileText,
+  Layers, 
   UserCircle, 
   Shield, 
   Bell, 
@@ -183,10 +184,10 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
                 />
                 <SidebarItem 
-                  to="/activity" 
-                  icon={Compass} 
+                  to="/tracking" 
+                  icon={Layers} 
                   label={t('myTracking', 'My Tracking')} 
-                  isActive={isActive('/activity')} 
+                  isActive={isActive('/tracking') || isActive('/my-reports')} 
                   isCollapsed={isCollapsed} 
                   onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
                 />

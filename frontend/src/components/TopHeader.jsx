@@ -216,6 +216,14 @@ export default function TopHeader() {
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="font-bold text-[#0B2027]">Report Issue</span>
         </div>
+      ) : (currentPath === '/my-reports' || currentPath === '/tracking') ? (
+        <div className="flex items-center space-x-2 text-xs font-semibold text-slate-700">
+          <Link to="/dashboard" className="p-1 text-slate-500 hover:text-[#005C66] transition-colors flex items-center" title="Dashboard">
+            <Home className="w-4 h-4" />
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          <span className="font-bold text-[#0B2027]">My Tracking</span>
+        </div>
       ) : (
         <div className="flex items-center space-x-1 sm:space-x-2">
           <Link
