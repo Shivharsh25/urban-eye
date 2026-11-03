@@ -12,7 +12,6 @@ import {
   ShieldCheck,
   Users,
   Zap,
-  ChevronRight,
   ThumbsUp,
   MoreVertical,
   BarChart2,
@@ -24,14 +23,8 @@ import {
   Phone,
   Trash2,
   Droplets,
-  Lightbulb,
-  FileEdit,
   Activity,
-  Map as MapIcon,
-  Volume2,
-  VolumeX,
-  CheckCircle2,
-  Eye
+  Map as MapIcon
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import DetectionModal from '../components/DetectionModal';
@@ -56,7 +49,6 @@ export default function CitizenDashboardPage() {
   // Interactive modal states
   const [selectedDetection, setSelectedDetection] = useState(null);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
-  const [activeMenuReportId, setActiveMenuReportId] = useState(null);
   
   const [upvotedIds, setUpvotedIds] = useState(new Set());
   const [playingAlertId, setPlayingAlertId] = useState(null);
@@ -295,7 +287,6 @@ export default function CitizenDashboardPage() {
         </span>
       );
     }
-    // Default: in_progress
     return (
       <span className="px-3.5 py-1 rounded-full text-xs font-semibold bg-[#FFF3E8] text-[#D97706] border border-[#FDE68A]/70 inline-block text-center min-w-[90px]">
         In Progress
@@ -349,7 +340,7 @@ export default function CitizenDashboardPage() {
     <div className="w-full text-slate-800 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 font-sans min-w-0">
       
       {/* ================================================================= */}
-      {/* 1. WELCOME GREETING & TOP ACTION BUTTONS                          */}
+      {/* 1. WELCOME GREETING & TOP ACTION BUTTONS (INC. EMERGENCY SOS)     */}
       {/* ================================================================= */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -368,21 +359,31 @@ export default function CitizenDashboardPage() {
           </div>
         </div>
 
-        {/* Sync Live & New Report Buttons */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Top Action Buttons: Sync Live, Emergency SOS, New Report */}
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-wrap">
           <button
             onClick={() => fetchData(true)}
             disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-[#F2FBF9] text-[#053B42] border border-[#CEE7E2] transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-[#F2FBF9] text-[#053B42] border border-[#CEE7E2] transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
             title="Refresh community feed"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-[#005C66] ${refreshing ? 'animate-spin' : ''}`} />
             <span>Sync Live</span>
           </button>
+
+          {/* Emergency SOS Button */}
+          <button
+            onClick={() => setShowEmergencyModal(true)}
+            className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-semibold bg-[#FFF1F2] hover:bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3] transition-all shadow-xs active:scale-95 cursor-pointer"
+            title="Immediate Emergency Services & Hotlines"
+          >
+            <PhoneCall className="w-3.5 h-3.5 text-[#E11D48]" />
+            <span>Emergency SOS</span>
+          </button>
           
           <button
             onClick={() => navigate('/report')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[#005C66] hover:bg-[#004B53] text-white transition-all shadow-xs active:scale-95 cursor-pointer"
+            className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-semibold bg-[#005C66] hover:bg-[#004B53] text-white transition-all shadow-xs active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>New Report</span>
@@ -391,10 +392,10 @@ export default function CitizenDashboardPage() {
       </div>
 
       {/* ================================================================= */}
-      {/* 2. KEY METRICS BAR: COHESIVE 6-METRIC CONTAINER                   */}
+      {/* 2. KEY METRICS BAR: CAPSULE / PILL SHAPED CONTAINER (EXACT EDGES) */}
       {/* ================================================================= */}
-      <div className="bg-white rounded-3xl border border-[#D5EFEA] p-5 sm:p-6 shadow-xs shadow-teal-900/5">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 lg:gap-2 divide-y md:divide-y-0 lg:divide-x divide-[#E2F1EE]">
+      <div className="bg-white/95 backdrop-blur-xs rounded-3xl lg:rounded-full border border-[#BCEEE5] px-6 sm:px-10 lg:px-12 py-5 sm:py-6 shadow-[0_4px_28px_rgba(0,180,180,0.12)]">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-5 lg:gap-2 items-center">
           
           {/* Metric 1: Community Issues */}
           <div className="flex items-center gap-3.5 px-2">
@@ -412,7 +413,7 @@ export default function CitizenDashboardPage() {
           </div>
 
           {/* Metric 2: Resolution Rate */}
-          <div className="flex items-center gap-3.5 px-2 pt-3 md:pt-0 lg:pl-5">
+          <div className="flex items-center gap-3.5 px-2">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-[#00897B]">
               <TrendingUp className="w-7 h-7 stroke-[1.8]" />
             </div>
@@ -431,7 +432,7 @@ export default function CitizenDashboardPage() {
           </div>
 
           {/* Metric 3: My Submissions */}
-          <div className="flex items-center gap-3.5 px-2 pt-3 md:pt-0 lg:pl-5">
+          <div className="flex items-center gap-3.5 px-2">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-[#00897B]">
               <FileText className="w-7 h-7 stroke-[1.8]" />
             </div>
@@ -445,8 +446,13 @@ export default function CitizenDashboardPage() {
             </div>
           </div>
 
+          {/* Center Vertical Divider matching screenshot */}
+          <div className="hidden lg:flex items-center justify-center">
+            <div className="w-px h-12 bg-[#D5EFEA]"></div>
+          </div>
+
           {/* Metric 4: Civic Trust */}
-          <div className="flex items-center gap-3.5 px-2 pt-3 md:pt-0 lg:pl-5">
+          <div className="flex items-center gap-3.5 px-2">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-[#00897B]">
               <ShieldCheck className="w-7 h-7 stroke-[1.8]" />
             </div>
@@ -464,7 +470,7 @@ export default function CitizenDashboardPage() {
           </div>
 
           {/* Metric 5: Engagement */}
-          <div className="flex items-center gap-3.5 px-2 pt-3 md:pt-0 lg:pl-5">
+          <div className="flex items-center gap-3.5 px-2">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-[#00897B]">
               <Users className="w-7 h-7 stroke-[1.8]" />
             </div>
@@ -483,7 +489,7 @@ export default function CitizenDashboardPage() {
           </div>
 
           {/* Metric 6: Pending SOS */}
-          <div className="flex items-center gap-3.5 px-2 pt-3 md:pt-0 lg:pl-5">
+          <div className="flex items-center gap-3.5 px-2">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-[#00897B]">
               <Zap className="w-7 h-7 stroke-[1.8]" />
             </div>
@@ -501,80 +507,9 @@ export default function CitizenDashboardPage() {
       </div>
 
       {/* ================================================================= */}
-      {/* 3. QUICK ACTIONS ROW (4 CARDS)                                    */}
+      {/* 3. MAIN CONTENT GRID: LEFT FEED (2 COLS) + RIGHT STATS (1 COL)    */}
       {/* ================================================================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        {/* Quick Action 1: Report Issue */}
-        <button
-          onClick={() => navigate('/report')}
-          className="bg-white hover:bg-[#F9FDFC] border border-[#D5EFEA] hover:border-[#00A896]/40 p-4 rounded-2xl flex items-center justify-between shadow-xs transition-all cursor-pointer group text-left"
-        >
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-[#E6F8F5] text-[#00897B] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <FileEdit className="w-5 h-5 stroke-[2]" />
-            </div>
-            <span className="text-sm font-bold text-[#0B2027] truncate">
-              Report Issue
-            </span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#005C66] group-hover:translate-x-0.5 transition-all shrink-0" />
-        </button>
-
-        {/* Quick Action 2: My Activity */}
-        <button
-          onClick={() => navigate('/my-reports')}
-          className="bg-white hover:bg-[#F9FDFC] border border-[#D5EFEA] hover:border-[#00A896]/40 p-4 rounded-2xl flex items-center justify-between shadow-xs transition-all cursor-pointer group text-left"
-        >
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-[#EBF5FE] text-[#0284C7] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Activity className="w-5 h-5 stroke-[2]" />
-            </div>
-            <span className="text-sm font-bold text-[#0B2027] truncate">
-              My Activity
-            </span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#005C66] group-hover:translate-x-0.5 transition-all shrink-0" />
-        </button>
-
-        {/* Quick Action 3: Live Map */}
-        <button
-          onClick={() => navigate('/map')}
-          className="bg-white hover:bg-[#F9FDFC] border border-[#D5EFEA] hover:border-[#00A896]/40 p-4 rounded-2xl flex items-center justify-between shadow-xs transition-all cursor-pointer group text-left"
-        >
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-[#E8F8F0] text-[#10B981] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <MapIcon className="w-5 h-5 stroke-[2]" />
-            </div>
-            <span className="text-sm font-bold text-[#0B2027] truncate">
-              Live Map
-            </span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#005C66] group-hover:translate-x-0.5 transition-all shrink-0" />
-        </button>
-
-        {/* Quick Action 4: Emergency SOS */}
-        <button
-          onClick={() => setShowEmergencyModal(true)}
-          className="bg-white hover:bg-[#FFF8F8] border border-[#D5EFEA] hover:border-rose-300 p-4 rounded-2xl flex items-center justify-between shadow-xs transition-all cursor-pointer group text-left"
-        >
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-[#FEECEC] text-[#EF4444] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <PhoneCall className="w-5 h-5 stroke-[2]" />
-            </div>
-            <span className="text-sm font-bold text-[#0B2027] truncate">
-              Emergency SOS
-            </span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-rose-600 group-hover:translate-x-0.5 transition-all shrink-0" />
-        </button>
-
-      </div>
-
-      {/* ================================================================= */}
-      {/* 4. MAIN CONTENT GRID: LEFT FEED (2 COLS) + RIGHT STATS (1 COL)    */}
-      {/* ================================================================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
         
         {/* --------------------------------------------------------------- */}
         {/* LEFT 2 COLUMNS: Recent Activity in Your Area                    */}
@@ -749,7 +684,7 @@ export default function CitizenDashboardPage() {
         </div>
 
         {/* --------------------------------------------------------------- */}
-        {/* RIGHT 1 COLUMN: Civic Engagement Score + Active Alerts          */}
+        {/* RIGHT 1 COLUMN: Civic Score + Active Alerts + Emergency SOS     */}
         {/* --------------------------------------------------------------- */}
         <div className="space-y-6">
           
@@ -880,12 +815,31 @@ export default function CitizenDashboardPage() {
             </div>
           </div>
 
+          {/* Card 3: Emergency SOS Services Quick Card */}
+          <div className="bg-white rounded-3xl border border-[#D5EFEA] p-5 shadow-xs shadow-teal-900/5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-2xl bg-[#FFF1F2] text-[#E11D48] border border-[#FECDD3] flex items-center justify-center shrink-0">
+                <PhoneCall className="w-5 h-5 stroke-[2]" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-sm font-bold text-[#0B2027] truncate">Emergency SOS</h4>
+                <p className="text-xs text-slate-500 truncate">Police 112 • Fire 101 • Rapid Hotlines</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowEmergencyModal(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-[#FFF1F2] hover:bg-[#FFE4E6] text-[#E11D48] border border-[#FECDD3] text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0"
+            >
+              Open SOS
+            </button>
+          </div>
+
         </div>
 
       </div>
 
       {/* ================================================================= */}
-      {/* 5. MODALS: DETECTION INSPECT MODAL + EMERGENCY SOS MODAL          */}
+      {/* 4. MODALS: DETECTION INSPECT MODAL + EMERGENCY SERVICES MODAL     */}
       {/* ================================================================= */}
       
       {/* Incident Detail & PDF Inspection Modal */}
