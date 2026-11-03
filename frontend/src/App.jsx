@@ -13,9 +13,12 @@ import CitizenReportsPage from './pages/CitizenReportsPage';
 import CitizenTrackingPage from './pages/CitizenTrackingPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminIssuesPage from './pages/AdminIssuesPage';
+import AdminTriagePage from './pages/AdminTriagePage';
+import AdminIncomingReportsPage from './pages/AdminIncomingReportsPage';
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminUsersPage from './pages/AdminUsersPage';
+import AdminDepartmentsPage from './pages/AdminDepartmentsPage';
 import AdminAnnouncementsPage from './pages/AdminAnnouncementsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -176,7 +179,37 @@ export default function App() {
               element={
                 <ProtectedRoute adminOnly={true}>
                   <AdminLayout>
-                    <AdminIssuesPage />
+                    <AdminIncomingReportsPage />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/incoming"
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminLayout>
+                    <AdminIncomingReportsPage />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/incoming-reports"
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminLayout>
+                    <AdminIncomingReportsPage />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/triage"
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminLayout>
+                    <AdminTriagePage />
                   </AdminLayout>
                 </ProtectedRoute>
               }
@@ -187,6 +220,16 @@ export default function App() {
                 <ProtectedRoute adminOnly={true}>
                   <AdminLayout>
                     <AdminAnalyticsPage />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/departments"
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminLayout>
+                    <AdminDepartmentsPage />
                   </AdminLayout>
                 </ProtectedRoute>
               }

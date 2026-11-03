@@ -571,7 +571,7 @@ router.patch('/detections/:id/status', requireAuth, requireAdmin, async (req, re
  */
 router.patch('/detections/:id', requireAuth, async (req, res) => {
   try {
-    const { reportText, address, customRemarks, type, severity } = req.body;
+    const { reportText, address, customRemarks, type, severity, status, assignedDepartment, assignedTeam, expectedResolution } = req.body;
     const user = req.user;
 
     const detection = await Detection.findById(req.params.id);
@@ -585,6 +585,10 @@ router.patch('/detections/:id', requireAuth, async (req, res) => {
     if (customRemarks !== undefined) updates.customRemarks = customRemarks;
     if (type !== undefined && user.role === 'admin') updates.type = type;
     if (severity !== undefined && user.role === 'admin') updates.severity = severity;
+    if (status !== undefined && user.role === 'admin') updates.status = status;
+    if (assignedDepartment !== undefined && user.role === 'admin') updates.assignedDepartment = assignedDepartment;
+    if (assignedTeam !== undefined && user.role === 'admin') updates.assignedTeam = assignedTeam;
+    if (expectedResolution !== undefined && user.role === 'admin') updates.expectedResolution = expectedResolution;
 
     const updated = await Detection.updateById(req.params.id, updates);
     emitDetectionUpdated(updated);

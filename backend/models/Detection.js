@@ -75,6 +75,14 @@ const DetectionSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  assignedTeam: {
+    type: String,
+    default: ''
+  },
+  expectedResolution: {
+    type: String,
+    default: ''
+  },
   dispatchStatus: {
     type: String,
     default: 'pending'

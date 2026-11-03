@@ -127,19 +127,19 @@ export default function AdminLayout({ children }) {
       path: '/admin/issues', 
       icon: FileText,
       badge: incomingCount > 0 ? incomingCount : '24',
-      active: location.pathname === '/admin/issues' && !location.search.includes('view=triage')
+      active: (location.pathname === '/admin/issues' || location.pathname === '/admin/incoming' || location.pathname === '/admin/incoming-reports') && !location.search.includes('view=triage')
     },
     { 
       name: 'Triage & Assign', 
-      path: '/admin/issues?view=triage', 
+      path: '/admin/triage', 
       icon: CheckSquare,
-      active: location.search.includes('view=triage')
+      active: location.pathname === '/admin/triage' || location.search.includes('view=triage')
     },
     { 
       name: 'Departments', 
-      path: '/admin/users', 
+      path: '/admin/departments', 
       icon: Building2,
-      active: location.pathname === '/admin/users'
+      active: location.pathname === '/admin/departments' || location.pathname === '/admin/users'
     },
     { 
       name: 'Citizen Communication', 
