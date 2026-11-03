@@ -224,6 +224,20 @@ export default function TopHeader() {
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="font-bold text-[#0B2027]">My Tracking</span>
         </div>
+      ) : currentPath === '/alerts' ? (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#E6F8F6] border border-[#BDEEE7] flex items-center justify-center text-[#00897B] shrink-0">
+            <Bell className="w-5 h-5 text-[#00897B]" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-[#0B2027] tracking-tight leading-tight">
+              Community Alerts
+            </h1>
+            <p className="text-xs text-slate-500 font-medium hidden md:block">
+              Real-time city updates, emergency notices and important announcements.
+            </p>
+          </div>
+        </div>
       ) : (
         <div className="flex items-center space-x-1 sm:space-x-2">
           <Link
