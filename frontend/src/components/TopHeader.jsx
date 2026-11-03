@@ -11,7 +11,8 @@ import {
   ChevronRight,
   Home,
   Trash2,
-  Activity
+  Activity,
+  User
 } from 'lucide-react';
 import UserMenuDropdown from './UserMenuDropdown';
 import { useLanguage } from '../context/LanguageContext';
@@ -250,6 +251,20 @@ export default function TopHeader() {
             </h1>
             <p className="text-xs text-slate-500 font-medium hidden md:block">
               Live operations across reports, departments and field crews.
+            </p>
+          </div>
+        </div>
+      ) : currentPath === '/profile' ? (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#E6F8F6] border border-[#BDEEE7] flex items-center justify-center text-[#00897B] shrink-0">
+            <User className="w-5 h-5 text-[#00897B]" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-[#0B2027] tracking-tight leading-tight">
+              Citizen Profile
+            </h1>
+            <p className="text-xs text-slate-500 font-medium hidden md:block">
+              Manage your profile, reports and city participation.
             </p>
           </div>
         </div>
