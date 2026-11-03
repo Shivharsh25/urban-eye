@@ -24,7 +24,8 @@ import {
   Trash2,
   Droplets,
   Activity,
-  Map as MapIcon
+  Map as MapIcon,
+  ChevronDown
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import DetectionModal from '../components/DetectionModal';
@@ -45,6 +46,7 @@ export default function CitizenDashboardPage() {
   // Filter state matching screenshot: All, Open, In Progress, Resolved
   const [filter, setFilter] = useState('ALL'); // ALL, OPEN, IN_PROGRESS, RESOLVED
   const [scoreTimeframe, setScoreTimeframe] = useState('This Month');
+  const [showAllActivity, setShowAllActivity] = useState(false);
   
   // Interactive modal states
   const [selectedDetection, setSelectedDetection] = useState(null);
@@ -320,6 +322,8 @@ export default function CitizenDashboardPage() {
     return true;
   });
 
+  const visibleReports = showAllActivity ? displayReports : displayReports.slice(0, 3);
+
   // Calculate resolution stats
   const totalCount = recentReports.length > 0 ? recentReports.length : 24;
   const resolvedCount = recentReports.filter(r => (r.status || '').toLowerCase() === 'resolved').length;
@@ -586,87 +590,105 @@ export default function CitizenDashboardPage() {
                   <p className="text-xs text-slate-500 font-medium">Scanning local grid sensors...</p>
                 </div>
               ) : displayReports.length > 0 ? (
-                displayReports.map((report) => {
-                  const meta = getCategoryDisplay(report);
-                  const Icon = meta.icon;
-                  const repId = report._id || report.id;
-                  const isUpvoted = upvotedIds.has(repId);
-                  const upvoteCount = (report.reportCount || 1) + (isUpvoted ? 1 : 0);
-                  const locationText = formatReportLocation(report);
-                  const dateText = formatReportDate(report.createdAt);
-                  const wardText = report.assignedDepartment || 'Sanitation';
+                <>
+                  <div className={`space-y-3 transition-all duration-300 ${showAllActivity ? 'max-h-[620px] overflow-y-auto custom-scrollbar pr-1' : ''}`}>
+                    {visibleReports.map((report) => {
+                      const meta = getCategoryDisplay(report);
+                      const Icon = meta.icon;
+                      const repId = report._id || report.id;
+                      const isUpvoted = upvotedIds.has(repId);
+                      const upvoteCount = (report.reportCount || 1) + (isUpvoted ? 1 : 0);
+                      const locationText = formatReportLocation(report);
+                      const dateText = formatReportDate(report.createdAt);
+                      const wardText = report.assignedDepartment || 'Sanitation';
 
-                  return (
-                    <div
-                      key={repId}
-                      onClick={() => setSelectedDetection(report)}
-                      className="p-4 rounded-2xl border border-[#E5F2EF] hover:border-[#00A896]/40 hover:bg-[#FAFDFC] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 group cursor-pointer shadow-2xs"
-                    >
-                      {/* Left: Category Icon + Description */}
-                      <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                        <div className={`w-11 h-11 rounded-xl ${meta.boxBg} ${meta.iconColor} border ${meta.borderColor} flex items-center justify-center shrink-0`}>
-                          <Icon className="w-5 h-5 stroke-[2]" />
-                        </div>
+                      return (
+                        <div
+                          key={repId}
+                          onClick={() => setSelectedDetection(report)}
+                          className="p-4 rounded-2xl border border-[#E5F2EF] hover:border-[#00A896]/40 hover:bg-[#FAFDFC] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 group cursor-pointer shadow-2xs"
+                        >
+                          {/* Left: Category Icon + Description */}
+                          <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                            <div className={`w-11 h-11 rounded-xl ${meta.boxBg} ${meta.iconColor} border ${meta.borderColor} flex items-center justify-center shrink-0`}>
+                              <Icon className="w-5 h-5 stroke-[2]" />
+                            </div>
 
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-bold text-[#0B2027] group-hover:text-[#005C66] transition-colors truncate">
-                            {meta.title}
-                          </h3>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm font-bold text-[#0B2027] group-hover:text-[#005C66] transition-colors truncate">
+                                {meta.title}
+                              </h3>
 
-                          <p className="text-xs text-slate-600 flex items-center gap-1.5 mt-0.5 truncate">
-                            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span className="truncate">{locationText}</span>
-                          </p>
+                              <p className="text-xs text-slate-600 flex items-center gap-1.5 mt-0.5 truncate">
+                                <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                <span className="truncate">{locationText}</span>
+                              </p>
 
-                          <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400 font-mono">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
-                              <span>{dateText}</span>
-                            </span>
-                            <span>•</span>
-                            <span>Ward: {wardText}</span>
+                              <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400 font-mono">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
+                                  <span>{dateText}</span>
+                                </span>
+                                <span>•</span>
+                                <span>Ward: {wardText}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Right: Status Badge + Upvote + Menu */}
+                          <div 
+                            className="flex items-center justify-end gap-3 self-end sm:self-center shrink-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {/* Status Badge */}
+                            {renderStatusBadge(report.status)}
+
+                            {/* Thumbs Up Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleToggleUpvote(repId)}
+                              className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                                isUpvoted 
+                                  ? 'bg-[#E5F7F3] text-[#00796B] border-[#00A896]' 
+                                  : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200 shadow-2xs'
+                              }`}
+                              title="Confirm / Support this issue"
+                            >
+                              <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-[#00796B] text-[#00796B]' : 'text-slate-500'}`} />
+                              <span>{upvoteCount}</span>
+                            </button>
+
+                            {/* Three Dots Menu Button */}
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => setSelectedDetection(report)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                                title="Inspect Issue & View PDF"
+                              >
+                                <MoreVertical className="w-4 h-4" />
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      );
+                    })}
+                  </div>
 
-                      {/* Right: Status Badge + Upvote + Menu */}
-                      <div 
-                        className="flex items-center justify-end gap-3 self-end sm:self-center shrink-0"
-                        onClick={(e) => e.stopPropagation()}
+                  {/* View All / Show Less Toggle Button */}
+                  {displayReports.length > 3 && (
+                    <div className="pt-3 text-center border-t border-[#E2F1EE]">
+                      <button
+                        type="button"
+                        onClick={() => setShowAllActivity(!showAllActivity)}
+                        className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[#F2FBF9] hover:bg-[#E5F7F3] text-[#005C66] text-xs font-bold transition-all border border-[#D5EFEA] shadow-2xs cursor-pointer active:scale-95"
                       >
-                        {/* Status Badge */}
-                        {renderStatusBadge(report.status)}
-
-                        {/* Thumbs Up Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleToggleUpvote(repId)}
-                          className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                            isUpvoted 
-                              ? 'bg-[#E5F7F3] text-[#00796B] border-[#00A896]' 
-                              : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200 shadow-2xs'
-                          }`}
-                          title="Confirm / Support this issue"
-                        >
-                          <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-[#00796B] text-[#00796B]' : 'text-slate-500'}`} />
-                          <span>{upvoteCount}</span>
-                        </button>
-
-                        {/* Three Dots Menu Button */}
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedDetection(report)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                            title="Inspect Issue & View PDF"
-                          >
-                            <MoreVertical className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
+                        <span>{showAllActivity ? 'Show Less' : `View All Activity (${displayReports.length})`}</span>
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showAllActivity ? 'rotate-180' : ''}`} />
+                      </button>
                     </div>
-                  );
-                })
+                  )}
+                </>
               ) : (
                 <div className="p-8 text-center text-slate-500 border border-dashed border-[#D5EFEA] rounded-2xl bg-[#F9FDFC]">
                   <p className="text-sm font-semibold text-slate-700">No reports found for this filter.</p>
