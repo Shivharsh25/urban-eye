@@ -196,6 +196,29 @@ export default function CitizenReportsPage() {
     };
   }, []);
 
+  // Bulletproof location string formatter to prevent rendering raw MongoDB GeoJSON objects
+  const formatLocationString = (item) => {
+    if (!item) return 'Noida, Uttar Pradesh';
+    if (typeof item.address === 'string' && item.address.trim()) {
+      return item.address;
+    }
+    if (typeof item.location === 'string' && item.location.trim()) {
+      return item.location;
+    }
+    if (item.location && typeof item.location === 'object') {
+      if (typeof item.location.address === 'string' && item.location.address.trim()) {
+        return item.location.address;
+      }
+      if (Array.isArray(item.location.coordinates) && item.location.coordinates.length >= 2) {
+        return `GPS: ${Number(item.location.coordinates[1]).toFixed(4)}, ${Number(item.location.coordinates[0]).toFixed(4)}`;
+      }
+    }
+    if (item.lat && item.lng) {
+      return `GPS: ${Number(item.lat).toFixed(4)}, ${Number(item.lng).toFixed(4)}`;
+    }
+    return 'Sector 62, Noida, Uttar Pradesh';
+  };
+
   // Helper for category metadata
   const getCategoryMeta = (item) => {
     const raw = String(item.categoryKey || item.type || item.className || '').toLowerCase();
@@ -281,7 +304,7 @@ export default function CitizenReportsPage() {
         const q = searchQuery.toLowerCase().trim();
         const idMatch = String(item.id || item.displayId || '').toLowerCase().includes(q);
         const descMatch = String(item.description || '').toLowerCase().includes(q);
-        const locMatch = String(item.location || item.address || '').toLowerCase().includes(q);
+        const locMatch = formatLocationString(item).toLowerCase().includes(q);
         const catMatch = getCategoryMeta(item).label.toLowerCase().includes(q);
         if (!idMatch && !descMatch && !locMatch && !catMatch) return false;
       }
@@ -615,7 +638,7 @@ export default function CitizenReportsPage() {
                     {/* Location Pin */}
                     <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 truncate pt-1">
                       <MapPin className="w-3.5 h-3.5 text-[#00897B] shrink-0" />
-                      <span className="truncate">{item.location || item.address || 'Noida, Uttar Pradesh'}</span>
+                      <span className="truncate">{formatLocationString(item)}</span>
                     </div>
                   </div>
                 </div>
@@ -704,7 +727,7 @@ export default function CitizenReportsPage() {
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-1.5 text-slate-700 font-medium">
                           <MapPin className="w-3.5 h-3.5 text-[#00897B]" />
-                          <span>{item.location || item.address || 'Noida'}</span>
+                          <span>{formatLocationString(item)}</span>
                         </div>
                       </td>
 

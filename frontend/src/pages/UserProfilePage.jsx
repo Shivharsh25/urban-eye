@@ -197,7 +197,7 @@ export default function UserProfilePage() {
       return {
         id: doc.id || doc._id || `UE-${1000 + idx}`,
         title: doc.className || doc.category || 'Road Hazard',
-        location: doc.address?.split(',')[0] || 'Sector 62',
+        location: typeof doc.address === 'string' ? doc.address.split(',')[0] : (doc.location?.coordinates ? `GPS: ${Number(doc.location.coordinates[1]).toFixed(2)}, ${Number(doc.location.coordinates[0]).toFixed(2)}` : 'Sector 62'),
         timeText: 'Recently',
         status: isResolved ? 'resolved' : 'in_progress',
         badgeLabel: isResolved ? 'Resolved' : 'In Progress',
@@ -527,7 +527,7 @@ export default function UserProfilePage() {
                       </h4>
                       <div className="flex items-center gap-1 text-[11px] text-slate-500 font-medium mt-0.5">
                         <MapPin className="w-3 h-3 text-slate-400" />
-                        <span>{report.location}</span>
+                        <span>{typeof report.location === 'string' ? report.location : (report.address || 'Sector 62')}</span>
                       </div>
                     </div>
                   </div>

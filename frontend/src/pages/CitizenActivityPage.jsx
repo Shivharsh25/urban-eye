@@ -157,7 +157,7 @@ export default function CitizenActivityPage() {
         id: doc.id || doc._id || `serv-${idx}`,
         title: `${doc.className || doc.category || 'Incident'} reported`,
         desc: doc.description || doc.reportText?.slice(0, 50) || 'Automated civic ticket dispatched.',
-        location: doc.address?.split(',')[0] || 'Sector 62',
+        location: typeof doc.address === 'string' ? doc.address.split(',')[0] : (doc.location?.coordinates ? `GPS: ${Number(doc.location.coordinates[1]).toFixed(2)}, ${Number(doc.location.coordinates[0]).toFixed(2)}` : 'Sector 62'),
         time: timeStr,
         status,
         category: doc.category || 'roads',
@@ -375,7 +375,7 @@ export default function CitizenActivityPage() {
                         {/* Location */}
                         <div className="hidden md:flex items-center gap-1 text-xs text-slate-600 font-medium">
                           <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{item.location}</span>
+                          <span>{typeof item.location === 'string' ? item.location : (item.address || 'Sector 62')}</span>
                         </div>
 
                         {/* Time */}

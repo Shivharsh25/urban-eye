@@ -204,7 +204,7 @@ export default function CitizenTrackingPage() {
         imageUrl: doc.imageUrl || (doc.category === 'garbage' ? '/test_real_garbage.jpg' : '/test_real_pothole.jpg'),
         categoryTitle: meta.title,
         description: doc.description || doc.reportText?.slice(0, 50) || `${meta.title} reported by citizen.`,
-        location: doc.address || 'Knowledge Park III, Greater Noida',
+        location: (typeof doc.address === 'string' && doc.address.trim()) ? doc.address : (typeof doc.location === 'string' ? doc.location : (Array.isArray(doc.location?.coordinates) ? `GPS: ${Number(doc.location.coordinates[1]).toFixed(4)}, ${Number(doc.location.coordinates[0]).toFixed(4)}` : 'Knowledge Park III, Greater Noida')),
         status: normStatus,
         lastUpdate: 'Recently updated'
       };
@@ -241,7 +241,7 @@ export default function CitizenTrackingPage() {
         const matchId = (item.displayId || '').toLowerCase().includes(q);
         const matchTitle = (item.categoryTitle || '').toLowerCase().includes(q);
         const matchDesc = (item.description || '').toLowerCase().includes(q);
-        const matchLoc = (item.location || '').toLowerCase().includes(q);
+        const matchLoc = (typeof item.location === 'string' ? item.location : (item.address || '')).toLowerCase().includes(q);
         return matchId || matchTitle || matchDesc || matchLoc;
       }
       return true;
@@ -539,7 +539,7 @@ export default function CitizenTrackingPage() {
                       <td className="py-4 pr-4 whitespace-nowrap">
                         <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
                           <MapPin className="w-4 h-4 text-[#00897B] shrink-0" />
-                          <span>{report.location}</span>
+                          <span>{typeof report.location === 'string' ? report.location : (report.address || 'Sector 62, Noida')}</span>
                         </div>
                       </td>
 
