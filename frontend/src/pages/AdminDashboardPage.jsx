@@ -832,7 +832,7 @@ export default function AdminDashboardPage() {
             
             {/* Action 1: Assign Reports (Dark Teal Button) */}
             <Link
-              to="/admin/issues?view=triage"
+              to="/admin/triage"
               className="w-full bg-[#005C66] hover:bg-[#06252B] text-white rounded-2xl p-4 flex items-center justify-between shadow-xs transition-all group active:scale-98"
             >
               <div className="flex items-center gap-3">
