@@ -320,3 +320,4 @@ flowchart LR
 
 ---
 *Urban EYE Platform Architecture Plan — Designed for Scalable, Secure, Multi-Role Civic Operations.*
+

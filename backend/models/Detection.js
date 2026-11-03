@@ -75,13 +75,51 @@ const DetectionSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  departmentId: {
+    type: String,
+    default: null,
+    index: true
+  },
   assignedTeam: {
     type: String,
     default: ''
   },
+  assignedTeamId: {
+    type: String,
+    default: null
+  },
   expectedResolution: {
     type: String,
     default: ''
+  },
+  needsReview: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  reviewReason: {
+    type: String,
+    default: ''
+  },
+  slaDeadline: {
+    type: Date,
+    default: null
+  },
+  workNotes: [{
+    note: { type: String, required: true },
+    author: { type: String, default: 'Department Admin' },
+    authorRole: { type: String, default: 'department_admin' },
+    photoUrl: { type: String, default: null },
+    createdAt: { type: Date, default: Date.now }
+  }],
+  resolutionProof: {
+    notes: { type: String, default: '' },
+    beforePhotoUrl: { type: String, default: null },
+    afterPhotoUrl: { type: String, default: null },
+    afterImageUrl: { type: String, default: null },
+    resolvedBy: { type: String, default: null },
+    resolvedByName: { type: String, default: null },
+    verifiedAt: { type: Date, default: null }
   },
   dispatchStatus: {
     type: String,

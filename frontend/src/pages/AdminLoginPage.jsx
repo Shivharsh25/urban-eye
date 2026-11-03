@@ -20,10 +20,14 @@ export default function AdminLoginPage() {
 
     try {
       const loggedInUser = await login(adminEmail, adminPassword);
-      if (loggedInUser.role !== 'admin') {
-        setAdminError('Access denied. Unauthorized role.');
-      } else {
+      if (loggedInUser.role === 'super_admin') {
+        navigate('/super-admin');
+      } else if (loggedInUser.role === 'department_admin') {
+        navigate('/dept-admin');
+      } else if (loggedInUser.role === 'admin') {
         navigate('/admin');
+      } else {
+        setAdminError('Access denied. Administrator privileges required.');
       }
     } catch (err) {
       setAdminError(err.response?.data?.error || 'Authentication failed.');

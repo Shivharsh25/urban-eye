@@ -91,6 +91,9 @@ app.get('/health', async (req, res) => {
 
 const userRoutes = require('./routes/userRoutes');
 const announcementRoutes = require('./routes/announcementRoutes');
+const superAdminRoutes = require('./routes/superAdminRoutes');
+const departmentAdminRoutes = require('./routes/departmentAdminRoutes');
+const adminRequestPublicRoutes = require('./routes/adminRequestPublicRoutes');
 
 // ----------------------------------------------------
 // API Route Registration
@@ -100,6 +103,9 @@ app.use('/api/users', userRoutes);
 app.use('/api', detectionRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/announcements', announcementRoutes);
+app.use('/api/super-admin', superAdminRoutes);
+app.use('/api/department-admin', departmentAdminRoutes);
+app.use('/api/admin-requests', adminRequestPublicRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

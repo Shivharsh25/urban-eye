@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "bootstrap:superadmin": "node scripts/bootstrap_superadmin.js"
   },
   "dependencies": {
     "axios": "^1.6.8",

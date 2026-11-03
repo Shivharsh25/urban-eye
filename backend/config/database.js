@@ -4,6 +4,10 @@ require('dotenv').config();
 const User = require('../models/User');
 const Detection = require('../models/Detection');
 const Announcement = require('../models/Announcement');
+const Department = require('../models/Department');
+const AdminRequest = require('../models/AdminRequest');
+const AuditLog = require('../models/AuditLog');
+const RoutingRule = require('../models/RoutingRule');
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -40,6 +44,10 @@ const db = {
   User,
   Detection,
   Announcement,
+  Department,
+  AdminRequest,
+  AuditLog,
+  RoutingRule,
 
   // Helper for stats summary (backwards compatibility with routes)
   async getStatsSummary() {

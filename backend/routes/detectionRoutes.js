@@ -19,7 +19,7 @@ const { detectLimiter } = require('../middleware/rateLimiter');
 const storageAdapter = require('../services/storageAdapter');
 const { resolveLocation, formatAddress, injectExifGps } = require('../services/geoService');
 const { processDuplicateCheck } = require('../services/clusteringService');
-const { getDepartmentForType, generateReportText, generateEscalationText } = require('../services/routingService');
+const { getDepartmentForType, resolveDepartmentForIssue, generateReportText, generateEscalationText } = require('../services/routingService');
 const { dispatchIncidentReport, dispatchEscalationAlert, sendResolutionNotifications } = require('../services/dispatchService');
 const { emitPipelineProgress, emitDetectionCreated, emitDetectionMerged, emitDetectionUpdated, emitDetectionDeleted } = require('../services/socketService');
 const { runYoloDetection, isModelAvailable } = require('../services/yoloInferenceService');
@@ -332,7 +332,7 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
       details: {}
     });
 
-    const deptInfo = getDepartmentForType(primaryDetection.type);
+    const deptInfo = await resolveDepartmentForIssue({ type: primaryDetection.type, confidence: primaryDetection.confidence });
     const incidentId = crypto.randomUUID().slice(0, 8).toUpperCase();
 
     const reportText = generateReportText({
@@ -388,6 +388,10 @@ router.post('/detect', detectLimiter, requireAuth, upload.single('image'), async
       reportCount: 1,
       lastReportedAt: new Date().toISOString(),
       assignedDepartment: deptInfo.department,
+      departmentId: deptInfo.departmentId || null,
+      needsReview: deptInfo.needsReview || false,
+      reviewReason: deptInfo.reviewReason || '',
+      status: deptInfo.needsReview ? 'needs_review' : 'assigned',
       dispatchStatus: 'pending',
       bbox: primaryDetection.bbox
     };
@@ -456,11 +460,20 @@ router.get('/detections', requireAuth, async (req, res) => {
     const user = req.user;
     let query = {};
 
-    if (user.role === 'admin' || req.query.scope === 'community' || req.query.community === 'true') {
+    if (user.role === 'super_admin' || user.role === 'admin' || req.query.scope === 'community' || req.query.community === 'true') {
       if (req.query.type) query.type = req.query.type;
       if (req.query.severity) query.severity = req.query.severity;
       if (req.query.status) query.status = req.query.status;
       if (req.query.department) query.assignedDepartment = req.query.department;
+    } else if (user.role === 'department_admin') {
+      // Department admin strictly scoped to their assigned department
+      query.$or = [
+        { departmentId: user.departmentId },
+        { assignedDepartment: user.departmentName }
+      ];
+      if (req.query.type) query.type = req.query.type;
+      if (req.query.severity) query.severity = req.query.severity;
+      if (req.query.status) query.status = req.query.status;
     } else {
       // Citizen only sees reports they participated in
       query.$or = [
@@ -506,13 +519,22 @@ router.get('/detections/:id', requireAuth, async (req, res) => {
       return res.status(404).json({ error: 'Detection not found.' });
     }
 
-    // Role check: non-admin can only view if they are a reporter
-    if (req.user.role !== 'admin') {
-      const isReporter =
-        detection.submittedBy === req.user.id ||
-        (detection.reporterIds && detection.reporterIds.includes(req.user.id));
-      if (!isReporter) {
-        return res.status(403).json({ error: 'Access denied to this report.' });
+    // Role check: super_admin and legacy admin see all; dept_admin only sees their department; citizen only sees their own
+    if (req.user.role !== 'super_admin' && req.user.role !== 'admin') {
+      if (req.user.role === 'department_admin') {
+        const isMatchingDept = 
+          detection.departmentId === req.user.departmentId ||
+          detection.assignedDepartment === req.user.departmentName;
+        if (!isMatchingDept) {
+          return res.status(403).json({ error: 'Access denied. Report belongs to another municipal department.' });
+        }
+      } else {
+        const isReporter =
+          detection.submittedBy === req.user.id ||
+          (detection.reporterIds && detection.reporterIds.includes(req.user.id));
+        if (!isReporter) {
+          return res.status(403).json({ error: 'Access denied to this report.' });
+        }
       }
     }
 

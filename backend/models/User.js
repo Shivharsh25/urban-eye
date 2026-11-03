@@ -49,7 +49,24 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
     default: 'user',
-    enum: ['user', 'admin']
+    enum: ['user', 'admin', 'super_admin', 'department_admin']
+  },
+  departmentId: {
+    type: String,
+    default: null
+  },
+  departmentName: {
+    type: String,
+    default: null
+  },
+  status: {
+    type: String,
+    enum: ['active', 'suspended', 'pending'],
+    default: 'active'
+  },
+  lastLoginAt: {
+    type: Date,
+    default: null
   },
   createdAt: {
     type: Date,
