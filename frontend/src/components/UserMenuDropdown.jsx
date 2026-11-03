@@ -93,11 +93,11 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
     const root = document.documentElement;
     root.classList.remove('text-[14px]', 'text-[16px]', 'text-[18px]');
     if (fontSize === 'large') {
-      root.style.fontSize = '17px';
+      root.style.fontSize = '21px';
     } else if (fontSize === 'xlarge') {
-      root.style.fontSize = '19px';
+      root.style.fontSize = '23px';
     } else {
-      root.style.fontSize = '16px';
+      root.style.fontSize = '18.5px';
     }
     localStorage.setItem('urban_eye_a11y_font', fontSize);
   }, [fontSize]);

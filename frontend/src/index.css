@@ -4,14 +4,19 @@
 
 @layer base {
   html {
-    font-size: 16.75px;
+    font-size: 18px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
   @media (min-width: 1024px) {
     html {
-      font-size: 17px;
+      font-size: 18.5px;
+    }
+  }
+  @media (min-width: 1536px) {
+    html {
+      font-size: 19.5px;
     }
   }
   html, body, #root {
@@ -25,19 +30,55 @@
   }
 }
 
-/* Slightly boost micro-typography for superior legibility across all views */
+/* Global typography enhancement across all pages and components */
 .text-\[9px\], [class*="text-[9px]"] {
-  font-size: 10.5px !important;
-  letter-spacing: 0.02em;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
 }
 
 .text-\[10px\], [class*="text-[10px]"] {
-  font-size: 11.5px !important;
-  letter-spacing: 0.015em;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
 }
 
 .text-\[11px\], [class*="text-[11px]"] {
-  font-size: 12.5px !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.text-xs {
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.text-sm {
+  font-size: 15.5px !important;
+  line-height: 1.5 !important;
+}
+
+.text-base {
+  font-size: 17.5px !important;
+  line-height: 1.55 !important;
+}
+
+.text-lg {
+  font-size: 20px !important;
+  line-height: 1.4 !important;
+}
+
+.text-xl {
+  font-size: 23px !important;
+  line-height: 1.35 !important;
+}
+
+.text-2xl {
+  font-size: 28px !important;
+  line-height: 1.25 !important;
+}
+
+.text-3xl {
+  font-size: 34px !important;
+  line-height: 1.2 !important;
 }
 
 /* Glass UI Component Enhancements with Narvik (#EAE7DD) & Sorrell (#99775C) */
