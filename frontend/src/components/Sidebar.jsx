@@ -22,6 +22,7 @@ import {
   X
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import Logo from './Logo';
 
 export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { user, isAdmin, logout } = useAuth();
@@ -77,15 +78,8 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       <div className={`h-16 px-4 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} border-b border-[#0E3841] relative z-10 shrink-0`}>
         {isCollapsed ? (
           <div className="flex flex-col items-center justify-center">
-            <Link to={isAdmin ? "/admin" : "/dashboard"} className="group" title="URBAN EYE • ACTIVE WATCH">
-              <div className="w-8 h-8 rounded-lg bg-teal-500/10 border border-teal-400/40 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-teal-400">
-                  <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" stroke="#2DD4BF" strokeWidth="1.8" strokeLinejoin="round" />
-                  <line x1="12" y1="12" x2="12" y2="22" stroke="#2DD4BF" strokeWidth="1.8" />
-                  <line x1="12" y1="12" x2="2" y2="7.5" stroke="#2DD4BF" strokeWidth="1.8" />
-                  <line x1="12" y1="12" x2="22" y2="7.5" stroke="#2DD4BF" strokeWidth="1.8" />
-                </svg>
-              </div>
+            <Link to={isAdmin ? "/admin" : "/dashboard"} className="group flex items-center justify-center" title="Urban EYE • Active Watch">
+              <Logo size="sm" subtitle="" showText={false} />
             </Link>
             <button 
               type="button"
@@ -106,22 +100,8 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           </div>
         ) : (
           <>
-            <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center space-x-2.5 group min-w-0" title="Urban EYE">
-              <div className="w-8 h-8 rounded-lg bg-teal-500/10 border border-teal-400/40 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-teal-400">
-                  <polygon points="12,2 22,7.5 22,16.5 12,22 2,16.5 2,7.5" stroke="#2DD4BF" strokeWidth="1.8" strokeLinejoin="round" />
-                  <line x1="12" y1="12" x2="12" y2="22" stroke="#2DD4BF" strokeWidth="1.8" />
-                  <line x1="12" y1="12" x2="2" y2="7.5" stroke="#2DD4BF" strokeWidth="1.8" />
-                  <line x1="12" y1="12" x2="22" y2="7.5" stroke="#2DD4BF" strokeWidth="1.8" />
-                </svg>
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="font-extrabold text-white text-sm tracking-wider leading-tight">URBAN EYE</span>
-                <span className="text-[9px] font-mono tracking-widest text-teal-300 flex items-center gap-1 leading-tight mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  ACTIVE WATCH
-                </span>
-              </div>
+            <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center space-x-2.5 group min-w-0 flex-1" title="Urban EYE • Active Watch">
+              <Logo size="sm" subtitle="Active Watch" showText={true} />
             </Link>
 
             {/* Desktop Collapse Toggle */}
