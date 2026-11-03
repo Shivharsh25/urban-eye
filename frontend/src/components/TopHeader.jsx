@@ -309,9 +309,9 @@ export default function TopHeader() {
             {t('reports', 'Reports')}
           </Link>
           <Link
-            to={isAdmin ? "/admin" : "/activity"}
+            to="/activity"
             className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
-              currentPath === '/analytics' || currentPath === '/admin'
+              currentPath === '/activity'
                 ? 'bg-[#003840] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}

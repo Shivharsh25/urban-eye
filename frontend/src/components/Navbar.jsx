@@ -17,7 +17,7 @@ import {
 import UserMenuDropdown from './UserMenuDropdown';
 
 export default function Navbar() {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [socketConnected, setSocketConnected] = useState(false);
@@ -52,7 +52,7 @@ export default function Navbar() {
           
           {/* Brand & Logo */}
           <div className="flex items-center space-x-3">
-            <Link to={isAdmin ? "/admin" : "/report"} className="flex items-center space-x-2.5 group">
+            <Link to="/report" className="flex items-center space-x-2.5 group">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-rose-500 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-200">
                 <Eye className="w-5 h-5 text-white animate-pulse" />
               </div>

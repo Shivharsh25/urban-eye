@@ -100,11 +100,7 @@ export default function RegisterPage() {
           <GoogleAuthButton 
             mode="signup"
             onSuccess={(user) => {
-              if (user?.role === 'admin') {
-                navigate('/admin');
-              } else {
-                navigate('/dashboard');
-              }
+              navigate('/dashboard');
             }}
             onError={(err) => setError(err)}
           />

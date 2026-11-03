@@ -21,18 +21,9 @@ import CitizenSettingsPage from './pages/CitizenSettingsPage';
 import CitizenSupportPage from './pages/CitizenSupportPage';
 import CitizenLayout from './layouts/CitizenLayout';
 
-// Legacy Admin Pages & Layout
+// Command Centre Authentication & Public Application
 import AdminLoginPage from './pages/AdminLoginPage';
-import AdminDashboardPage from './pages/AdminDashboardPage';
-import AdminIssuesPage from './pages/AdminIssuesPage';
-import AdminTriagePage from './pages/AdminTriagePage';
-import AdminIncomingReportsPage from './pages/AdminIncomingReportsPage';
-import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
-import AdminSettingsPage from './pages/AdminSettingsPage';
-import AdminUsersPage from './pages/AdminUsersPage';
-import AdminDepartmentsPage from './pages/AdminDepartmentsPage';
-import AdminAnnouncementsPage from './pages/AdminAnnouncementsPage';
-import AdminLayout from './layouts/AdminLayout';
+import DeptAdminApplyPage from './pages/DeptAdminApplyPage';
 
 // Super Admin Portal Pages & Layout
 import SuperAdminLayout from './layouts/SuperAdminLayout';
@@ -55,16 +46,12 @@ import DeptAdminTeamsPage from './pages/deptadmin/DeptAdminTeamsPage';
 import DeptAdminAnalyticsPage from './pages/deptadmin/DeptAdminAnalyticsPage';
 import DeptAdminNotificationsPage from './pages/deptadmin/DeptAdminNotificationsPage';
 
-// Public Department Admin Application
-import DeptAdminApplyPage from './pages/DeptAdminApplyPage';
-
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 function HomeRedirect() {
-  const { isAdmin, isSuperAdmin, isDeptAdmin } = useAuth();
+  const { isSuperAdmin, isDeptAdmin } = useAuth();
   if (isSuperAdmin) return <Navigate to="/super-admin" replace />;
   if (isDeptAdmin) return <Navigate to="/dept-admin" replace />;
-  if (isAdmin) return <Navigate to="/admin" replace />;
   return <Navigate to="/dashboard" replace />;
 }
 
@@ -367,108 +354,6 @@ export default function App() {
                   <DepartmentAdminLayout>
                     <DeptAdminNotificationsPage />
                   </DepartmentAdminLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Legacy Admin Routes */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminDashboardPage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/issues"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminIncomingReportsPage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/incoming"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminIncomingReportsPage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/incoming-reports"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminIncomingReportsPage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/triage"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminTriagePage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/analytics"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminAnalyticsPage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/departments"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminDepartmentsPage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/users"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminUsersPage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/announcements"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminAnnouncementsPage />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/settings"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <AdminLayout>
-                    <AdminSettingsPage />
-                  </AdminLayout>
                 </ProtectedRoute>
               }
             />

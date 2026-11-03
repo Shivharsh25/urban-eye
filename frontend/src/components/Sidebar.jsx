@@ -78,7 +78,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       <div className={`h-16 px-4 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} border-b border-[#0E3841] relative z-10 shrink-0`}>
         {isCollapsed ? (
           <div className="flex flex-col items-center justify-center">
-            <Link to={isAdmin ? "/admin" : "/dashboard"} className="group flex items-center justify-center" title="Urban EYE • Active Watch">
+            <Link to="/dashboard" className="group flex items-center justify-center" title="Urban EYE • Active Watch">
               <Logo size="sm" subtitle="" showText={false} />
             </Link>
             <button 
@@ -100,7 +100,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           </div>
         ) : (
           <>
-            <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center space-x-2.5 group min-w-0 flex-1" title="Urban EYE • Active Watch">
+            <Link to="/dashboard" className="flex items-center space-x-2.5 group min-w-0 flex-1" title="Urban EYE • Active Watch">
               <Logo size="sm" subtitle="Active Watch" showText={true} />
             </Link>
 
@@ -131,116 +131,109 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       <nav className="flex-1 py-3 px-3 space-y-1 overflow-y-auto custom-scrollbar relative z-10">
         {user && (
           <>
-            {isAdmin ? (
-              <>
-                <SidebarItem to="/admin" icon={LayoutDashboard} label={t('dashboard', 'Dashboard')} isActive={isActive('/admin')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} />
-                <SidebarItem to="/report" icon={Camera} label={t('reportIssue', 'Report Issue')} isActive={isActive('/report')} isCollapsed={isCollapsed} onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} badge="AI Scan" />
-              </>
-            ) : (
-              <>
-                {/* Core Navigation Items */}
-                <SidebarItem 
-                  to="/dashboard" 
-                  icon={Home} 
-                  label={t('dashboard', 'Dashboard')} 
-                  isActive={isActive('/dashboard')} 
-                  isCollapsed={isCollapsed} 
-                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                />
-                <SidebarItem 
-                  to="/my-reports" 
-                  icon={FileText} 
-                  label={t('reports', 'Reports')} 
-                  isActive={isActive('/my-reports') || isActive('/reports')} 
-                  isCollapsed={isCollapsed} 
-                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                />
-                <SidebarItem 
-                  to="/report" 
-                  icon={PlusCircle} 
-                  label={t('reportIssue', 'Report Issue')} 
-                  isActive={isActive('/report')} 
-                  isCollapsed={isCollapsed} 
-                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                />
-                <SidebarItem 
-                  to="/tracking" 
-                  icon={Layers} 
-                  label={t('myTracking', 'My Tracking')} 
-                  isActive={isActive('/tracking')} 
-                  isCollapsed={isCollapsed} 
-                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                />
+            {/* Core Navigation Items */}
+            <SidebarItem 
+              to="/dashboard" 
+              icon={Home} 
+              label={t('dashboard', 'Dashboard')} 
+              isActive={isActive('/dashboard')} 
+              isCollapsed={isCollapsed} 
+              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+            />
+            <SidebarItem 
+              to="/my-reports" 
+              icon={FileText} 
+              label={t('reports', 'Reports')} 
+              isActive={isActive('/my-reports') || isActive('/reports')} 
+              isCollapsed={isCollapsed} 
+              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+            />
+            <SidebarItem 
+              to="/report" 
+              icon={PlusCircle} 
+              label={t('reportIssue', 'Report Issue')} 
+              isActive={isActive('/report')} 
+              isCollapsed={isCollapsed} 
+              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+            />
+            <SidebarItem 
+              to="/tracking" 
+              icon={Layers} 
+              label={t('myTracking', 'My Tracking')} 
+              isActive={isActive('/tracking')} 
+              isCollapsed={isCollapsed} 
+              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+            />
 
-                {/* Section 1: CITY NETWORK */}
-                {!isCollapsed && (
-                  <div className="flex items-center space-x-2 px-3 pt-5 pb-1.5 text-[10px] font-bold tracking-wider text-teal-400/70 uppercase">
-                    <span>{t('cityNetwork', 'CITY NETWORK')}</span>
-                    <div className="h-px flex-1 bg-[#0E3841]"></div>
-                  </div>
-                )}
-                <SidebarItem 
-                  to="/map" 
-                  icon={Map} 
-                  label={t('liveMap', 'Live Map')} 
-                  isActive={isActive('/map')} 
-                  isCollapsed={isCollapsed} 
-                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                  badge="Live" 
-                  isLiveDot={true}
-                />
-                <SidebarItem 
-                  to="/alerts" 
-                  icon={Bell} 
-                  label={t('communityAlerts', 'Community Alerts')} 
-                  isActive={isActive('/alerts')} 
-                  isCollapsed={isCollapsed} 
-                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                />
-                <SidebarItem 
-                  to="/activity" 
-                  icon={Activity} 
-                  label={t('cityActivity', 'City Activity')} 
-                  isActive={isActive('/activity')} 
-                  isCollapsed={isCollapsed} 
-                  onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                />
-
-                {/* Section 2: ACCOUNT */}
-                <div className="pt-2">
-                  {!isCollapsed && (
-                    <div className="flex items-center space-x-2 px-3 pt-3 pb-1.5 text-[10px] font-bold tracking-wider text-teal-400/70 uppercase">
-                      <span>{t('account', 'ACCOUNT')}</span>
-                      <div className="h-px flex-1 bg-[#0E3841]"></div>
-                    </div>
-                  )}
-                  <SidebarItem 
-                    to="/profile" 
-                    icon={UserCircle} 
-                    label={t('citizenProfile', 'Citizen Profile')} 
-                    isActive={isActive('/profile')} 
-                    isCollapsed={isCollapsed} 
-                    onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                  />
-                  <SidebarItem 
-                    to="/settings" 
-                    icon={Settings} 
-                    label={t('settings', 'Settings')} 
-                    isActive={isActive('/settings')} 
-                    isCollapsed={isCollapsed} 
-                    onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                  />
-                  <SidebarItem 
-                    to="/support" 
-                    icon={HelpCircle} 
-                    label={t('helpSupport', 'Help & Support')} 
-                    isActive={isActive('/support')} 
-                    isCollapsed={isCollapsed} 
-                    onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
-                  />
-                </div>
-              </>
+            {/* Section 1: CITY NETWORK */}
+            {!isCollapsed && (
+              <div className="flex items-center space-x-2 px-3 pt-5 pb-1.5 text-[10px] font-bold tracking-wider text-teal-400/70 uppercase">
+                <span>{t('cityNetwork', 'CITY NETWORK')}</span>
+                <div className="h-px flex-1 bg-[#0E3841]"></div>
+              </div>
             )}
+
+            <SidebarItem 
+              to="/map" 
+              icon={Map} 
+              label={t('liveMap', 'Live Map')} 
+              isActive={isActive('/map')} 
+              isCollapsed={isCollapsed} 
+              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+              badge="Live" 
+              isLiveDot={true} 
+            />
+            <SidebarItem 
+              to="/alerts" 
+              icon={Bell} 
+              label={t('communityAlerts', 'Community Alerts')} 
+              isActive={isActive('/alerts')} 
+              isCollapsed={isCollapsed} 
+              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+            />
+            <SidebarItem 
+              to="/activity" 
+              icon={Activity} 
+              label={t('cityActivity', 'City Activity')} 
+              isActive={isActive('/activity')} 
+              isCollapsed={isCollapsed} 
+              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+            />
+
+            {/* Section 2: ACCOUNT */}
+            <div className="pt-2">
+              {!isCollapsed && (
+                <div className="flex items-center space-x-2 px-3 pt-3 pb-1.5 text-[10px] font-bold tracking-wider text-teal-400/70 uppercase">
+                  <span>{t('account', 'ACCOUNT')}</span>
+                  <div className="h-px flex-1 bg-[#0E3841]"></div>
+                </div>
+              )}
+
+              <SidebarItem 
+                to="/profile" 
+                icon={UserCircle} 
+                label={t('citizenProfile', 'Citizen Profile')} 
+                isActive={isActive('/profile')} 
+                isCollapsed={isCollapsed} 
+                onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+              />
+              <SidebarItem 
+                to="/settings" 
+                icon={Settings} 
+                label={t('settings', 'Settings')} 
+                isActive={isActive('/settings')} 
+                isCollapsed={isCollapsed} 
+                onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+              />
+              <SidebarItem 
+                to="/support" 
+                icon={HelpCircle} 
+                label={t('helpSupport', 'Help & Support')} 
+                isActive={isActive('/support')} 
+                isCollapsed={isCollapsed} 
+                onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
+              />
+            </div>
           </>
         )}
       </nav>

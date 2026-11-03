@@ -24,8 +24,7 @@ export default function AdminLoginPage() {
         navigate('/super-admin');
       } else if (loggedInUser.role === 'department_admin') {
         navigate('/dept-admin');
-      } else if (loggedInUser.role === 'admin') {
-        navigate('/admin');
+
       } else {
         setAdminError('Access denied. Administrator privileges required.');
       }
