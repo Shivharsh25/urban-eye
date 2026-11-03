@@ -1,20 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getSocket } from '../api/socket';
 import { 
   Bell, 
   Moon, 
   Sun, 
-  Check, 
   CheckCheck, 
-  AlertTriangle, 
-  Info, 
-  Sparkles, 
-  Layers,
   ChevronDown,
-  Globe,
   Trash2
 } from 'lucide-react';
 import UserMenuDropdown from './UserMenuDropdown';
@@ -22,21 +15,21 @@ import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api/client';
 
-export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
+export default function TopHeader() {
   const { user, isAdmin } = useAuth();
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme, isDarkMode } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Socket state
   const [socketConnected, setSocketConnected] = useState(false);
 
-  // Toast indicator for feedback
-  const [feedbackToast, setFeedbackToast] = useState('');
-
   // Dropdowns state
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
   const notifRef = useRef(null);
+  const langRef = useRef(null);
 
   // Read notifications tracking
   const [readNotifIds, setReadNotifIds] = useState(() => {
@@ -102,7 +95,6 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
       setNotifications(withUnread);
     } catch (err) {
       console.warn('Could not fetch server notifications:', err.message);
-      // Fallback notifications with accurate unread
       const fallbackNotifs = [
         {
           id: 'fb-1',
@@ -129,7 +121,6 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
     loadNotifications();
   }, []);
 
-  // Compute exact unread count from notifications array
   const unreadCount = notifications.filter(n => n.unread).length;
 
   // Socket connection tracking & live notification push
@@ -149,230 +140,194 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
         type: newAnn.type || 'info',
         unread: true
       };
-      setNotifications(prev => [newNotif, ...prev.filter(n => n.id !== newNotif.id)]);
-      setFeedbackToast(`New Broadcast: ${newAnn.title}`);
-      setTimeout(() => setFeedbackToast(''), 3000);
-    };
-
-    const onDetectionCreated = (detection) => {
-      const newNotif = {
-        id: `det-${detection._id || detection.id || Date.now()}`,
-        title: 'New Incident Reported',
-        desc: `${(detection.type || 'Civic issue').toUpperCase()} identified in ${detection.address || 'your locality'}.`,
-        time: 'Just now',
-        type: detection.severity === 'high' || detection.severity === 'critical' ? 'warning' : 'info',
-        unread: true
-      };
-      setNotifications(prev => [newNotif, ...prev.slice(0, 15)]);
+      setNotifications(prev => [newNotif, ...prev]);
     };
 
     s.on('connect', onConnect);
     s.on('disconnect', onDisconnect);
     s.on('announcement:created', onAnnouncementCreated);
-    s.on('detection:created', onDetectionCreated);
 
     return () => {
       s.off('connect', onConnect);
       s.off('disconnect', onDisconnect);
       s.off('announcement:created', onAnnouncementCreated);
-      s.off('detection:created', onDetectionCreated);
     };
   }, []);
 
-  // Click outside for menus
+  // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(event) {
       if (notifRef.current && !notifRef.current.contains(event.target)) {
         setIsNotifOpen(false);
+      }
+      if (langRef.current && !langRef.current.contains(event.target)) {
+        setIsLangOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleToggleTheme = (e) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    toggleTheme();
-    const willBeDark = !isDarkMode;
-    setFeedbackToast(willBeDark ? 'Dark Mode Activated' : 'Light Mode Activated');
-    setTimeout(() => setFeedbackToast(''), 2200);
-  };
-
-  const handleSelectLang = (code, e) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    setLang(code);
-    setFeedbackToast(code === 'hi' ? 'भाषा: हिन्दी' : 'Language: English');
-    setTimeout(() => setFeedbackToast(''), 2000);
-  };
-
   const handleMarkAllRead = () => {
     const allIds = notifications.map(n => n.id);
-    setReadNotifIds(allIds);
-    try {
-      localStorage.setItem('urban_eye_read_notif_ids', JSON.stringify(allIds));
-    } catch {}
+    const updatedReadIds = Array.from(new Set([...readNotifIds, ...allIds]));
+    setReadNotifIds(updatedReadIds);
+    localStorage.setItem('urban_eye_read_notif_ids', JSON.stringify(updatedReadIds));
     setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
   };
 
   const handleMarkItemRead = (id) => {
-    const nextReadIds = [...readNotifIds, id];
-    setReadNotifIds(nextReadIds);
-    try {
-      localStorage.setItem('urban_eye_read_notif_ids', JSON.stringify(nextReadIds));
-    } catch {}
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+    if (!readNotifIds.includes(id)) {
+      const updated = [...readNotifIds, id];
+      setReadNotifIds(updated);
+      localStorage.setItem('urban_eye_read_notif_ids', JSON.stringify(updated));
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+    }
   };
 
   const handleClearNotifications = () => {
     setNotifications([]);
-    const allIds = notifications.map(n => n.id);
-    try {
-      localStorage.setItem('urban_eye_read_notif_ids', JSON.stringify(allIds));
-    } catch {}
   };
 
-  // Determine current page display title with i18n
-  const getPageInfo = () => {
-    const path = location.pathname;
-    if (path.includes('/dashboard')) return { title: t('dashboard'), section: 'Overview' };
-    if (path.includes('/report')) return { title: t('reportIssue'), section: 'AI Camera' };
-    if (path.includes('/my-reports')) return { title: t('myReports'), section: 'History' };
-    if (path.includes('/map')) return { title: t('liveMap'), section: 'Live Geotags' };
-    if (path.includes('/alerts')) return { title: t('alerts'), section: 'Civic Watch' };
-    if (path.includes('/activity')) return { title: t('activity'), section: 'Network Stream' };
-    if (path.includes('/profile')) return { title: t('profile'), section: 'Account' };
-    if (path.includes('/settings')) return { title: t('settings'), section: 'Preferences' };
-    if (path.includes('/support')) return { title: t('support'), section: 'Civic Services' };
-    if (path.includes('/admin/issues')) return { title: 'Reported Issues', section: 'Admin Registry' };
-    if (path.includes('/admin/analytics')) return { title: 'Predictive Analytics', section: 'Telemetry' };
-    if (path.includes('/admin/users')) return { title: 'User Governance', section: 'Citizens & Staff' };
-    if (path.includes('/admin/announcements')) return { title: 'Municipal Broadcasts', section: 'Alerts' };
-    if (path.includes('/admin/settings')) return { title: 'System Settings', section: 'Configuration' };
-    if (path.includes('/admin')) return { title: 'Command Center', section: 'Executive Panel' };
-    return { title: title || t('appTitle'), section: subtitle || t('appSubtitle') };
+  const getInitials = () => {
+    if (!user || !user.name) return 'RA';
+    const parts = user.name.trim().split(' ');
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
   };
 
-  const pageInfo = getPageInfo();
+  const currentPath = location.pathname;
 
   return (
-    <header className="sticky top-0 z-30 h-16 border-b border-[#EAE7DD] bg-white/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between transition-colors">
+    <header className="h-16 px-6 lg:px-8 flex items-center justify-between border-b border-[#E2F1EE] bg-transparent relative z-20">
       
-      {/* Toast popup */}
-      {feedbackToast && typeof document !== 'undefined' && createPortal(
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[99999] px-5 py-2.5 bg-slate-900 border border-[#EAE7DD] text-white font-semibold text-xs sm:text-sm rounded-2xl shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-top-3">
-          <Check className="w-4 h-4 text-emerald-400" />
-          <span>{feedbackToast}</span>
-        </div>,
-        document.body
-      )}
-
-      {/* Left Area: Breadcrumbs / Title */}
-      <div className="flex items-center space-x-3 min-w-0">
-        <div className="flex flex-col min-w-0">
-          <div className="flex items-center space-x-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#99775C] truncate hidden sm:inline">
-              {pageInfo.section}
-            </span>
-            <span className="text-slate-300 hidden sm:inline">•</span>
-            <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight truncate">
-              {pageInfo.title}
-            </h1>
-          </div>
-        </div>
-
-        {/* Live Socket Feed Pill */}
-        <div className="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-[#FAF9F5] border border-[#EAE7DD] text-[11px]">
-          <span className="relative flex h-2 w-2">
-            {socketConnected && (
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            )}
-            <span className={`relative inline-flex rounded-full h-2 w-2 ${socketConnected ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-          </span>
-          <span className={socketConnected ? 'text-emerald-700 font-semibold' : 'text-rose-600 font-semibold'}>
-            {socketConnected ? t('liveFeed') : t('offline')}
-          </span>
-        </div>
+      {/* ================================================================= */}
+      {/* 1. LEFT: NAVIGATION TABS (Overview, Activity, Reports, Analytics)  */}
+      {/* ================================================================= */}
+      <div className="flex items-center space-x-1 sm:space-x-2">
+        <Link
+          to="/dashboard"
+          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+            currentPath === '/dashboard'
+              ? 'bg-[#003840] text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+          }`}
+        >
+          {t('overview', 'Overview')}
+        </Link>
+        <Link
+          to="/activity"
+          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+            currentPath === '/activity'
+              ? 'bg-[#003840] text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+          }`}
+        >
+          {t('activity', 'Activity')}
+        </Link>
+        <Link
+          to="/my-reports"
+          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+            currentPath === '/my-reports' || currentPath === '/report'
+              ? 'bg-[#003840] text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+          }`}
+        >
+          {t('reports', 'Reports')}
+        </Link>
+        <Link
+          to={isAdmin ? "/admin" : "/activity"}
+          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+            currentPath === '/analytics' || currentPath === '/admin'
+              ? 'bg-[#003840] text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+          }`}
+        >
+          {t('analytics', 'Analytics')}
+        </Link>
       </div>
 
-      {/* Right Area: Action Icons Matching Screenshot */}
-      <div className="flex items-center space-x-2 sm:space-x-3.5">
+      {/* ================================================================= */}
+      {/* 2. RIGHT: LANGUAGE DROPDOWN, MOON THEME, NOTIFICATION BELL, AVATAR*/}
+      {/* ================================================================= */}
+      <div className="flex items-center space-x-3 sm:space-x-4">
         
-        {/* ================================================================= */}
-        {/* 1. LANGUAGE SWITCHER: HINDI & ENGLISH SIDE BY SIDE                */}
-        {/* ================================================================= */}
-        <div className="flex items-center p-0.5 rounded-xl bg-[#FAF9F5] border border-[#EAE7DD] text-xs font-semibold">
+        {/* Language Dropdown (English v) */}
+        <div className="relative" ref={langRef}>
           <button
             type="button"
-            onClick={(e) => handleSelectLang('en', e)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-              lang === 'en'
-                ? 'bg-white text-slate-900 border border-[#EAE7DD] shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-            title="English"
+            onClick={() => setIsLangOpen(!isLangOpen)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#D5EFEA] bg-white/90 hover:bg-white text-xs font-semibold text-slate-700 shadow-xs transition-all cursor-pointer"
+            title="Select Language"
           >
-            <span className="hidden sm:inline">English</span>
-            <span className="sm:hidden font-mono">EN</span>
+            <span>{lang === 'hi' ? 'हिन्दी' : 'English'}</span>
+            <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
           </button>
-          <button
-            type="button"
-            onClick={(e) => handleSelectLang('hi', e)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-              lang === 'hi'
-                ? 'bg-white text-slate-900 border border-[#EAE7DD] shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-            title="हिन्दी (Hindi)"
-          >
-            <span className="hidden sm:inline">हिन्दी</span>
-            <span className="sm:hidden font-mono">HI</span>
-          </button>
+
+          {isLangOpen && (
+            <div className="absolute right-0 mt-2 w-36 bg-white border border-[#D5EFEA] rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <button
+                type="button"
+                onClick={() => { setLang('en'); setIsLangOpen(false); }}
+                className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between hover:bg-[#F2FBF9] ${
+                  lang === 'en' ? 'text-[#005C66] font-bold bg-[#F2FBF9]' : 'text-slate-700'
+                }`}
+              >
+                <span>English</span>
+                {lang === 'en' && <span className="w-1.5 h-1.5 rounded-full bg-[#005C66]"></span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setLang('hi'); setIsLangOpen(false); }}
+                className={`w-full px-3 py-1.5 text-left text-xs font-semibold flex items-center justify-between hover:bg-[#F2FBF9] ${
+                  lang === 'hi' ? 'text-[#005C66] font-bold bg-[#F2FBF9]' : 'text-slate-700'
+                }`}
+              >
+                <span>हिन्दी (Hindi)</span>
+                {lang === 'hi' && <span className="w-1.5 h-1.5 rounded-full bg-[#005C66]"></span>}
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* ================================================================= */}
-        {/* 2. THEME TOGGLE ICON (Moon / Sun)                                 */}
-        {/* ================================================================= */}
+        {/* Theme Toggle (Crescent Moon icon) */}
         <button
           type="button"
-          onClick={handleToggleTheme}
+          onClick={toggleTheme}
           title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           aria-label="Toggle Theme"
-          className="p-2 sm:p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center justify-center group cursor-pointer"
+          className="p-2 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all flex items-center justify-center cursor-pointer"
         >
           {isDarkMode ? (
-            <Moon className="w-5 h-5 text-slate-600 group-hover:text-amber-500 transition-colors" />
+            <Sun className="w-4 h-4 text-amber-500 transition-colors" />
           ) : (
-            <Sun className="w-5 h-5 text-amber-500 group-hover:text-amber-600 transition-colors" />
+            <Moon className="w-4 h-4 text-slate-700 hover:text-teal-600 transition-colors" />
           )}
         </button>
 
-        {/* ================================================================= */}
-        {/* 3. NOTIFICATION BELL WITH ACCURATE DYNAMIC BADGE                  */}
-        {/* ================================================================= */}
+        {/* Notification Bell with alert dot */}
         <div className="relative" ref={notifRef}>
           <button
             type="button"
             onClick={() => setIsNotifOpen(!isNotifOpen)}
             title="Notifications"
             aria-label="View notifications"
-            className="p-2 sm:p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center justify-center relative group cursor-pointer"
+            className="p-2 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/80 transition-all flex items-center justify-center relative cursor-pointer"
           >
-            <Bell className="w-5 h-5 text-slate-600 group-hover:text-sky-600 transition-colors" />
+            <Bell className="w-4 h-4 text-slate-700 hover:text-teal-600 transition-colors" />
             
-            {/* Dynamic badge - strictly reflects real unread count */}
+            {/* Dynamic unread badge dot */}
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs border-2 border-white pointer-events-none animate-pulse">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
             )}
           </button>
 
           {/* Notifications Dropdown Panel */}
           {isNotifOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
-              <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-[#D5EFEA] rounded-2xl shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="p-3.5 bg-[#F7FCFB] border-b border-[#E2F1EE] flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-xs font-bold text-slate-900">{t('civicNotifications', 'Civic Notifications')}</span>
                   {unreadCount > 0 ? (
@@ -390,7 +345,7 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
                     <button
                       type="button"
                       onClick={handleMarkAllRead}
-                      className="text-[11px] font-semibold text-sky-600 hover:text-sky-700 transition-colors flex items-center gap-1 cursor-pointer"
+                      className="text-[11px] font-semibold text-teal-700 hover:text-teal-800 transition-colors flex items-center gap-1 cursor-pointer"
                       title="Mark all as read"
                     >
                       <CheckCheck className="w-3.5 h-3.5" />
@@ -416,12 +371,12 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
                     <div 
                       key={n.id} 
                       onClick={() => handleMarkItemRead(n.id)}
-                      className={`p-3.5 hover:bg-slate-50 transition-colors cursor-pointer relative ${n.unread ? 'bg-sky-50/40' : ''}`}
+                      className={`p-3.5 hover:bg-[#F9FDFC] transition-colors cursor-pointer relative ${n.unread ? 'bg-teal-50/30' : ''}`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-1.5 min-w-0">
                           {n.unread && (
-                            <span className="w-2 h-2 rounded-full bg-sky-600 shrink-0" />
+                            <span className="w-2 h-2 rounded-full bg-teal-600 shrink-0" />
                           )}
                           <h4 className={`text-xs font-bold truncate ${n.unread ? 'text-slate-900' : 'text-slate-700'}`}>
                             {n.title}
@@ -441,11 +396,11 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
                 )}
               </div>
 
-              <div className="p-2.5 bg-slate-50 border-t border-slate-200 text-center">
+              <div className="p-2.5 bg-[#F7FCFB] border-t border-[#E2F1EE] text-center">
                 <Link
                   to="/alerts"
                   onClick={() => setIsNotifOpen(false)}
-                  className="text-xs font-bold text-sky-600 hover:text-sky-700 transition-colors inline-flex items-center gap-1"
+                  className="text-xs font-bold text-[#005C66] hover:text-[#004C54] transition-colors inline-flex items-center gap-1"
                 >
                   <span>{t('viewAllAlerts', 'View All Community Alerts')}</span>
                   <span>→</span>
@@ -455,10 +410,17 @@ export default function TopHeader({ title, subtitle, showBreadcrumb = true }) {
           )}
         </div>
 
-        {/* ================================================================= */}
-        {/* 4. USER PROFILE AVATAR DROPDOWN (TAP OPTION & LOGOUT MENU)        */}
-        {/* ================================================================= */}
-        <UserMenuDropdown />
+        {/* User Profile Avatar (RA) */}
+        <UserMenuDropdown 
+          customTrigger={
+            <div 
+              className="w-8 h-8 rounded-full bg-[#004D56] hover:bg-[#003B42] text-white flex items-center justify-center font-bold text-xs shadow-xs transition-all cursor-pointer ring-1 ring-white"
+              title={user ? `${user.name} (${user.email})` : 'Account Menu'}
+            >
+              {getInitials()}
+            </div>
+          }
+        />
 
       </div>
     </header>

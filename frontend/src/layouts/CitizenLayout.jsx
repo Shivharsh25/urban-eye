@@ -17,12 +17,12 @@ export default function CitizenLayout({ children }) {
   };
 
   return (
-    <div className="h-screen h-[100dvh] text-slate-800 flex flex-col lg:flex-row font-sans selection:bg-[#99775C] selection:text-white relative overflow-hidden">
-      {/* Clean Ambient Background with Narvik (#EAE7DD) and Sorrell Brown (#99775C) */}
+    <div className="h-screen h-[100dvh] text-slate-800 flex flex-col lg:flex-row font-sans selection:bg-[#005C66] selection:text-white relative overflow-hidden">
+      {/* Clean Ambient Mint-Teal Background */}
       <WatermarkBackground />
 
       {/* Mobile Header with tap avatar dropdown */}
-      <header className="lg:hidden shrink-0 z-30 border-b border-[#EAE7DD] px-3.5 py-2.5 flex items-center justify-between relative bg-white/90 backdrop-blur-md w-full max-w-full box-border">
+      <header className="lg:hidden shrink-0 z-30 border-b border-[#D5EFEA] px-3.5 py-2.5 flex items-center justify-between relative bg-white/95 backdrop-blur-md w-full max-w-full box-border">
          <div className="flex items-center space-x-2 min-w-0">
             <button 
               type="button"
@@ -32,17 +32,17 @@ export default function CitizenLayout({ children }) {
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <span className="font-bold text-slate-900 text-base tracking-tight truncate">URBAN <span className="text-sky-600">EYE</span></span>
+            <span className="font-extrabold text-[#0B2027] text-base tracking-tight truncate">URBAN <span className="text-[#00897B]">EYE</span></span>
          </div>
          <div className="flex items-center space-x-2 shrink-0">
            <button
              type="button"
              onClick={handleNextLang}
              title="Switch Language"
-             className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-sky-700 text-xs font-mono font-bold flex items-center space-x-1 active:scale-95"
+             className="px-2.5 py-1 rounded-lg bg-white border border-[#D5EFEA] text-[#005C66] text-xs font-mono font-bold flex items-center space-x-1 active:scale-95"
            >
              <span className="text-xs">अ/A</span>
-             <span className="text-[10px] text-sky-600 font-bold uppercase">{lang}</span>
+             <span className="text-[10px] text-[#00897B] font-bold uppercase">{lang}</span>
            </button>
            <UserMenuDropdown />
          </div>
@@ -53,7 +53,7 @@ export default function CitizenLayout({ children }) {
       {/* Mobile Backdrop */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-40 lg:hidden animate-fade-in"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

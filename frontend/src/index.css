@@ -220,9 +220,30 @@ html.light [class*="border-stone-700"] {
 }
 
 html.light header,
-html.light aside {
+html.light aside:not(.sidebar-dark) {
   background-color: rgba(255, 255, 255, 0.96) !important;
   border-color: #EAE7DD !important;
+}
+
+html.light aside.sidebar-dark,
+aside.sidebar-dark {
+  background-color: #06252B !important;
+  border-color: rgba(0, 168, 150, 0.15) !important;
+}
+
+html.light aside.sidebar-dark .text-white,
+aside.sidebar-dark .text-white {
+  color: #ffffff !important;
+}
+
+html.light aside.sidebar-dark .text-slate-300,
+aside.sidebar-dark .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+html.light aside.sidebar-dark .text-slate-400,
+aside.sidebar-dark .text-slate-400 {
+  color: #94a3b8 !important;
 }
 
 html.light .glass-panel {
