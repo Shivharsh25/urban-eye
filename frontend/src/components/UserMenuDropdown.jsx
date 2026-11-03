@@ -317,11 +317,11 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
             <button
               type="button"
               onClick={handleSignOutClick}
-              className="w-full text-left px-5 py-2.5 text-sm font-medium text-slate-800 hover:bg-rose-50 hover:text-rose-600 transition-colors flex items-center justify-between"
+              className="w-full text-left px-5 py-2.5 text-sm font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 transition-colors flex items-center justify-between group cursor-pointer border-t border-slate-100" style={{ color: "#DC2626" }}
               role="menuitem"
             >
-              <span>{t('signOut')}</span>
-              <LogOut className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-600" />
+              <span className="font-bold text-red-600" style={{ color: "#DC2626" }}>{t('signOut')}</span>
+              <LogOut className="w-4 h-4 text-red-600 group-hover:translate-x-0.5 transition-transform" style={{ color: "#DC2626" }} />
             </button>
           ) : (
             <div className="pt-1 mt-1 border-t border-slate-100">
