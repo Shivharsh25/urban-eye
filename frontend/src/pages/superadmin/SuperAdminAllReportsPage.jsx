@@ -5,17 +5,20 @@ import {
   FileText,
   Search,
   Building2,
-  Calendar,
+  Clock,
   MapPin,
   Eye,
   RefreshCw,
   X,
-  ChevronLeft,
-  ChevronRight,
   Trash2,
   Zap,
   Droplets,
-  Leaf
+  Leaf,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  CheckCircle2,
+  AlertTriangle
 } from 'lucide-react';
 
 // Fallback sample reports matching the executive screenshot
@@ -27,10 +30,12 @@ const DEFAULT_SAMPLE_REPORTS = [
     type: 'pothole',
     confidence: 0.78,
     assignedDepartment: 'Roads & Public Works Department',
+    departmentId: 'roads-dept',
     address: 'Maharajganj, Maharajganj, Uttar Pradesh',
-    location: { address: 'Maharajganj, Maharajganj, Uttar Pradesh' },
     status: 'pending',
-    createdAt: new Date('2026-11-03T10:15:00').toISOString()
+    createdAt: new Date('2026-11-03T10:15:00').toISOString(),
+    imageUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80',
+    needsReview: false
   },
   {
     _id: 'rep-2',
@@ -39,10 +44,12 @@ const DEFAULT_SAMPLE_REPORTS = [
     type: 'garbage',
     confidence: 0.81,
     assignedDepartment: 'Sanitation & Solid Waste Department',
-    address: 'Knowledge Park II, Greater Noida',
-    location: { address: 'Knowledge Park II, Greater Noida' },
+    departmentId: 'sanitation-dept',
+    address: 'Knowledge Park II, Greater Noida, UP',
     status: 'pending',
-    createdAt: new Date('2026-10-14T14:30:00').toISOString()
+    createdAt: new Date('2026-10-14T09:30:00').toISOString(),
+    imageUrl: 'https://images.unsplash.com/photo-1605600659908-0ef719419d41?auto=format&fit=crop&w=600&q=80',
+    needsReview: false
   },
   {
     _id: 'rep-3',
@@ -51,10 +58,12 @@ const DEFAULT_SAMPLE_REPORTS = [
     type: 'pothole',
     confidence: 0.77,
     assignedDepartment: 'Roads & Public Works Department',
+    departmentId: 'roads-dept',
     address: 'Delta 1, Sector 20, Greater Noida',
-    location: { address: 'Delta 1, Sector 20, Greater Noida' },
     status: 'pending',
-    createdAt: new Date('2026-10-11T09:20:00').toISOString()
+    createdAt: new Date('2026-10-11T14:20:00').toISOString(),
+    imageUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80',
+    needsReview: false
   },
   {
     _id: 'rep-4',
@@ -63,10 +72,12 @@ const DEFAULT_SAMPLE_REPORTS = [
     type: 'garbage',
     confidence: 0.75,
     assignedDepartment: 'Sanitation & Solid Waste Department',
-    address: 'New Delhi Municipal Area',
-    location: { address: 'New Delhi Municipal Area' },
+    departmentId: 'sanitation-dept',
+    address: 'New Delhi Municipal Area, Central Zone',
     status: 'pending',
-    createdAt: new Date('2026-10-11T11:45:00').toISOString()
+    createdAt: new Date('2026-10-11T12:00:00').toISOString(),
+    imageUrl: 'https://images.unsplash.com/photo-1605600659908-0ef719419d41?auto=format&fit=crop&w=600&q=80',
+    needsReview: false
   },
   {
     _id: 'rep-5',
@@ -75,28 +86,17 @@ const DEFAULT_SAMPLE_REPORTS = [
     type: 'pothole',
     confidence: 0.71,
     assignedDepartment: 'Roads & Public Works Department',
-    address: 'Dadri Road, Barola, Noida',
-    location: { address: 'Dadri Road, Barola, Noida' },
+    departmentId: 'roads-dept',
+    address: 'Dadri Road, Barola, Noida, UP',
     status: 'pending',
-    createdAt: new Date('2026-10-11T16:10:00').toISOString()
-  },
-  // Additional sample items to make 25 items for pagination
-  ...Array.from({ length: 20 }, (_, idx) => ({
-    _id: `rep-extra-${idx + 6}`,
-    id: `E${(idx + 10).toString(16).toUpperCase()}8B92`,
-    category: idx % 2 === 0 ? 'pothole' : 'garbage',
-    type: idx % 2 === 0 ? 'pothole' : 'garbage',
-    confidence: 0.70 + (idx % 25) * 0.01,
-    assignedDepartment: idx % 2 === 0 ? 'Roads & Public Works Department' : 'Sanitation & Solid Waste Department',
-    address: `Sector ${15 + idx}, Municipal Zone ${Math.floor(idx / 4) + 1}`,
-    location: { address: `Sector ${15 + idx}, Municipal Zone ${Math.floor(idx / 4) + 1}` },
-    status: idx % 3 === 0 ? 'in_progress' : idx % 5 === 0 ? 'resolved' : 'pending',
-    createdAt: new Date(Date.now() - (idx + 5) * 86400000).toISOString()
-  }))
+    createdAt: new Date('2026-10-11T11:45:00').toISOString(),
+    imageUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80',
+    needsReview: false
+  }
 ];
 
 export default function SuperAdminAllReportsPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const [reports, setReports] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -109,9 +109,9 @@ export default function SuperAdminAllReportsPage() {
   const [needsReviewOnly, setNeedsReviewOnly] = useState(searchParams.get('needsReview') === 'true');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Pagination
+  // Pagination & Rows Per Page
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
 
   // Inspection Modal
   const [selectedReport, setSelectedReport] = useState(null);
@@ -131,12 +131,13 @@ export default function SuperAdminAllReportsPage() {
       ]);
 
       const serverReports = repRes.data.reports || [];
+      setDepartments(deptRes.data.departments || []);
+
       if (serverReports.length > 0) {
         setReports(serverReports);
       } else {
         setReports(DEFAULT_SAMPLE_REPORTS);
       }
-      setDepartments(deptRes.data.departments || []);
     } catch (err) {
       console.error('Failed to load reports:', err);
       setReports(DEFAULT_SAMPLE_REPORTS);
@@ -147,37 +148,47 @@ export default function SuperAdminAllReportsPage() {
 
   useEffect(() => {
     fetchReports();
+    setCurrentPage(1);
   }, [selectedDept, selectedStatus, needsReviewOnly]);
 
   const filteredReports = useMemo(() => {
     return reports.filter((r) => {
+      // Dept filter
+      if (selectedDept !== 'all') {
+        const matchesDept = r.departmentId === selectedDept || r.assignedDepartmentId === selectedDept;
+        if (!matchesDept) return false;
+      }
+      // Status filter
+      if (selectedStatus !== 'all') {
+        if (r.status?.toLowerCase() !== selectedStatus.toLowerCase()) return false;
+      }
+      // Review filter
+      if (needsReviewOnly && !r.needsReview && r.status !== 'needs_review') {
+        return false;
+      }
+      // Search query
+      if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
       const idStr = String(r.id || r.reportId || r._id || '');
       const typeStr = String(r.type || r.category || '');
       const deptStr = String(r.assignedDepartment || '');
       const addrStr = typeof r.address === 'string' ? r.address : String(r.location?.address || '');
-
-      const matchesQuery = !q || (
+      return (
         idStr.toLowerCase().includes(q) ||
         typeStr.toLowerCase().includes(q) ||
         deptStr.toLowerCase().includes(q) ||
         addrStr.toLowerCase().includes(q)
       );
-
-      const matchesDept = selectedDept === 'all' || r.departmentId === selectedDept || r.assignedDepartment === selectedDept;
-      const matchesStatus = selectedStatus === 'all' || r.status === selectedStatus;
-      const matchesReview = !needsReviewOnly || r.needsReview === true || r.status === 'needs_review';
-
-      return matchesQuery && matchesDept && matchesStatus && matchesReview;
     });
-  }, [reports, searchQuery, selectedDept, selectedStatus, needsReviewOnly]);
+  }, [reports, selectedDept, selectedStatus, needsReviewOnly, searchQuery]);
 
-  // Paginated subset
-  const totalPages = Math.ceil(filteredReports.length / pageSize) || 1;
+  // Paginated slice
   const paginatedReports = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredReports.slice(start, start + pageSize);
-  }, [filteredReports, currentPage, pageSize]);
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    return filteredReports.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredReports, currentPage, rowsPerPage]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredReports.length / rowsPerPage));
 
   // Category Icon helper
   const getCategoryIcon = (category) => {
@@ -221,6 +232,13 @@ export default function SuperAdminAllReportsPage() {
         <Leaf className="w-4 h-4" />
       </div>
     );
+  };
+
+  // Format date helper
+  const formatDate = (isoDate) => {
+    if (!isoDate) return '11/3/2026';
+    const d = new Date(isoDate);
+    return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
   };
 
   return (
@@ -277,55 +295,61 @@ export default function SuperAdminAllReportsPage() {
       </div>
 
       {/* ======================================================== */}
-      {/* 3. FILTERS BAR ROW */}
+      {/* 3. SEARCH & FILTERS BAR (EXACT MOCKUP MATCH) */}
       {/* ======================================================== */}
-      <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-wrap items-center gap-3">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[240px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5 pointer-events-none" />
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Search Input */}
+        <div className="relative flex-1 min-w-[260px] bg-white border border-slate-200/90 rounded-2xl px-4 py-2.5 shadow-2xs flex items-center">
+          <Search className="w-4 h-4 text-slate-400 mr-2.5 shrink-0 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search report ID, category, location..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00B074]/30 focus:border-[#00B074] transition-all"
+            className="w-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent"
           />
         </div>
 
-        {/* Department Filter */}
-        <select
-          value={selectedDept}
-          onChange={(e) => setSelectedDept(e.target.value)}
-          className="px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#00B074]/30 cursor-pointer shadow-2xs"
-        >
-          <option value="all">All Departments</option>
-          {departments.map((dept) => (
-            <option key={dept._id} value={dept._id}>
-              {dept.name}
-            </option>
-          ))}
-        </select>
+        {/* All Departments Dropdown */}
+        <div className="relative">
+          <select
+            value={selectedDept}
+            onChange={(e) => setSelectedDept(e.target.value)}
+            className="appearance-none bg-white border border-slate-200/90 px-4 py-2.5 pr-9 rounded-2xl text-xs font-semibold text-slate-700 shadow-2xs focus:outline-none cursor-pointer"
+          >
+            <option value="all">All Departments</option>
+            {departments.map((dept) => (
+              <option key={dept._id} value={dept._id}>
+                {dept.name}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+        </div>
 
-        {/* Status Filter */}
-        <select
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-          className="px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#00B074]/30 cursor-pointer shadow-2xs"
-        >
-          <option value="all">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="in_progress">In Progress</option>
-          <option value="resolved">Resolved</option>
-          <option value="needs_review">Needs Review</option>
-        </select>
+        {/* All Statuses Dropdown */}
+        <div className="relative">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="appearance-none bg-white border border-slate-200/90 px-4 py-2.5 pr-9 rounded-2xl text-xs font-semibold text-slate-700 shadow-2xs focus:outline-none cursor-pointer"
+          >
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="needs_review">Needs Review</option>
+          </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+        </div>
 
-        {/* Needs Review Toggle Pill */}
-        <label className="flex items-center space-x-2 text-xs text-[#92400E] font-bold cursor-pointer px-3.5 py-2 rounded-xl bg-[#FEF6E9] border border-amber-200/90 shadow-2xs select-none">
+        {/* Flagged for Review Checkbox */}
+        <label className="flex items-center space-x-2 text-xs font-bold text-[#92400E] cursor-pointer px-4 py-2.5 rounded-2xl bg-[#FEF6E9] border border-amber-200/70 shadow-2xs select-none">
           <input
             type="checkbox"
             checked={needsReviewOnly}
             onChange={(e) => setNeedsReviewOnly(e.target.checked)}
-            className="w-4 h-4 rounded border-amber-400 text-amber-600 focus:ring-0 cursor-pointer bg-white"
+            className="w-4 h-4 rounded border-amber-300 text-amber-600 focus:ring-0 cursor-pointer"
           />
           <span>Flagged for Review</span>
         </label>
@@ -356,7 +380,7 @@ export default function SuperAdminAllReportsPage() {
                   <th className="py-3.5 px-4">Assigned Department</th>
                   <th className="py-3.5 px-4">Location</th>
                   <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 pr-6 pl-4 text-right">Inspect</th>
+                  <th className="py-3.5 pr-6 pl-4 text-center">Inspect</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
@@ -364,19 +388,22 @@ export default function SuperAdminAllReportsPage() {
                   const isResolved = report.status === 'resolved';
                   const isInProgress = report.status === 'in_progress';
                   const needsReview = report.needsReview || report.status === 'needs_review';
-                  const reportIdDisplay = report.id || report.reportId || String(report._id).slice(-8).toUpperCase();
-                  const reportDate = new Date(report.createdAt).toLocaleDateString();
+                  const reportId = report.id || report.reportId || String(report._id).slice(-8).toUpperCase();
+                  const addressText = typeof report.address === 'string' ? report.address : (report.location?.address || 'Municipal Area');
 
                   return (
-                    <tr key={report._id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr
+                      key={report._id}
+                      className="hover:bg-slate-50/70 transition-colors"
+                    >
                       {/* Report ID & Date */}
                       <td className="py-4 pl-6 pr-4 align-middle">
-                        <span className="font-mono text-[#00897B] font-black text-sm block">
-                          {reportIdDisplay}
+                        <span className="font-mono text-[#00A86B] font-bold text-xs sm:text-sm block">
+                          {reportId}
                         </span>
-                        <div className="flex items-center space-x-1.5 text-slate-500 text-[11px] font-medium mt-0.5">
-                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{reportDate}</span>
+                        <div className="flex items-center space-x-1.5 text-[11px] text-slate-400 mt-0.5">
+                          <Clock className="w-3 h-3 text-slate-400" />
+                          <span>{formatDate(report.createdAt)}</span>
                         </div>
                       </td>
 
@@ -385,11 +412,11 @@ export default function SuperAdminAllReportsPage() {
                         <div className="flex items-center space-x-3">
                           {getCategoryIcon(report.type || report.category)}
                           <div>
-                            <div className="font-bold text-slate-900 text-xs sm:text-sm capitalize">
+                            <span className="font-bold text-slate-900 text-xs sm:text-sm block">
                               {report.type || report.category}
-                            </div>
-                            <span className="text-[11px] text-slate-500 font-medium block">
-                              {Math.round((report.confidence || 0.75) * 100)}% confidence
+                            </span>
+                            <span className="text-[11px] text-slate-500 font-normal">
+                              {Math.round((report.confidence || 0.78) * 100)}% confidence
                             </span>
                           </div>
                         </div>
@@ -397,20 +424,22 @@ export default function SuperAdminAllReportsPage() {
 
                       {/* Assigned Department */}
                       <td className="py-4 px-4 align-middle">
-                        <div className="inline-flex items-center space-x-2 text-[#00695C] font-bold text-xs">
-                          <div className="w-6 h-6 rounded-md bg-[#E8F8F0] flex items-center justify-center shrink-0">
-                            <Building2 className="w-3.5 h-3.5 text-[#00A86B]" />
+                        <div className="flex items-center space-x-2 text-slate-800">
+                          <div className="w-7 h-7 rounded-lg bg-[#E8F8F0] text-emerald-600 flex items-center justify-center shrink-0">
+                            <Building2 className="w-3.5 h-3.5" />
                           </div>
-                          <span>{report.assignedDepartment || 'Roads & Public Works Department'}</span>
+                          <span className="font-medium text-slate-900 text-xs truncate max-w-[220px]">
+                            {report.assignedDepartment || 'Roads & Public Works Department'}
+                          </span>
                         </div>
                       </td>
 
                       {/* Location */}
                       <td className="py-4 px-4 align-middle max-w-[220px]">
-                        <div className="flex items-center space-x-1.5 text-slate-700">
+                        <div className="flex items-center space-x-1.5 text-slate-600">
                           <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span className="truncate block font-medium" title={typeof report.address === 'string' ? report.address : report.location?.address}>
-                            {typeof report.address === 'string' ? report.address : (report.location?.address || 'Civil Lines, Central Zone')}
+                          <span className="truncate block font-normal" title={addressText}>
+                            {addressText}
                           </span>
                         </div>
                       </td>
@@ -418,32 +447,32 @@ export default function SuperAdminAllReportsPage() {
                       {/* Status */}
                       <td className="py-4 px-4 align-middle">
                         {needsReview ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#FEF6E9] text-[#D97706] inline-block">
+                          <span className="px-3 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-[#FEF3C7] text-[#92400E] inline-block">
                             Needs Review
                           </span>
                         ) : isResolved ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#D4F4E4] text-[#00695C] inline-block">
+                          <span className="px-3 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-[#D1FAE5] text-[#065F46] inline-block">
                             Resolved
                           </span>
                         ) : isInProgress ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#E0F2FE] text-[#0369A1] inline-block">
+                          <span className="px-3 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-[#E0F2FE] text-[#0369A1] inline-block">
                             In Progress
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#F3E8FF] text-[#6B21A8] inline-block">
+                          <span className="px-3 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-[#F3E8FF] text-[#6B21A8] inline-block">
                             Pending
                           </span>
                         )}
                       </td>
 
                       {/* Inspect */}
-                      <td className="py-4 pr-6 pl-4 align-middle text-right">
+                      <td className="py-4 pr-6 pl-4 align-middle text-center">
                         <button
                           onClick={() => setSelectedReport(report)}
-                          className="w-8 h-8 rounded-xl bg-[#E8F8F0] hover:bg-[#D4F4E4] text-emerald-700 flex items-center justify-center transition-all cursor-pointer shadow-2xs ml-auto"
+                          className="w-8 h-8 rounded-xl bg-[#E6F8F0] hover:bg-[#D4F4E4] text-[#00A86B] flex items-center justify-center transition-colors shadow-2xs mx-auto cursor-pointer"
                           title="Inspect Report Dossier"
                         >
-                          <Eye className="w-4 h-4 text-emerald-600" />
+                          <Eye className="w-4 h-4" />
                         </button>
                       </td>
                     </tr>
@@ -457,47 +486,51 @@ export default function SuperAdminAllReportsPage() {
         {/* ======================================================== */}
         {/* 5. TABLE FOOTER: PAGINATION & ROWS PER PAGE */}
         {/* ======================================================== */}
-        <div className="p-4 sm:p-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white text-xs">
-          {/* Left: Showing info */}
-          <div className="font-bold text-slate-600">
-            Showing {filteredReports.length === 0 ? 0 : (currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filteredReports.length)} of {filteredReports.length} reports
+        <div className="p-4 sm:p-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white">
+          <div className="text-xs font-bold text-slate-600">
+            Showing {filteredReports.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0} -{' '}
+            {Math.min(currentPage * rowsPerPage, filteredReports.length)} of {filteredReports.length} reports
           </div>
 
-          {/* Right: Rows per page & Page numbers */}
-          <div className="flex items-center space-x-5">
-            <div className="flex items-center space-x-2 font-bold text-slate-600">
-              <span>Rows per page:</span>
-              <select
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="px-2 py-1 rounded-lg border border-slate-200/90 bg-white font-bold text-slate-800 focus:outline-none cursor-pointer"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-              </select>
+          <div className="flex items-center space-x-6 text-xs font-bold text-slate-600">
+            {/* Rows Per Page */}
+            <div className="flex items-center space-x-2">
+              <span className="text-slate-500 font-medium">Rows per page:</span>
+              <div className="relative">
+                <select
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="appearance-none bg-white border border-slate-200 rounded-lg px-2.5 py-1 pr-6 text-xs font-bold text-slate-700 focus:outline-none cursor-pointer"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                </select>
+                <ChevronDown className="w-3 h-3 text-slate-400 absolute right-1.5 top-2 pointer-events-none" />
+              </div>
             </div>
 
-            <div className="flex items-center space-x-1 font-bold text-slate-700">
+            {/* Pagination Controls */}
+            <div className="flex items-center space-x-1">
               <button
-                onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
-                className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
 
-              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((pageNum) => (
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map((pageNum) => (
                 <button
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                     currentPage === pageNum
                       ? 'bg-[#003840] text-white shadow-xs'
-                      : 'border border-slate-200/80 bg-white text-slate-700 hover:bg-slate-50'
+                      : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   {pageNum}
@@ -505,9 +538,9 @@ export default function SuperAdminAllReportsPage() {
               ))}
 
               <button
-                onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -517,22 +550,22 @@ export default function SuperAdminAllReportsPage() {
       </div>
 
       {/* ======================================================== */}
-      {/* 6. INSPECTION MODAL (CLEAN LIGHT EXECUTIVE STYLING) */}
+      {/* 6. INSPECTION MODAL (CLEAN LIGHT EXECUTIVE DOSSIER) */}
       {/* ======================================================== */}
       {selectedReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
               <div>
                 <span className="text-[10px] font-mono uppercase text-[#00A86B] font-bold block">
-                  Report Dossier &bull; {selectedReport.id || selectedReport.reportId || selectedReport._id}
+                  Report Dossier &bull; {selectedReport.id || selectedReport.reportId || String(selectedReport._id).slice(-8).toUpperCase()}
                 </span>
-                <h2 className="text-lg font-black text-[#0A262C] capitalize">
+                <h2 className="text-lg font-black text-[#0A262C]">
                   {selectedReport.type || selectedReport.category}
                 </h2>
               </div>
-              <button 
-                onClick={() => setSelectedReport(null)} 
+              <button
+                onClick={() => setSelectedReport(null)}
                 className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -540,8 +573,7 @@ export default function SuperAdminAllReportsPage() {
             </div>
 
             <div className="space-y-4 text-xs">
-              
-              {/* Image previews (Reported vs Resolution) */}
+              {/* Photo Previews */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <span className="font-bold text-slate-700 block mb-1">Citizen Uploaded Photo</span>
@@ -549,10 +581,10 @@ export default function SuperAdminAllReportsPage() {
                     <img
                       src={selectedReport.imageUrl}
                       alt="Citizen report"
-                      className="w-full h-44 object-cover rounded-2xl border border-slate-200 bg-slate-50"
+                      className="w-full h-44 object-cover rounded-2xl border border-slate-200 shadow-2xs"
                     />
                   ) : (
-                    <div className="w-full h-44 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 font-medium">
+                    <div className="w-full h-44 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400">
                       No photo provided
                     </div>
                   )}
@@ -564,10 +596,10 @@ export default function SuperAdminAllReportsPage() {
                     <img
                       src={selectedReport.resolutionProof.afterImageUrl}
                       alt="Resolution proof"
-                      className="w-full h-44 object-cover rounded-2xl border border-emerald-200 bg-slate-50"
+                      className="w-full h-44 object-cover rounded-2xl border border-emerald-200 shadow-2xs"
                     />
                   ) : (
-                    <div className="w-full h-44 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 font-medium">
+                    <div className="w-full h-44 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400">
                       Pending repair completion
                     </div>
                   )}
@@ -575,25 +607,25 @@ export default function SuperAdminAllReportsPage() {
               </div>
 
               {/* Details List */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
-                <div className="flex justify-between py-1 border-b border-slate-200/80">
+              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-2.5">
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
                   <span className="text-slate-500 font-medium">Assigned Department:</span>
-                  <span className="font-bold text-[#0A262C]">{selectedReport.assignedDepartment}</span>
+                  <span className="font-bold text-slate-900">{selectedReport.assignedDepartment || 'Roads & Public Works Department'}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-slate-200/80">
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
                   <span className="text-slate-500 font-medium">AI Detection Confidence:</span>
                   <span className="font-mono text-[#00A86B] font-bold">
-                    {Math.round((selectedReport.confidence || 0.75) * 100)}%
+                    {Math.round((selectedReport.confidence || 0.78) * 100)}%
                   </span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-slate-200/80">
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
                   <span className="text-slate-500 font-medium">Location Address:</span>
-                  <span className="text-slate-900 font-bold text-right max-w-xs truncate">
-                    {typeof selectedReport.address === 'string' ? selectedReport.address : (selectedReport.location?.address || 'N/A')}
+                  <span className="text-slate-900 font-semibold text-right max-w-xs">
+                    {typeof selectedReport.address === 'string' ? selectedReport.address : (selectedReport.location?.address || 'Municipal Area')}
                   </span>
                 </div>
                 {selectedReport.needsReview && (
-                  <div className="flex justify-between py-1 text-amber-700 font-bold">
+                  <div className="flex justify-between py-1 text-amber-800 font-semibold">
                     <span>Review Reason:</span>
                     <span>{selectedReport.reviewReason || 'Flagged by routing engine'}</span>
                   </div>
@@ -606,18 +638,17 @@ export default function SuperAdminAllReportsPage() {
                   <span className="font-bold text-slate-700 block mb-2">Department Progress Logs</span>
                   <div className="space-y-2">
                     {selectedReport.workNotes.map((note, idx) => (
-                      <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px]">
+                      <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                         <div className="flex justify-between text-slate-500 mb-1">
                           <span className="font-bold text-[#00A86B]">{note.authorName}</span>
                           <span>{new Date(note.timestamp).toLocaleString()}</span>
                         </div>
-                        <p className="text-slate-800 font-medium">{note.note}</p>
+                        <p className="text-slate-800">{note.note}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-
             </div>
           </div>
         </div>
