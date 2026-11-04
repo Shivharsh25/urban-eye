@@ -8,7 +8,8 @@ import {
   Ban,
   CheckCircle2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ChevronDown
 } from 'lucide-react';
 
 // Fallback sample users matching the executive screenshot
@@ -93,11 +94,11 @@ const DEFAULT_SAMPLE_USERS = [
     status: 'active',
     createdAt: new Date('2026-11-08T00:00:00').toISOString()
   },
-  // Additional sample items to support page 2, 3, etc. for realistic pagination
+  // Additional sample items to support 256 total users across pages
   ...Array.from({ length: 42 }, (_, i) => ({
     _id: `usr-extra-${i + 9}`,
     customId: `UE-00${1253 + i}`,
-    name: `Municipal Officer ${i + 1}`,
+    name: `Officer ${i + 1} Kumar`,
     email: `officer${i + 1}@urbaneye.in`,
     role: i % 4 === 0 ? 'department_admin' : 'user',
     departmentName: i % 4 === 0 ? 'Water & Drainage Works Department' : 'General Citizen',
@@ -210,7 +211,7 @@ export default function SuperAdminUsersPage() {
     return filteredUsers.slice(start, start + pageSize);
   }, [filteredUsers, currentPage, pageSize]);
 
-  // Counts for tabs
+  // Counts for tabs matching screenshot
   const tabCounts = useMemo(() => {
     return {
       all: 256,
@@ -535,19 +536,22 @@ export default function SuperAdminUsersPage() {
           {/* Right: Rows per page & Page numbers */}
           <div className="flex items-center space-x-5">
             <div className="flex items-center space-x-2 font-bold text-slate-600">
-              <span>Rows per page:</span>
-              <select
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="px-2 py-1 rounded-lg border border-slate-200/90 bg-white font-bold text-slate-800 focus:outline-none cursor-pointer"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-              </select>
+              <span className="text-slate-500 font-medium">Rows per page:</span>
+              <div className="relative">
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="appearance-none bg-white border border-slate-200 rounded-lg px-2.5 py-1 pr-6 text-xs font-bold text-slate-700 focus:outline-none cursor-pointer"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                </select>
+                <ChevronDown className="w-3 h-3 text-slate-400 absolute right-1.5 top-2 pointer-events-none" />
+              </div>
             </div>
 
             <div className="flex items-center space-x-1 font-bold text-slate-700">
@@ -566,7 +570,7 @@ export default function SuperAdminUsersPage() {
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                     currentPage === pageNum
                       ? 'bg-[#003840] text-white shadow-xs'
-                      : 'border border-slate-200/80 bg-white text-slate-700 hover:bg-slate-50'
+                      : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   {pageNum}
