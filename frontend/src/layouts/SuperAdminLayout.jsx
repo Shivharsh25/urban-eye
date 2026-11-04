@@ -12,6 +12,7 @@ import {
   Share2,
   ShieldCheck,
   ChevronLeft,
+  ChevronRight,
   LogOut,
   ExternalLink,
   Menu,
@@ -25,6 +26,25 @@ export default function SuperAdminLayout({ children }) {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [pendingRequestsCount, setPendingRequestsCount] = useState(3);
+
+  // Sidebar Collapse / Minimize State
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('urbaneye_superadmin_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebar = () => {
+    setIsCollapsed(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('urbaneye_superadmin_collapsed', String(next));
+      } catch {}
+      return next;
+    });
+  };
 
   useEffect(() => {
     async function fetchPendingCount() {
@@ -85,15 +105,19 @@ export default function SuperAdminLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0F7F7] text-slate-900 flex flex-col lg:flex-row font-sans selection:bg-[#00B074] selection:text-white">
+    <div className="h-screen w-screen overflow-hidden bg-[#F0F7F7] text-slate-900 flex flex-col lg:flex-row font-sans selection:bg-[#00B074] selection:text-white">
       
       {/* ======================================================== */}
-      {/* DESKTOP SIDEBAR (EXACT MATCH TO REFERENCE DESIGN)       */}
+      {/* DESKTOP SIDEBAR (EXPANDABLE / COLLAPSIBLE & FULL HEIGHT) */}
       {/* ======================================================== */}
-      <aside className="hidden lg:flex lg:flex-col w-[280px] bg-[#02181D] border-r border-[#00383E]/70 sticky top-0 h-screen z-30 shrink-0 select-none overflow-hidden">
+      <aside
+        className={`hidden lg:flex lg:flex-col h-full bg-[#02181D] border-r border-[#00383E]/70 z-30 shrink-0 select-none overflow-hidden transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'w-20' : 'w-[280px]'
+        }`}
+      >
         
-        {/* Brand Header with Glowing 3D Cube & Collapse Arrow */}
-        <div className="p-5 pb-3 flex items-center justify-between">
+        {/* Brand Header with Glowing 3D Cube & Working Collapse Button */}
+        <div className={`p-5 pb-3 flex items-center ${isCollapsed ? 'justify-center flex-col space-y-3' : 'justify-between'}`}>
           <div className="flex items-center space-x-3">
             {/* Glowing Neon 3D Cube Icon */}
             <div className="relative flex items-center justify-center w-11 h-11 rounded-full bg-[#03232A] border border-[#00E5FF]/40 shadow-[0_0_15px_rgba(0,229,255,0.3)] shrink-0">
@@ -110,40 +134,47 @@ export default function SuperAdminLayout({ children }) {
               </svg>
             </div>
 
-            <div>
-              <span className="text-base font-black tracking-wider text-white block leading-tight font-sans">
-                URBAN EYE
-              </span>
-              <div className="flex items-center space-x-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] shadow-[0_0_6px_#00E5FF] animate-pulse" />
-                <span className="text-[10px] font-bold tracking-widest text-[#00E5FF] uppercase font-mono">
-                  SUPER ADMIN v2.0
+            {!isCollapsed && (
+              <div className="overflow-hidden">
+                <span className="text-base font-black tracking-wider text-white block leading-tight font-sans whitespace-nowrap">
+                  URBAN EYE
                 </span>
+                <div className="flex items-center space-x-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] shadow-[0_0_6px_#00E5FF] animate-pulse" />
+                  <span className="text-[10px] font-bold tracking-widest text-[#00E5FF] uppercase font-mono whitespace-nowrap">
+                    SUPER ADMIN v2.0
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* Collapse/Expand Toggle Button */}
+          {/* Working Collapse/Expand Button */}
           <button
             type="button"
-            className="w-7 h-7 rounded-lg border border-[#004750] bg-[#022329]/80 flex items-center justify-center text-teal-300 hover:text-white hover:border-[#00E5FF]/60 transition-colors shadow-2xs"
-            title="Collapse Sidebar"
+            onClick={toggleSidebar}
+            className="w-7 h-7 rounded-lg border border-[#004750] bg-[#022329]/80 flex items-center justify-center text-teal-300 hover:text-white hover:border-[#00E5FF]/60 hover:bg-[#004750]/50 transition-all shadow-2xs cursor-pointer shrink-0"
+            title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
-            <ChevronLeft className="w-4 h-4" />
+            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
 
         {/* Navigation Sections */}
-        <nav className="flex-1 px-3.5 py-2 space-y-4 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 px-3 py-2 space-y-3 overflow-y-auto custom-scrollbar">
           {navSections.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1">
-              {section.title && (
+              {section.title && !isCollapsed && (
                 <div className="flex items-center space-x-2 px-3 pt-3 pb-1.5">
                   <span className="text-[10px] font-black tracking-widest text-[#00E5FF] uppercase whitespace-nowrap">
                     {section.title}
                   </span>
                   <div className="flex-1 h-[1px] bg-[#004750]/60" />
                 </div>
+              )}
+
+              {section.title && isCollapsed && (
+                <div className="w-8 mx-auto h-[1px] bg-[#004750]/60 my-2" />
               )}
 
               {section.items.map((item) => {
@@ -157,21 +188,30 @@ export default function SuperAdminLayout({ children }) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-[13px] font-bold transition-all group ${
+                    title={isCollapsed ? item.label : undefined}
+                    className={`relative flex items-center transition-all group ${
+                      isCollapsed
+                        ? 'justify-center p-3 rounded-2xl'
+                        : 'justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-[13px] font-bold'
+                    } ${
                       isActive
                         ? 'bg-gradient-to-r from-[#00897B] via-[#00A896] to-[#02C39A] text-white shadow-md shadow-[#00897B]/30'
                         : 'text-slate-300 hover:text-white hover:bg-[#042830]'
                     }`}
                   >
                     <div className="flex items-center space-x-3.5">
-                      <Icon className={`w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-[#00E5FF]'}`} />
-                      <span className="tracking-wide">{item.label}</span>
+                      <Icon className={`w-4 h-4 transition-transform group-hover:scale-110 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-[#00E5FF]'}`} />
+                      {!isCollapsed && <span className="tracking-wide whitespace-nowrap">{item.label}</span>}
                     </div>
 
-                    {item.badge !== undefined && (
-                      <span className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black bg-[#00E599] text-[#002227] shadow-xs">
+                    {!isCollapsed && item.badge !== undefined && (
+                      <span className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black bg-[#00E599] text-[#002227] shadow-xs shrink-0">
                         {item.badge}
                       </span>
+                    )}
+
+                    {isCollapsed && item.badge !== undefined && (
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#00E599] absolute top-1.5 right-1.5 shadow-sm" />
                     )}
                   </Link>
                 );
@@ -180,95 +220,113 @@ export default function SuperAdminLayout({ children }) {
           ))}
         </nav>
 
-        {/* Futuristic Glowing Neon City Skyline Vector Illustration */}
-        <div className="relative w-full overflow-hidden pointer-events-none mt-auto">
-          <svg className="w-full h-20" viewBox="0 0 280 85" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="neonGlowGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                <stop offset="0%" stopColor="#00E5FF" stopOpacity="0.22" />
-                <stop offset="100%" stopColor="#00E5FF" stopOpacity="0.0" />
-              </linearGradient>
-              <linearGradient id="waveStrokeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#00897B" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="#00E5FF" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#00897B" stopOpacity="0.3" />
-              </linearGradient>
-            </defs>
+        {/* Futuristic Glowing Neon City Skyline Vector Illustration (Shown when expanded) */}
+        {!isCollapsed && (
+          <div className="relative w-full overflow-hidden pointer-events-none mt-auto">
+            <svg className="w-full h-20" viewBox="0 0 280 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="neonGlowGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                  <stop offset="0%" stopColor="#00E5FF" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#00E5FF" stopOpacity="0.0" />
+                </linearGradient>
+                <linearGradient id="waveStrokeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#00897B" stopOpacity="0.3" />
+                  <stop offset="50%" stopColor="#00E5FF" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="#00897B" stopOpacity="0.3" />
+                </linearGradient>
+              </defs>
 
-            {/* Neon Skyscrapers Outline */}
-            <path
-              d="M0 85 L0 78 L15 78 L15 66 L28 66 L28 52 L42 52 L42 62 L55 62 L55 42 L68 42 L68 66 L82 66 L82 54 L98 54 L98 32 L112 32 L112 20 L118 20 L118 8 L120 8 L120 20 L128 20 L128 44 L145 44 L145 58 L160 58 L160 36 L175 36 L175 64 L192 64 L192 52 L208 52 L208 70 L224 70 L224 58 L240 58 L240 75 L260 75 L260 64 L280 64 L280 85 Z"
-              stroke="#00E5FF"
-              strokeWidth="1.2"
-              fill="url(#neonGlowGrad)"
-            />
+              <path
+                d="M0 85 L0 78 L15 78 L15 66 L28 66 L28 52 L42 52 L42 62 L55 62 L55 42 L68 42 L68 66 L82 66 L82 54 L98 54 L98 32 L112 32 L112 20 L118 20 L118 8 L120 8 L120 20 L128 20 L128 44 L145 44 L145 58 L160 58 L160 36 L175 36 L175 64 L192 64 L192 52 L208 52 L208 70 L224 70 L224 58 L240 58 L240 75 L260 75 L260 64 L280 64 L280 85 Z"
+                stroke="#00E5FF"
+                strokeWidth="1.2"
+                fill="url(#neonGlowGrad)"
+              />
+              <circle cx="119" cy="8" r="1.5" fill="#00E5FF" />
+              <circle cx="55" cy="40" r="1.2" fill="#00E5FF" />
+              <circle cx="160" cy="34" r="1.2" fill="#00E5FF" />
+              <path d="M35 58 V62 M35 66 V70" stroke="#00E5FF" strokeWidth="1" strokeDasharray="1 2" opacity="0.6" />
+              <path d="M62 48 V58 M62 62 V72" stroke="#00E5FF" strokeWidth="1" strokeDasharray="1 2" opacity="0.6" />
+              <path d="M105 38 V48 M105 52 V62" stroke="#00E5FF" strokeWidth="1" strokeDasharray="1 2" opacity="0.6" />
+              <path d="M152 46 V54 M152 58 V66" stroke="#00E5FF" strokeWidth="1" strokeDasharray="1 2" opacity="0.6" />
+              <path d="M0 76 C70 68, 140 84, 280 74" stroke="url(#waveStrokeGrad)" strokeWidth="1.5" fill="none" />
+              <path d="M0 80 C90 74, 190 86, 280 78" stroke="url(#waveStrokeGrad)" strokeWidth="1" strokeOpacity="0.7" fill="none" />
+            </svg>
+          </div>
+        )}
 
-            {/* Antenna Lights */}
-            <circle cx="119" cy="8" r="1.5" fill="#00E5FF" />
-            <circle cx="55" cy="40" r="1.2" fill="#00E5FF" />
-            <circle cx="160" cy="34" r="1.2" fill="#00E5FF" />
+        {/* User Card & Citizen View at Bottom (Locked to bottom) */}
+        <div className={`p-3.5 border-t border-[#003B42]/70 bg-[#02181D] shrink-0 ${isCollapsed ? 'flex flex-col items-center space-y-3' : 'space-y-2.5'}`}>
+          {!isCollapsed ? (
+            <>
+              {/* User Profile Row */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3 overflow-hidden">
+                  <div className="w-8 h-8 rounded-full bg-[#00D084] text-[#00272B] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
+                    {getInitials(user?.name)}
+                  </div>
+                  <div className="truncate">
+                    <p className="text-xs font-bold text-white truncate leading-tight">
+                      {user?.name || 'Shivharsh Tiwari'}
+                    </p>
+                    <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+                      Super Admin
+                    </p>
+                  </div>
+                </div>
 
-            {/* Window Arrays */}
-            <path d="M35 58 V62 M35 66 V70" stroke="#00E5FF" strokeWidth="1" strokeDasharray="1 2" opacity="0.6" />
-            <path d="M62 48 V58 M62 62 V72" stroke="#00E5FF" strokeWidth="1" strokeDasharray="1 2" opacity="0.6" />
-            <path d="M105 38 V48 M105 52 V62" stroke="#00E5FF" strokeWidth="1" strokeDasharray="1 2" opacity="0.6" />
-            <path d="M152 46 V54 M152 58 V66" stroke="#00E5FF" strokeWidth="1" strokeDasharray="1 2" opacity="0.6" />
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="p-1.5 rounded-lg bg-rose-950/40 border border-rose-900/50 text-rose-300 hover:text-white hover:bg-rose-900/60 transition-colors shrink-0"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
 
-            {/* Neon Waves at bottom */}
-            <path
-              d="M0 76 C70 68, 140 84, 280 74"
-              stroke="url(#waveStrokeGrad)"
-              strokeWidth="1.5"
-              fill="none"
-            />
-            <path
-              d="M0 80 C90 74, 190 86, 280 78"
-              stroke="url(#waveStrokeGrad)"
-              strokeWidth="1"
-              strokeOpacity="0.7"
-              fill="none"
-            />
-          </svg>
-        </div>
-
-        {/* User Card & Citizen View at Bottom */}
-        <div className="p-4 border-t border-[#003B42]/70 bg-[#02181D] space-y-2.5">
-          {/* User Profile Row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 overflow-hidden">
-              <div className="w-8 h-8 rounded-full bg-[#00D084] text-[#00272B] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
+              {/* Citizen View Action Button */}
+              <Link
+                to="/dashboard"
+                target="_blank"
+                className="w-full py-2 px-3 rounded-xl bg-[#00343C] hover:bg-[#004854] border border-[#005560] text-white font-bold text-xs flex items-center justify-between transition-all shadow-xs cursor-pointer group"
+                title="Open Citizen Portal in new tab"
+              >
+                <span className="tracking-wide">Citizen View</span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#00E5FF] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </>
+          ) : (
+            <>
+              {/* Collapsed Avatar */}
+              <div
+                className="w-9 h-9 rounded-full bg-[#00D084] text-[#00272B] font-black text-xs flex items-center justify-center shadow-sm cursor-pointer"
+                title={`${user?.name || 'Shivharsh Tiwari'} (Super Admin)`}
+              >
                 {getInitials(user?.name)}
               </div>
-              <div className="truncate">
-                <p className="text-xs font-bold text-white truncate leading-tight">
-                  {user?.name || 'Shivharsh Tiwari'}
-                </p>
-                <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
-                  Super Admin
-                </p>
-              </div>
-            </div>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="p-1.5 rounded-lg bg-rose-950/40 border border-rose-900/50 text-rose-300 hover:text-white hover:bg-rose-900/60 transition-colors shrink-0"
-              title="Sign Out"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-            </button>
-          </div>
+              {/* Collapsed Citizen View Icon Link */}
+              <Link
+                to="/dashboard"
+                target="_blank"
+                className="w-9 h-9 rounded-xl bg-[#00343C] hover:bg-[#004854] border border-[#005560] text-white flex items-center justify-center transition-all shadow-xs cursor-pointer"
+                title="Open Citizen Portal"
+              >
+                <ExternalLink className="w-4 h-4 text-[#00E5FF]" />
+              </Link>
 
-          {/* Citizen View Action Button */}
-          <Link
-            to="/dashboard"
-            target="_blank"
-            className="w-full py-2 px-3 rounded-xl bg-[#00343C] hover:bg-[#004854] border border-[#005560] text-white font-bold text-xs flex items-center justify-between transition-all shadow-xs cursor-pointer group"
-            title="Open Citizen Portal in new tab"
-          >
-            <span className="tracking-wide">Citizen View</span>
-            <ExternalLink className="w-3.5 h-3.5 text-[#00E5FF] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
+              {/* Collapsed Logout Button */}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-9 h-9 rounded-xl bg-rose-950/40 border border-rose-900/50 text-rose-300 hover:text-white hover:bg-rose-900/60 flex items-center justify-center transition-colors"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </>
+          )}
         </div>
       </aside>
 
@@ -360,9 +418,9 @@ export default function SuperAdminLayout({ children }) {
       )}
 
       {/* ======================================================== */}
-      {/* MAIN CONTENT VIEWPORT                                    */}
+      {/* MAIN CONTENT VIEWPORT (SCROLLS INDEPENDENTLY)             */}
       {/* ======================================================== */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto min-h-screen bg-[#F0F7F7]">
+      <main className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto bg-[#F0F7F7]">
         <div className="p-4 sm:p-6 lg:p-8 flex-1 max-w-[1400px] mx-auto w-full">
           {children}
         </div>
