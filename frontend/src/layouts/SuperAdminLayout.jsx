@@ -33,7 +33,6 @@ export default function SuperAdminLayout({ children }) {
         const count = res.data.count || (res.data.requests || []).length || 0;
         setPendingRequestsCount(count > 0 ? count : 3);
       } catch (err) {
-        // Fallback default
         setPendingRequestsCount(3);
       }
     }
@@ -43,7 +42,7 @@ export default function SuperAdminLayout({ children }) {
   }, []);
 
   const navItems = [
-    { label: 'Dashboard', path: '/super-admin', icon: LayoutDashboard },
+    { label: 'Platform Overview', path: '/super-admin', icon: LayoutDashboard },
     { label: 'Departments', path: '/super-admin/departments', icon: Landmark },
     {
       label: 'Admin Requests',
@@ -52,7 +51,7 @@ export default function SuperAdminLayout({ children }) {
       badge: pendingRequestsCount
     },
     { label: 'Department Admins', path: '/super-admin/admins', icon: Users },
-    { label: 'All Reports', path: '/super-admin/reports', icon: FileText },
+    { label: 'Citywide Reports', path: '/super-admin/reports', icon: FileText },
     { label: 'AI & Routing Rules', path: '/super-admin/ai-config', icon: Cpu },
     { label: 'Platform Users', path: '/super-admin/users', icon: UserCog },
     { label: 'Audit Logs', path: '/super-admin/audit-logs', icon: ShieldCheck }
@@ -77,7 +76,7 @@ export default function SuperAdminLayout({ children }) {
       <aside className="hidden lg:flex lg:flex-col w-[270px] bg-[#00272B] border-r border-[#00383E] sticky top-0 h-screen z-30 shrink-0 select-none">
         
         {/* Brand Header */}
-        <div className="p-6 pb-5 flex items-center space-x-3.5">
+        <div className="p-5 pb-3 flex items-center space-x-3.5">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00A86B] to-[#004D40] flex items-center justify-center shadow-md shadow-emerald-950/40 shrink-0">
             {/* Hexagonal Shield with Eye Pupil */}
             <svg className="w-6 h-6 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -90,14 +89,23 @@ export default function SuperAdminLayout({ children }) {
             <span className="text-base font-black tracking-wide text-white block leading-tight">
               URBAN EYE
             </span>
-            <span className="text-xs font-semibold text-[#66C4B0] block">
-              Super Admin Portal
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#00D084] block">
+              SUPER ADMIN v2.0
             </span>
           </div>
         </div>
 
+        {/* Global Live System Indicator */}
+        <div className="mx-4 my-2 px-3 py-1.5 rounded-xl bg-[#001D20] border border-[#004D54] flex items-center justify-between text-xs">
+          <div className="flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[11px] font-semibold text-slate-300">City Grid Active</span>
+          </div>
+          <span className="text-[10px] font-mono text-[#00D084] font-bold uppercase tracking-wider">ONLINE</span>
+        </div>
+
         {/* Navigation Items */}
-        <nav className="flex-1 px-4 py-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isDashboard = item.path === '/super-admin';
@@ -109,7 +117,7 @@ export default function SuperAdminLayout({ children }) {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                   isActive
                     ? 'bg-[#00B074] text-white shadow-md shadow-[#00B074]/30 font-bold'
                     : 'text-slate-300 hover:text-white hover:bg-[#06383E]'
@@ -130,29 +138,38 @@ export default function SuperAdminLayout({ children }) {
         </nav>
 
         {/* User Card at Bottom */}
-        <div className="p-4 border-t border-[#003B42] bg-[#002226]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 overflow-hidden">
-              <div className="w-9 h-9 rounded-full bg-[#00D084] text-[#00272B] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
-                {getInitials(user?.name)}
-              </div>
-              <div className="truncate">
-                <p className="text-xs font-bold text-white truncate leading-tight">
-                  {user?.name || 'Shivharsh Tiwari'}
-                </p>
-                <p className="text-[11px] text-[#66C4B0] font-medium truncate">
-                  Super Admin
-                </p>
-              </div>
+        <div className="p-4 border-t border-[#003B42] bg-[#002226] space-y-2.5">
+          <div className="flex items-center space-x-3 overflow-hidden">
+            <div className="w-9 h-9 rounded-full bg-[#00D084] text-[#00272B] font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
+              {getInitials(user?.name)}
             </div>
+            <div className="truncate">
+              <p className="text-xs font-bold text-white truncate leading-tight">
+                {user?.name || 'Shivharsh Tiwari'}
+              </p>
+              <p className="text-[10px] text-slate-400 font-medium truncate">
+                {user?.email || 'shivharshtiwari86017@gmail.com'}
+              </p>
+            </div>
+          </div>
 
+          <div className="flex items-center space-x-2 pt-1">
+            <Link
+              to="/dashboard"
+              target="_blank"
+              className="flex-1 py-1.5 px-2.5 rounded-xl bg-[#003B42] hover:bg-[#004D56] text-white text-[11px] font-semibold flex items-center justify-center space-x-1.5 transition-colors border border-teal-800/40"
+              title="Open Citizen Portal in new tab"
+            >
+              <span>Citizen View</span>
+              <ExternalLink className="w-3 h-3 text-[#66C4B0]" />
+            </Link>
             <button
               type="button"
               onClick={handleLogout}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-300 hover:bg-rose-950/40 transition-colors"
+              className="p-1.5 px-2 rounded-xl bg-rose-950/40 border border-rose-900/50 text-rose-300 hover:text-white hover:bg-rose-900/60 transition-colors"
               title="Sign Out"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -166,7 +183,7 @@ export default function SuperAdminLayout({ children }) {
           </div>
           <div>
             <span className="text-xs font-black tracking-wider text-white">URBAN EYE</span>
-            <span className="text-[10px] block text-[#66C4B0] font-semibold">Super Admin Portal</span>
+            <span className="text-[10px] block text-[#00D084] font-semibold">SUPER ADMIN v2.0</span>
           </div>
         </div>
 
