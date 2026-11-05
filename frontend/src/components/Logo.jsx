@@ -1,12 +1,16 @@
 import React from 'react';
 
-export default function Logo({ size = 'md', subtitle = 'Active Watch', showText = true }) {
+export default function Logo({ size = 'md', subtitle = 'Active Watch', showText = true, theme = 'dark', darkText = false }) {
   const isSmall = size === 'sm';
   const isLarge = size === 'lg';
   
   const iconSize = isSmall ? 'w-8 h-8' : isLarge ? 'w-16 h-16' : 'w-11 h-11';
   const textSize = isSmall ? 'text-lg' : isLarge ? 'text-3xl' : 'text-xl';
   const subSize = isSmall ? 'text-[8px]' : isLarge ? 'text-[11px]' : 'text-[9px]';
+
+  const isLight = theme === 'light' || darkText;
+  const urbanColor = isLight ? 'text-[#0A262C]' : 'text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]';
+  const subColor = isLight ? 'text-[#00897B]' : 'text-cyan-400/80 drop-shadow-[0_0_6px_rgba(6,182,212,0.3)]';
 
   return (
     <div className="flex items-center space-x-3 group cursor-pointer select-none">
@@ -78,7 +82,7 @@ export default function Logo({ size = 'md', subtitle = 'Active Watch', showText 
       {showText && (
         <div className="flex flex-col min-w-0">
           <h1 className={`${textSize} font-black tracking-tight flex items-center leading-none`}>
-            <span className="text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]">URBAN</span>
+            <span className={urbanColor}>URBAN</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 ml-1.5 drop-shadow-[0_0_16px_rgba(6,182,212,0.5)] group-hover:animate-shimmer-text">
               EYE
             </span>
@@ -89,7 +93,7 @@ export default function Logo({ size = 'md', subtitle = 'Active Watch', showText 
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-400"></span>
               </span>
-              <span className={`${subSize} font-mono uppercase tracking-[0.22em] text-cyan-400/80 font-bold drop-shadow-[0_0_6px_rgba(6,182,212,0.3)]`}>
+              <span className={`${subSize} font-mono uppercase tracking-[0.22em] ${subColor} font-bold`}>
                 {subtitle}
               </span>
             </div>
