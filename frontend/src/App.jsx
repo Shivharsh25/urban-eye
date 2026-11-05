@@ -364,6 +364,9 @@ export default function App() {
             <Route path="/admin" element={<Navigate to="/admin-login" replace />} />
             <Route path="/admin/*" element={<Navigate to="/admin-login" replace />} />
             <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<LandingPage />} />
+            <Route path="/index.html" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ErrorBoundary>
       </BrowserRouter>
