@@ -143,7 +143,7 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
   const handleConfirmSignOut = () => {
     setShowSignOutConfirm(false);
     logout();
-    navigate('/login');
+    navigate('/', { replace: true });
   };
 
   const handleNavigate = (path) => {

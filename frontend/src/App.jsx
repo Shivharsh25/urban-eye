@@ -7,6 +7,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Public & Citizen Pages
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CitizenDashboardPage from './pages/CitizenDashboardPage';
@@ -362,7 +363,7 @@ export default function App() {
             {/* Explicit legacy admin redirect */}
             <Route path="/admin" element={<Navigate to="/admin-login" replace />} />
             <Route path="/admin/*" element={<Navigate to="/admin-login" replace />} />
-            <Route path="/" element={<HomeRedirect />} />
+            <Route path="/" element={<LandingPage />} />
           </Routes>
         </ErrorBoundary>
       </BrowserRouter>

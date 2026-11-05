@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Settings, 
   Bell, 
@@ -34,6 +35,7 @@ export default function CitizenSettingsPage() {
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme, isDarkMode } = useTheme();
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Active settings section
   const [activeSection, setActiveSection] = useState('notifications'); // 'notifications' | 'security' | 'privacy' | 'preferences' | 'linked' | 'about'
@@ -804,6 +806,7 @@ export default function CitizenSettingsPage() {
                   onClick={() => {
                     setIsDeleteModalOpen(false);
                     logout();
+                    navigate('/', { replace: true });
                   }}
                   className="flex-1 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 shadow-xs"
                 >

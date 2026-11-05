@@ -41,7 +41,7 @@ export default function DepartmentAdminLayout({ children }) {
 
   const handleLogout = () => {
     logout();
-    navigate('/admin-login');
+    navigate('/', { replace: true });
   };
 
   return (

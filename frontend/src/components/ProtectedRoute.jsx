@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -11,6 +11,17 @@ export default function ProtectedRoute({
   const { user, loading, isAdmin, isSuperAdmin, isDeptAdmin } = useAuth();
   const location = useLocation();
 
+  // If user navigates back using browser <- button after logout, prevent restoring cached state
+  useEffect(() => {
+    const handlePageShow = (event) => {
+      if (event.persisted && !user) {
+        window.location.replace('/');
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, [user]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -22,6 +33,13 @@ export default function ProtectedRoute({
     );
   }
 
+  // 1. Strict unauthenticated check: if not logged in, NO ACCESS allowed!
+  if (!user) {
+    const targetLogin = (superAdminOnly || deptAdminOnly || adminOnly) ? '/admin-login' : '/login';
+    return <Navigate to={targetLogin} replace state={{ from: location }} />;
+  }
+
+  // 2. Role authorization checks
   if (superAdminOnly && !isSuperAdmin) {
     return <Navigate to="/admin-login" replace state={{ from: location }} />;
   }
@@ -31,7 +49,7 @@ export default function ProtectedRoute({
   }
 
   if (adminOnly && !isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/admin-login" replace state={{ from: location }} />;
   }
 
   return children;

@@ -94,7 +94,7 @@ export default function SuperAdminLayout({ children }) {
 
   const handleLogout = () => {
     logout();
-    navigate('/admin-login');
+    navigate('/', { replace: true });
   };
 
   const getInitials = (name) => {

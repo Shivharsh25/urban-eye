@@ -18,19 +18,16 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem('urban_eye_user');
-      if (stored) return JSON.parse(stored);
-      // Auto-set default citizen for instant localhost access without login
-      localStorage.setItem('urban_eye_user', JSON.stringify(DEFAULT_LOCAL_USER));
-      return DEFAULT_LOCAL_USER;
+      return stored ? JSON.parse(stored) : null;
     } catch {
-      return DEFAULT_LOCAL_USER;
+      return null;
     }
   });
 
-  const [token, setToken] = useState(() => localStorage.getItem('urban_eye_token') || 'local-demo-token');
-  const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState(() => localStorage.getItem('urban_eye_token') || null);
+  const [loading, setLoading] = useState(true);
 
-  // Validate session on load and obtain valid token in background if needed
+  // Validate session on load
   useEffect(() => {
     async function verifyAuth() {
       const savedToken = localStorage.getItem('urban_eye_token');
@@ -41,33 +38,28 @@ export function AuthProvider({ children }) {
             setUser(res.data.user);
             localStorage.setItem('urban_eye_user', JSON.stringify(res.data.user));
             const socket = getSocket();
-            if (socket.connected) {
+            if (socket?.connected) {
               socket.emit('join:user', res.data.user.id);
             }
+          } else {
+            setUser(null);
+            setToken(null);
+            localStorage.removeItem('urban_eye_token');
+            localStorage.removeItem('urban_eye_user');
           }
         } catch (err) {
-          console.warn('[AuthContext] Session check, keeping local session active:', err.message);
+          if (err.response?.status === 401 || err.response?.status === 403) {
+            setUser(null);
+            setToken(null);
+            localStorage.removeItem('urban_eye_token');
+            localStorage.removeItem('urban_eye_user');
+          }
         }
       } else {
-        // Automatically obtain a live valid JWT token from backend
-        try {
-          const res = await client.post('/api/auth/login', {
-            email: 'sarah.jenkins@example.com',
-            password: 'Citizen@123456'
-          });
-          if (res.data?.token) {
-            setToken(res.data.token);
-            localStorage.setItem('urban_eye_token', res.data.token);
-            const activeUser = {
-              ...DEFAULT_LOCAL_USER,
-              id: res.data.user?.id || DEFAULT_LOCAL_USER.id
-            };
-            setUser(activeUser);
-            localStorage.setItem('urban_eye_user', JSON.stringify(activeUser));
-          }
-        } catch {
-          // Offline fallback
-        }
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('urban_eye_token');
+        localStorage.removeItem('urban_eye_user');
       }
       setLoading(false);
     }
@@ -187,6 +179,15 @@ export function AuthProvider({ children }) {
     setToken(null);
     localStorage.removeItem('urban_eye_token');
     localStorage.removeItem('urban_eye_user');
+    sessionStorage.clear();
+    try {
+      const socket = getSocket();
+      if (socket?.connected) {
+        socket.disconnect();
+      }
+    } catch (e) {
+      console.warn('Socket disconnect error:', e);
+    }
   };
 
   const updateUser = (updatedUser) => {
