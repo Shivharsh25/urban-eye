@@ -49,13 +49,15 @@ import {
   Timer,
   CheckCircle2,
   Truck,
-  Activity
+  Activity,
+  Menu
 } from 'lucide-react';
 
 export default function LandingPage() {
   const { user, isSuperAdmin, isDeptAdmin } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Home');
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
@@ -121,6 +123,7 @@ export default function LandingPage() {
   // Helper to scroll smoothly to section
   const scrollToSection = (id, tabName) => {
     setActiveTab(tabName);
+    setMobileNavOpen(false);
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -153,12 +156,12 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
           
           {/* Left: Brand Logo & Title */}
-          <Link to="/" className="flex items-center group cursor-pointer">
+          <Link to="/" className="flex items-center group cursor-pointer shrink-0">
             <Logo size="sm" theme="light" subtitle="Active Watch" />
           </Link>
 
-          {/* Center: Main Nav Links */}
-          <nav className="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
+          {/* Center: Main Nav Links (Desktop) */}
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 text-sm font-semibold text-slate-600">
             {[
               { label: 'Home', id: 'hero' },
               { label: 'Features', id: 'features' },
@@ -185,41 +188,108 @@ export default function LandingPage() {
             ))}
           </nav>
 
-          {/* Right: Portals Action Buttons */}
-          <div className="flex items-center space-x-3">
-            {/* Citizen Portal Button */}
+          {/* Right: Portals Action Buttons & Mobile Hamburger */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Citizen Portal Button (Tablet & Desktop) */}
             <Link
               to="/login"
-              className="px-4 py-2 rounded-xl border border-slate-200 hover:border-[#00897B] text-slate-800 font-bold text-xs flex items-center space-x-1.5 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
+              className="hidden sm:inline-flex px-3.5 sm:px-4 py-2 rounded-xl border border-slate-200 hover:border-[#00897B] text-slate-800 font-bold text-xs items-center space-x-1.5 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
             >
               <User className="w-4 h-4 text-slate-600" />
               <span>Citizen Portal</span>
             </Link>
 
-            {/* Admin Portal Button */}
+            {/* Admin Portal Button (Tablet & Desktop) */}
             <Link
               to="/admin-login"
-              className="px-4 py-2 rounded-xl bg-[#003840] hover:bg-[#002B31] text-white font-bold text-xs flex items-center space-x-1.5 shadow-sm transition-all cursor-pointer"
+              className="hidden sm:inline-flex px-3.5 sm:px-4 py-2 rounded-xl bg-[#003840] hover:bg-[#002B31] text-white font-bold text-xs items-center space-x-1.5 shadow-sm transition-all cursor-pointer"
             >
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span>Admin Portal</span>
             </Link>
+
+            {/* Compact Login Button (Mobile only) */}
+            <Link
+              to="/login"
+              className="sm:hidden px-3 py-1.5 rounded-lg bg-[#003840] text-white font-bold text-xs flex items-center space-x-1 shadow-2xs"
+            >
+              <User className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Login</span>
+            </Link>
+
+            {/* Mobile Hamburger Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen(prev => !prev)}
+              className="lg:hidden w-9 h-9 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileNavOpen ? <X className="w-5 h-5 text-rose-500" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
 
         </div>
+
+        {/* Mobile Navigation Drawer (Dropdown) */}
+        {mobileNavOpen && (
+          <div className="lg:hidden bg-white/98 backdrop-blur-md border-b border-slate-200 shadow-lg px-4 py-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="grid grid-cols-2 gap-2 pb-3 border-b border-slate-100">
+              <Link
+                to="/login"
+                onClick={() => setMobileNavOpen(false)}
+                className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-bold text-xs flex items-center justify-center space-x-1.5"
+              >
+                <User className="w-4 h-4 text-slate-600" />
+                <span>Citizen Portal</span>
+              </Link>
+              <Link
+                to="/admin-login"
+                onClick={() => setMobileNavOpen(false)}
+                className="p-2.5 rounded-xl bg-[#003840] text-white font-bold text-xs flex items-center justify-center space-x-1.5"
+              >
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Admin Portal</span>
+              </Link>
+            </div>
+
+            <nav className="flex flex-col space-y-1 text-sm font-semibold text-slate-700">
+              {[
+                { label: 'Home', id: 'hero' },
+                { label: 'Features', id: 'features' },
+                { label: 'Use Cases', id: 'use-cases' },
+                { label: 'How It Works', id: 'how-it-works' },
+                { label: 'Impact', id: 'impact' },
+                { label: 'About', id: 'about' },
+                { label: 'FAQs', id: 'faqs' }
+              ].map((nav) => (
+                <button
+                  key={nav.label}
+                  onClick={() => scrollToSection(nav.id, nav.label)}
+                  className={`px-3 py-2 text-left rounded-lg transition-colors cursor-pointer ${
+                    activeTab === nav.label
+                      ? 'bg-[#E8F8F0] text-[#00A86B] font-bold'
+                      : 'hover:bg-slate-50'
+                  }`}
+                >
+                  {nav.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* ======================================================== */}
       {/* 2. HERO SECTION                                          */}
       {/* ======================================================== */}
-      <section id="hero" className="relative pt-10 pb-8 lg:pt-14 lg:pb-12 overflow-hidden bg-white">
+      <section id="hero" className="relative pt-6 pb-8 sm:pt-10 sm:pb-10 lg:pt-14 lg:pb-12 overflow-hidden bg-white">
         
         {/* Exact Hero City Skyline Background Image from User */}
         <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[60%] xl:w-[65%] pointer-events-none z-0 overflow-hidden flex items-end justify-end">
           <img
             src="/hero-city-full.jpg"
             alt="Urban Eye Smart City Skyline"
-            className="w-full h-full object-cover object-right"
+            className="w-full h-full object-cover object-right opacity-30 sm:opacity-50 lg:opacity-100"
           />
           {/* Smooth horizontal gradient from left (white) to right (transparent) */}
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 sm:via-white/50 lg:via-white/15 to-transparent" />
@@ -237,7 +307,7 @@ export default function LandingPage() {
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black text-[#0A262C] tracking-tight leading-[1.12]">
+            <h1 className="text-3xl sm:text-5xl lg:text-[56px] font-black text-[#0A262C] tracking-tight leading-[1.15] sm:leading-[1.12]">
               Smarter Cities,<br />
               <span className="text-[#00A86B]">Faster Resolution</span>
             </h1>
@@ -248,7 +318,7 @@ export default function LandingPage() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-7 flex flex-wrap items-center gap-4">
+            <div className="mt-6 sm:mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <Link
                 to="/login"
                 className="px-6 py-3.5 rounded-xl bg-[#003840] hover:bg-[#002B31] text-white font-bold text-sm flex items-center space-x-2.5 shadow-md shadow-emerald-950/20 hover:shadow-lg transition-all cursor-pointer group"
@@ -270,7 +340,7 @@ export default function LandingPage() {
             </div>
 
             {/* 4 Feature Highlights Beneath CTA */}
-            <div className="mt-10 flex flex-wrap items-center gap-6 sm:gap-8">
+            <div className="mt-8 sm:mt-10 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3 sm:gap-8">
               <div className="flex items-center space-x-2 text-xs font-bold text-slate-800">
                 <Zap className="w-4 h-4 text-[#00A86B] shrink-0" />
                 <span>Real-time Detection</span>
@@ -299,11 +369,11 @@ export default function LandingPage() {
       <section id="impact" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-20 mb-8 lg:mb-12">
         
         {/* Top 4 Primary Metric Stat Cards */}
-        <div className="bg-[#F4FBF7] border border-emerald-100 rounded-3xl p-6 sm:p-7 shadow-xs">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 divide-y md:divide-y-0 md:divide-x divide-emerald-100/80">
+        <div className="bg-[#F4FBF7] border border-emerald-100 rounded-3xl p-4 sm:p-7 shadow-xs">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 md:divide-x divide-emerald-100/80">
             
             {/* Stat 1 */}
-            <div className="flex items-center space-x-4 pt-4 md:pt-0">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="w-12 h-12 rounded-2xl bg-[#D4F4E4] text-[#00695C] flex items-center justify-center shrink-0 shadow-2xs">
                 <Users className="w-6 h-6" />
               </div>
@@ -314,7 +384,7 @@ export default function LandingPage() {
             </div>
 
             {/* Stat 2 */}
-            <div className="flex items-center space-x-4 pt-4 md:pt-0 md:pl-8">
+            <div className="flex items-center space-x-3 sm:space-x-4 md:pl-6 lg:pl-8">
               <div className="w-12 h-12 rounded-2xl bg-[#D4F4E4] text-[#00695C] flex items-center justify-center shrink-0 shadow-2xs">
                 <Landmark className="w-6 h-6" />
               </div>
@@ -325,7 +395,7 @@ export default function LandingPage() {
             </div>
 
             {/* Stat 3 */}
-            <div className="flex items-center space-x-4 pt-4 md:pt-0 md:pl-8">
+            <div className="flex items-center space-x-3 sm:space-x-4 md:pl-6 lg:pl-8">
               <div className="w-12 h-12 rounded-2xl bg-[#D4F4E4] text-[#00695C] flex items-center justify-center shrink-0 shadow-2xs">
                 <Layers className="w-6 h-6" />
               </div>
@@ -336,7 +406,7 @@ export default function LandingPage() {
             </div>
 
             {/* Stat 4 */}
-            <div className="flex items-center space-x-4 pt-4 md:pt-0 md:pl-8">
+            <div className="flex items-center space-x-3 sm:space-x-4 md:pl-6 lg:pl-8">
               <div className="w-12 h-12 rounded-2xl bg-[#D4F4E4] text-[#00695C] flex items-center justify-center shrink-0 shadow-2xs">
                 <TrendingUp className="w-6 h-6" />
               </div>
@@ -1192,7 +1262,7 @@ export default function LandingPage() {
             <div>
               &copy; 2026 Urban Eye. All rights reserved.
             </div>
-            <div className="flex items-center space-x-6">
+            <div className="flex flex-wrap items-center gap-3 sm:space-x-6">
               <button
                 onClick={() => setLegalModal('privacy')}
                 className="hover:text-white transition-colors cursor-pointer"
@@ -1223,7 +1293,7 @@ export default function LandingPage() {
       {/* 12. DOCUMENTATION MODAL                                  */}
       {/* ======================================================== */}
       {docModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
             
             {/* Modal Header */}
@@ -1246,7 +1316,7 @@ export default function LandingPage() {
             </div>
 
             {/* Doc Tabs */}
-            <div className="flex border-b border-slate-200 px-6 space-x-6 text-xs font-bold text-slate-600 bg-white">
+            <div className="flex border-b border-slate-200 px-4 sm:px-6 space-x-4 sm:space-x-6 text-xs font-bold text-slate-600 bg-white overflow-x-auto scrollbar-none">
               {[
                 { id: 'architecture', label: 'Platform Architecture' },
                 { id: 'citizen', label: 'Citizen Guide' },
@@ -1353,7 +1423,7 @@ export default function LandingPage() {
       {/* 13. API REFERENCE MODAL                                  */}
       {/* ======================================================== */}
       {apiModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
             
             {/* Modal Header */}
@@ -1376,7 +1446,7 @@ export default function LandingPage() {
             </div>
 
             {/* API Tabs */}
-            <div className="flex border-b border-slate-200 px-6 space-x-6 text-xs font-bold text-slate-600 bg-white">
+            <div className="flex border-b border-slate-200 px-4 sm:px-6 space-x-4 sm:space-x-6 text-xs font-bold text-slate-600 bg-white overflow-x-auto scrollbar-none">
               {[
                 { id: 'reports', label: 'POST /api/reports' },
                 { id: 'departments', label: 'GET /api/departments' },
@@ -1490,7 +1560,7 @@ export default function LandingPage() {
       {/* 14. SUPPORT & HELP CENTER MODAL                          */}
       {/* ======================================================== */}
       {supportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
             
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
@@ -1594,7 +1664,7 @@ export default function LandingPage() {
       {/* 15. LEGAL / PRIVACY / TERMS / ACCESSIBILITY MODAL        */}
       {/* ======================================================== */}
       {legalModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[80vh]">
             
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">

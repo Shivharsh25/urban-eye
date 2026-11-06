@@ -226,7 +226,7 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
         </div>
 
         {/* Video Stage (16:9 Aspect Ratio) */}
-        <div className="relative aspect-video w-full bg-[#020508] overflow-hidden select-none flex flex-col group">
+        <div className="relative aspect-[4/3] sm:aspect-video min-h-[350px] sm:min-h-0 w-full bg-[#020508] overflow-hidden select-none flex flex-col group">
           {/* Simulated Browser Chrome Bar */}
           <div className="h-9 w-full bg-[#081017] border-b border-slate-800 flex items-center px-4 justify-between text-xs z-20 shrink-0">
             {/* macOS Window Dots */}
@@ -237,7 +237,7 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
             </div>
 
             {/* Address Bar */}
-            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-black/50 border border-teal-900/40 text-[11px] font-mono text-slate-300 w-72 sm:w-96 justify-center">
+            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-black/50 border border-teal-900/40 text-[11px] font-mono text-slate-300 flex-1 max-w-[190px] sm:max-w-xs md:max-w-md mx-2 justify-center">
               <span className="text-emerald-400 font-bold">https://</span>
               <span>{currentChapter.url}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping ml-1" />
@@ -622,7 +622,7 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
                   </div>
 
                   {/* 4 Large Realtime KPI Counters */}
-                  <div className="grid grid-cols-4 gap-2.5 my-3 text-center">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 my-2 sm:my-3 text-center">
                     <div className="p-2.5 rounded-2xl bg-slate-900/90 border border-slate-800">
                       <div className="text-xl font-black text-emerald-400">1,248</div>
                       <div className="text-[9px] text-slate-400 font-mono">RESOLVED TODAY</div>
@@ -661,7 +661,7 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
             {/* Subtitle Narration Bar at the Bottom of Every Scene */}
             <div className="absolute bottom-3 inset-x-4 text-center z-20 pointer-events-none">
               <div
-                className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-black/90 backdrop-blur-md text-xs sm:text-sm font-medium shadow-2xl border"
+                className="inline-flex items-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-black/90 backdrop-blur-md text-[11px] sm:text-sm font-medium shadow-2xl border max-w-full"
                 style={{
                   borderColor: `${currentChapter.color}50`,
                   color: currentChapter.color

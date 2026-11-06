@@ -693,7 +693,7 @@ export default function CitizenReportPage() {
               Select Issue Category
             </h2>
 
-            <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-2.5">
               {[
                 { id: 'pothole', label: 'Roads & Potholes', icon: AlertTriangle },
                 { id: 'garbage', label: 'Garbage & Waste', icon: Trash2 },
@@ -831,7 +831,7 @@ export default function CitizenReportPage() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {/* Low */}
               <button
                 type="button"

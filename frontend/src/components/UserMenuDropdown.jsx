@@ -623,7 +623,7 @@ export default function UserMenuDropdown({ customTrigger, align = 'right' }) {
               {/* Text Size Selector */}
               <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800">
                 <div className="text-xs sm:text-sm font-bold text-white mb-2">Display Font Scaling</div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {[
                     { key: 'normal', label: 'Default' },
                     { key: 'large', label: 'Large (115%)' },

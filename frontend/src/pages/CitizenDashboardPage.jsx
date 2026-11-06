@@ -398,8 +398,8 @@ export default function CitizenDashboardPage() {
       {/* ================================================================= */}
       {/* 2. KEY METRICS BAR: CAPSULE / PILL SHAPED CONTAINER (EXACT EDGES) */}
       {/* ================================================================= */}
-      <div className="bg-white/95 backdrop-blur-xs rounded-3xl lg:rounded-full border border-[#BCEEE5] px-6 sm:px-10 lg:px-12 py-5 sm:py-6 shadow-[0_4px_28px_rgba(0,180,180,0.12)]">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-5 lg:gap-2 items-center">
+      <div className="bg-white/95 backdrop-blur-xs rounded-3xl lg:rounded-full border border-[#BCEEE5] px-4 sm:px-8 lg:px-12 py-4 sm:py-6 shadow-[0_4px_28px_rgba(0,180,180,0.12)]">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 sm:gap-5 lg:gap-2 items-center">
           
           {/* Metric 1: Community Issues */}
           <div className="flex items-center gap-3.5 px-2">
