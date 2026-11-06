@@ -345,7 +345,7 @@ export default function CitizenReportPage() {
   };
 
   return (
-    <div className="w-full text-slate-800 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 font-sans min-w-0">
+    <div className="w-full max-w-full text-slate-800 p-3 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 font-sans min-w-0 overflow-x-hidden box-border">
       
       {/* ================================================================= */}
       {/* 1. PAGE HEADER & STEPPER (EXACTLY MATCHING SCREENSHOT)            */}
@@ -360,39 +360,39 @@ export default function CitizenReportPage() {
           </p>
         </div>
 
-        {/* 3-Step Wizard Progress Bar extending full width with proper magnification */}
-        <div className="w-full py-3 sm:py-4 flex items-center justify-between">
+        {/* 3-Step Wizard Progress Bar extending full width with responsive scaling */}
+        <div className="w-full max-w-full py-2 sm:py-4 flex items-center justify-between min-w-0">
           {/* Step 1: Issue Details (Active) */}
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-            <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#00897B] text-white flex items-center justify-center text-sm sm:text-base font-bold shadow-xs shrink-0 ring-4 ring-[#E6F8F5]">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <span className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#00897B] text-white flex items-center justify-center text-xs sm:text-base font-bold shadow-xs shrink-0 ring-2 sm:ring-4 ring-[#E6F8F5]">
               1
             </span>
-            <span className="text-sm sm:text-base font-bold text-[#0B2027] whitespace-nowrap tracking-tight">
-              Issue Details
+            <span className="text-xs sm:text-base font-bold text-[#0B2027] tracking-tight">
+              <span className="hidden sm:inline">Issue </span>Details
             </span>
           </div>
 
-          <div className="h-0.5 flex-1 bg-gradient-to-r from-[#00897B]/60 to-[#D5EFEA] mx-3 sm:mx-6 md:mx-8"></div>
+          <div className="h-0.5 flex-1 bg-gradient-to-r from-[#00897B]/60 to-[#D5EFEA] mx-1.5 sm:mx-6 min-w-[8px]"></div>
 
           {/* Step 2: Location */}
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-            <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#E6F3F0] text-[#00897B] flex items-center justify-center text-sm sm:text-base font-bold shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <span className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#E6F3F0] text-[#00897B] flex items-center justify-center text-xs sm:text-base font-bold shrink-0">
               2
             </span>
-            <span className="text-sm sm:text-base font-semibold text-slate-600 whitespace-nowrap tracking-tight">
+            <span className="text-xs sm:text-base font-semibold text-slate-600 tracking-tight">
               Location
             </span>
           </div>
 
-          <div className="h-0.5 flex-1 bg-[#D5EFEA] mx-3 sm:mx-6 md:mx-8"></div>
+          <div className="h-0.5 flex-1 bg-[#D5EFEA] mx-1.5 sm:mx-6 min-w-[8px]"></div>
 
           {/* Step 3: Review & Submit */}
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-            <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#E6F3F0] text-[#00897B] flex items-center justify-center text-sm sm:text-base font-bold shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <span className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#E6F3F0] text-[#00897B] flex items-center justify-center text-xs sm:text-base font-bold shrink-0">
               3
             </span>
-            <span className="text-sm sm:text-base font-semibold text-slate-600 whitespace-nowrap tracking-tight">
-              Review & Submit
+            <span className="text-xs sm:text-base font-semibold text-slate-600 tracking-tight">
+              <span className="hidden sm:inline">Review & </span>Submit
             </span>
           </div>
         </div>
@@ -576,12 +576,12 @@ export default function CitizenReportPage() {
       {/* ================================================================= */}
       {/* 2. MAIN 2-COLUMN BALANCED FORM LAYOUT (EXACTLY LIKE SCREENSHOT)   */}
       {/* ================================================================= */}
-      <form onSubmit={handleSubmitReport} className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+      <form onSubmit={handleSubmitReport} className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 items-start w-full max-w-full min-w-0">
         
         {/* --------------------------------------------------------------- */}
         {/* LEFT COLUMN: Upload Evidence, Category, Describe Issue          */}
         {/* --------------------------------------------------------------- */}
-        <div className="bg-white rounded-3xl border border-[#D5EFEA] p-6 shadow-xs shadow-teal-900/5 space-y-6">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#D5EFEA] p-4 sm:p-6 shadow-xs shadow-teal-900/5 space-y-5 sm:space-y-6 w-full max-w-full min-w-0 overflow-hidden box-border">
           
           {/* Section 1: Upload Evidence */}
           <div>
@@ -761,7 +761,7 @@ export default function CitizenReportPage() {
         {/* --------------------------------------------------------------- */}
         {/* RIGHT COLUMN: Set Location, Severity Level, Submit Button       */}
         {/* --------------------------------------------------------------- */}
-        <div className="bg-white rounded-3xl border border-[#D5EFEA] p-6 shadow-xs shadow-teal-900/5 space-y-6">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#D5EFEA] p-4 sm:p-6 shadow-xs shadow-teal-900/5 space-y-5 sm:space-y-6 w-full max-w-full min-w-0 overflow-hidden box-border">
           
           {/* Section 1: Set Location */}
           <div>

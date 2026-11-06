@@ -314,7 +314,7 @@ export default function CitizenReportsPage() {
   }, [reports, activeCategory, statusFilter, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#F3F9F8] text-[#0B2027] px-4 sm:px-6 lg:px-8 py-6 max-w-[1400px] mx-auto space-y-6">
+    <div className="min-h-screen bg-[#F3F9F8] text-[#0B2027] px-3 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-[1400px] mx-auto space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden box-border">
 
       {/* =================================================================== */}
       {/* 1. HEADER ROW                                                      */}
@@ -334,7 +334,7 @@ export default function CitizenReportsPage() {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap w-full sm:w-auto">
           {/* View Mode Toggle */}
           <div className="flex items-center bg-white border border-[#D5EFEA] rounded-xl p-1 shadow-2xs">
             <button
@@ -396,14 +396,14 @@ export default function CitizenReportsPage() {
       {/* =================================================================== */}
       {/* 2. METRICS CARDS ROW (Matching Reference Layout)                   */}
       {/* =================================================================== */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 w-full max-w-full min-w-0">
         {/* Total Reports */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#D5EFEA] shadow-2xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#E6F8F6] border border-[#BDEEE7] flex items-center justify-center text-[#00897B] shrink-0">
+        <div className="bg-white rounded-2xl p-3 sm:p-5 border border-[#D5EFEA] shadow-2xs flex items-center gap-2.5 sm:gap-4 min-w-0 overflow-hidden">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#E6F8F6] border border-[#BDEEE7] flex items-center justify-center text-[#00897B] shrink-0">
             <FileText className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-[#0B2027] tracking-tight">
+            <div className="text-xl sm:text-3xl font-black text-[#0B2027] tracking-tight truncate">
               {metrics.total}
             </div>
             <div className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -413,12 +413,12 @@ export default function CitizenReportsPage() {
         </div>
 
         {/* In Progress */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#D5EFEA] shadow-2xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
+        <div className="bg-white rounded-2xl p-3 sm:p-5 border border-[#D5EFEA] shadow-2xs flex items-center gap-2.5 sm:gap-4 min-w-0 overflow-hidden">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
             <RotateCw className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-[#0B2027] tracking-tight">
+            <div className="text-xl sm:text-3xl font-black text-[#0B2027] tracking-tight truncate">
               {metrics.inProgress}
             </div>
             <div className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -428,12 +428,12 @@ export default function CitizenReportsPage() {
         </div>
 
         {/* Resolved */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#D5EFEA] shadow-2xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
+        <div className="bg-white rounded-2xl p-3 sm:p-5 border border-[#D5EFEA] shadow-2xs flex items-center gap-2.5 sm:gap-4 min-w-0 overflow-hidden">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-[#0B2027] tracking-tight">
+            <div className="text-xl sm:text-3xl font-black text-[#0B2027] tracking-tight truncate">
               {metrics.resolved}
             </div>
             <div className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -443,12 +443,12 @@ export default function CitizenReportsPage() {
         </div>
 
         {/* Under Review */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#D5EFEA] shadow-2xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 shrink-0">
+        <div className="bg-white rounded-2xl p-3 sm:p-5 border border-[#D5EFEA] shadow-2xs flex items-center gap-2.5 sm:gap-4 min-w-0 overflow-hidden">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 shrink-0">
             <Clock className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-[#0B2027] tracking-tight">
+            <div className="text-xl sm:text-3xl font-black text-[#0B2027] tracking-tight truncate">
               {metrics.underReview}
             </div>
             <div className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -461,12 +461,12 @@ export default function CitizenReportsPage() {
       {/* =================================================================== */}
       {/* 3. FILTER TABS & SEARCH BAR ROW                                     */}
       {/* =================================================================== */}
-      <div className="bg-white rounded-2xl p-4 border border-[#D5EFEA] shadow-2xs space-y-3.5">
+      <div className="bg-white rounded-2xl p-3 sm:p-4 border border-[#D5EFEA] shadow-2xs space-y-3 w-full max-w-full overflow-hidden box-border">
         
         {/* Top: Status Tabs + Search */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Status Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 w-full max-w-full scrollbar-none">
             {[
               { id: 'all', label: 'All Reports' },
               { id: 'in_progress', label: 'In Progress' },
@@ -511,7 +511,7 @@ export default function CitizenReportsPage() {
         </div>
 
         {/* Bottom: Category Chips */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-1 border-t border-slate-100 scrollbar-hide">
+        <div className="flex items-center gap-2 overflow-x-auto pt-1 border-t border-slate-100 w-full max-w-full scrollbar-none">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
             Category:
           </span>
@@ -568,7 +568,7 @@ export default function CitizenReportsPage() {
         </div>
       ) : viewMode === 'grid' ? (
         /* ================= CARD GRID VIEW ================= */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full max-w-full min-w-0">
           {filteredReports.map((item) => {
             const cat = getCategoryMeta(item);
             const status = getStatusMeta(item.status);
@@ -662,9 +662,9 @@ export default function CitizenReportsPage() {
         </div>
       ) : (
         /* ================= TABLE LIST VIEW ================= */
-        <div className="bg-white rounded-2xl border border-[#D5EFEA] shadow-2xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#D5EFEA] shadow-2xs overflow-hidden w-full max-w-full">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[640px] text-left border-collapse">
               <thead>
                 <tr className="bg-[#FAF9F5] border-b border-[#EAEFEF] text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <th className="py-3 px-4">Report</th>

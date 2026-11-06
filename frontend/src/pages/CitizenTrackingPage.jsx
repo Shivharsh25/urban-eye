@@ -249,7 +249,7 @@ export default function CitizenTrackingPage() {
   }, [allCombinedReports, activeFilter, searchQuery]);
 
   return (
-    <div className="w-full max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="w-full max-w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6 overflow-x-hidden box-border min-w-0">
       
       {/* ===================================================================== */}
       {/* 1. PAGE HEADER                                                        */}
@@ -293,7 +293,7 @@ export default function CitizenTrackingPage() {
       {/* ===================================================================== */}
       {/* 2. FOUR METRIC SUMMARY CARDS                                          */}
       {/* ===================================================================== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 w-full max-w-full min-w-0">
         
         {/* Card 1: Total Reports */}
         <div className="bg-gradient-to-br from-white via-white to-sky-100/70 border border-[#D5EFEA] rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-xs hover:shadow-md transition-all">

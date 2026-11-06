@@ -187,7 +187,7 @@ export default function DetectionModal({ detection, onClose, onStatusUpdated }) 
   return createPortal(
     <div 
       className="fixed inset-0 z-[99998] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
-      style={{ minHeight: '100vh', width: '100vw' }}
+      style={{ minHeight: '100vh', width: '100%' }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
