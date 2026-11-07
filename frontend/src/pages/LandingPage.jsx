@@ -161,7 +161,7 @@ export default function LandingPage() {
           </Link>
 
           {/* Center: Main Nav Links (Desktop) */}
-          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 text-sm font-semibold text-slate-600">
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 text-base font-semibold text-slate-600">
             {[
               { label: 'Home', id: 'hero' },
               { label: 'Features', id: 'features' },
@@ -193,7 +193,7 @@ export default function LandingPage() {
             {/* Citizen Portal Button (Tablet & Desktop) */}
             <Link
               to="/login"
-              className="hidden sm:inline-flex px-3.5 sm:px-4 py-2 rounded-xl border border-slate-200 hover:border-[#00897B] text-slate-800 font-bold text-xs items-center space-x-1.5 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
+              className="hidden sm:inline-flex px-4 py-2 rounded-xl border border-slate-200 hover:border-[#00897B] text-slate-800 font-bold text-sm items-center space-x-1.5 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
             >
               <User className="w-4 h-4 text-slate-600" />
               <span>Citizen Portal</span>
@@ -202,7 +202,7 @@ export default function LandingPage() {
             {/* Admin Portal Button (Tablet & Desktop) */}
             <Link
               to="/admin-login"
-              className="hidden sm:inline-flex px-3.5 sm:px-4 py-2 rounded-xl bg-[#003840] hover:bg-[#002B31] text-white font-bold text-xs items-center space-x-1.5 shadow-sm transition-all cursor-pointer"
+              className="hidden sm:inline-flex px-4 py-2 rounded-xl bg-[#003840] hover:bg-[#002B31] text-white font-bold text-sm items-center space-x-1.5 shadow-sm transition-all cursor-pointer"
             >
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span>Admin Portal</span>
@@ -280,154 +280,123 @@ export default function LandingPage() {
       </header>
 
       {/* ======================================================== */}
-      {/* 2. HERO SECTION                                          */}
+      {/* 2. HERO SECTION (EXACT MATCH TO REFERENCE DESIGN)       */}
       {/* ======================================================== */}
-      <section id="hero" className="relative pt-8 pb-10 sm:pt-12 sm:pb-14 lg:pt-16 lg:pb-16 overflow-hidden bg-white">
+      <section id="hero" className="relative pt-10 pb-12 sm:pt-14 sm:pb-16 lg:pt-20 lg:pb-24 overflow-hidden bg-white">
         
-        {/* Full-width Balanced City Skyline Background spanning both sides */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+        {/* City Skyline Background (Right Side, vibrant 100% clarity, matching reference image) */}
+        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[62%] xl:w-[60%] h-full pointer-events-none z-0 overflow-hidden">
           <img
             src="/hero-city-full.jpg"
             alt="Urban Eye Smart City Skyline"
-            className="w-full h-full object-cover object-center opacity-20 sm:opacity-35 lg:opacity-50"
+            className="w-full h-full object-cover object-right sm:object-center lg:object-right-bottom"
           />
-          {/* Dual balanced horizontal gradients for high contrast on left and visual clarity on right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 sm:via-white/75 lg:via-white/60 to-white/30" />
-          {/* Subtle bottom fade to transition seamlessly into the Impact section */}
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white via-white/60 to-transparent" />
+          {/* Smooth horizontal gradient: solid white on left, gently fading into city on right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent lg:via-white/35" />
+        </div>
+
+        {/* Bottom Organic Curved White Swoop (matching the reference image curve under trees) */}
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none z-0 overflow-hidden">
+          <svg
+            viewBox="0 0 1440 120"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-14 sm:h-20 lg:h-28 text-white preserve-3d"
+          >
+            <path
+              d="M0,120 L0,35 Q480,10 760,55 T1440,25 L1440,120 Z"
+              fill="#ffffff"
+            />
+          </svg>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="max-w-2xl lg:max-w-2xl xl:max-w-3xl space-y-6 sm:space-y-7">
             
-            {/* Left Column (7 cols): Main Headline, Subtitle, CTAs & Core Badges */}
-            <div className="lg:col-span-7 space-y-6">
-              
-              {/* Top Badge */}
-              <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-[#E8F8F0] border border-[#A7F3D0] text-[#00695C] text-xs sm:text-sm font-bold shadow-2xs">
-                <ShieldCheck className="w-4 h-4 text-[#00A86B]" />
-                <span>AI-Powered City Governance</span>
-              </div>
-
-              {/* Main Headline (Increased font size) */}
-              <h1 className="text-3xl sm:text-5xl lg:text-[58px] xl:text-[62px] font-black text-[#0A262C] tracking-tight leading-[1.12]">
-                Smarter Cities,<br />
-                <span className="text-[#00A86B]">Faster Resolution</span>
-              </h1>
-
-              {/* Subtitle (Increased font size) */}
-              <p className="text-base sm:text-xl text-slate-600 leading-relaxed font-medium max-w-xl">
-                A unified platform that detects urban issues in real time, intelligently routes them to the right department, and ensures transparent, faster resolution.
-              </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 pt-1">
-                <Link
-                  to="/login"
-                  className="px-7 py-4 rounded-xl bg-[#003840] hover:bg-[#002B31] text-white font-bold text-sm sm:text-base flex items-center justify-center space-x-2.5 shadow-md shadow-emerald-950/20 hover:shadow-lg transition-all cursor-pointer group"
-                >
-                  <span>Get Started</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => setDemoModalOpen(true)}
-                  className="px-6 py-4 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm sm:text-base flex items-center justify-center space-x-2.5 shadow-2xs transition-all cursor-pointer"
-                >
-                  <div className="w-6 h-6 rounded-full bg-emerald-50 text-[#00A86B] flex items-center justify-center border border-[#A7F3D0]">
-                    <Play className="w-3 h-3 fill-current ml-0.5" />
-                  </div>
-                  <span>Watch Demo</span>
-                </button>
-              </div>
-
-              {/* 4 Feature Highlights Beneath CTA */}
-              <div className="pt-2 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-4 sm:gap-7">
-                <div className="flex items-center space-x-2 text-xs sm:text-sm font-bold text-slate-800">
-                  <Zap className="w-4 h-4 text-[#00A86B] shrink-0" />
-                  <span>Real-time Detection</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs sm:text-sm font-bold text-slate-800">
-                  <Layers className="w-4 h-4 text-[#00A86B] shrink-0" />
-                  <span>Auto Routing</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs sm:text-sm font-bold text-slate-800">
-                  <BarChart3 className="w-4 h-4 text-[#00A86B] shrink-0" />
-                  <span>Department Coordination</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs sm:text-sm font-bold text-slate-800">
-                  <ShieldCheck className="w-4 h-4 text-[#00A86B] shrink-0" />
-                  <span>Transparent Tracking</span>
-                </div>
-              </div>
-
+            {/* Top Pill Badge */}
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#E8F8F0] border border-[#A7F3D0]/60 text-[#00695C] text-xs sm:text-sm font-bold shadow-2xs">
+              <ShieldCheck className="w-4 h-4 text-[#00897B]" />
+              <span>AI-Powered City Governance</span>
             </div>
 
-            {/* Right Column (5 cols): Interactive Live Civic Telemetry Card (Covers the Right Side) */}
-            <div className="lg:col-span-5 hidden lg:block">
-              <div className="bg-white/92 backdrop-blur-md border border-emerald-100/90 rounded-3xl p-6 sm:p-7 shadow-xl shadow-emerald-950/5 space-y-4">
-                
-                {/* Telemetry Header */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <div className="flex items-center space-x-2.5">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00A86B]"></span>
-                    </span>
-                    <span className="text-xs font-black uppercase tracking-wider text-[#0A262C]">
-                      Live Civic Telemetry
-                    </span>
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#00A86B] text-[11px] font-bold font-mono border border-emerald-100">
-                    YOLOv8 Active
-                  </span>
-                </div>
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-6xl lg:text-[64px] xl:text-[70px] font-black text-[#0A262C] tracking-tight leading-[1.08]">
+              Smarter Cities,<br />
+              <span className="text-[#00897B]">Faster Resolution</span>
+            </h1>
 
-                {/* Telemetry Feed Item 1 */}
-                <div className="p-3.5 rounded-2xl bg-[#F4FBF7] border border-emerald-100/80 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#D4F4E4] text-[#00695C] flex items-center justify-center font-bold text-sm shrink-0">
-                      🚧
-                    </div>
-                    <div>
-                      <div className="text-xs font-black text-[#0A262C]">Road Defect • Auto-Triaged</div>
-                      <div className="text-[11px] text-slate-500 font-medium">PWD Dispatched • 48h SLA Active</div>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-[#00A86B] font-mono">94.8% AI</span>
-                </div>
+            {/* Subtitle */}
+            <p className="text-base sm:text-xl lg:text-[22px] text-slate-600 leading-relaxed font-medium max-w-xl">
+              A unified platform that detects urban issues in real time, intelligently routes them to the right department, and ensures transparent, faster resolution.
+            </p>
 
-                {/* Telemetry Feed Item 2 */}
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-sm shrink-0">
-                      🗑️
-                    </div>
-                    <div>
-                      <div className="text-xs font-black text-[#0A262C]">Waste Spill • GPS Geofenced</div>
-                      <div className="text-[11px] text-slate-500 font-medium">Sanitation Route #4 Assigned</div>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-sky-600 font-mono">24h SLA</span>
-                </div>
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 pt-2">
+              <Link
+                to="/login"
+                className="px-7 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-[#054E45] hover:bg-[#033B34] text-white font-bold text-base sm:text-lg flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition-all cursor-pointer group"
+              >
+                <span>Get Started</span>
+                <span className="text-lg transition-transform group-hover:translate-x-1">→</span>
+              </Link>
 
-                {/* Telemetry Realtime Metrics Strip */}
-                <div className="grid grid-cols-3 gap-2.5 pt-1 text-center">
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <div className="text-lg sm:text-xl font-black text-[#0A262C]">&lt; 280ms</div>
-                    <div className="text-[10px] font-bold text-slate-400 font-mono uppercase">AI Ingest</div>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <div className="text-lg font-black text-[#00A86B]">95%</div>
-                    <div className="text-[10px] font-bold text-slate-400 font-mono uppercase">Faster Fix</div>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <div className="text-lg font-black text-purple-600">100%</div>
-                    <div className="text-[10px] font-bold text-slate-400 font-mono uppercase">Audit Logged</div>
-                  </div>
+              <button
+                type="button"
+                onClick={() => setDemoModalOpen(true)}
+                className="px-6 sm:px-7 py-3.5 sm:py-4 rounded-xl border-2 border-[#00897B] bg-white hover:bg-slate-50 text-[#0A262C] font-bold text-base sm:text-lg flex items-center justify-center space-x-2.5 shadow-2xs transition-all cursor-pointer"
+              >
+                <div className="w-6 h-6 rounded-full border-2 border-[#00897B] flex items-center justify-center text-[#00897B]">
+                  <Play className="w-2.5 h-2.5 fill-[#00897B] ml-0.5" />
                 </div>
+                <span>Watch Demo</span>
+              </button>
+            </div>
 
+            {/* 4 Feature Highlights Beneath CTA (with vertical dividers matching reference image) */}
+            <div className="pt-6 sm:pt-8 grid grid-cols-2 gap-4 sm:flex sm:items-center sm:gap-6 lg:gap-8">
+              {/* Feature 1 */}
+              <div className="flex items-center space-x-2.5">
+                <Zap className="w-5 h-5 text-[#00897B] shrink-0" />
+                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
+                  <div>Real-time</div>
+                  <div>Detection</div>
+                </div>
+              </div>
+
+              {/* Vertical divider */}
+              <div className="hidden sm:block h-8 w-[1px] bg-slate-200 shrink-0" />
+
+              {/* Feature 2 */}
+              <div className="flex items-center space-x-2.5">
+                <Layers className="w-5 h-5 text-[#00897B] shrink-0" />
+                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
+                  <div>Auto</div>
+                  <div>Routing</div>
+                </div>
+              </div>
+
+              {/* Vertical divider */}
+              <div className="hidden sm:block h-8 w-[1px] bg-slate-200 shrink-0" />
+
+              {/* Feature 3 */}
+              <div className="flex items-center space-x-2.5">
+                <BarChart3 className="w-5 h-5 text-[#00897B] shrink-0" />
+                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
+                  <div>Department</div>
+                  <div>Coordination</div>
+                </div>
+              </div>
+
+              {/* Vertical divider */}
+              <div className="hidden sm:block h-8 w-[1px] bg-slate-200 shrink-0" />
+
+              {/* Feature 4 */}
+              <div className="flex items-center space-x-2.5">
+                <ShieldCheck className="w-5 h-5 text-[#00897B] shrink-0" />
+                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
+                  <div>Transparent</div>
+                  <div>Tracking</div>
+                </div>
               </div>
             </div>
 
@@ -438,11 +407,11 @@ export default function LandingPage() {
       {/* ======================================================== */}
       {/* 3. IMPACT SECTION (HIGH-LEVEL STATS + CONCRETE RESULTS)  */}
       {/* ======================================================== */}
-      <section id="impact" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-20 mb-8 lg:mb-12">
+      <section id="impact" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-20 mb-8 lg:mb-12">
         
         {/* Top 4 Primary Metric Stat Cards */}
-        <div className="bg-[#F4FBF7] border border-emerald-100 rounded-3xl p-4 sm:p-7 shadow-xs">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 md:divide-x divide-emerald-100/80">
+        <div className="bg-[#F4FBF7] border border-emerald-100 rounded-3xl p-5 sm:p-8 shadow-xs">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-6 md:gap-8 md:divide-x divide-emerald-100/80">
             
             {/* Stat 1 */}
             <div className="flex items-center space-x-3 sm:space-x-4">
@@ -450,8 +419,8 @@ export default function LandingPage() {
                 <Users className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0A262C] block">1M+</span>
-                <span className="text-xs sm:text-sm font-bold text-slate-500">Citizens Covered</span>
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A262C] block">1M+</span>
+                <span className="text-sm sm:text-base font-bold text-slate-600">Citizens Covered</span>
               </div>
             </div>
 
@@ -461,8 +430,8 @@ export default function LandingPage() {
                 <Landmark className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0A262C] block">50+</span>
-                <span className="text-xs sm:text-sm font-bold text-slate-500">Departments</span>
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A262C] block">50+</span>
+                <span className="text-sm sm:text-base font-bold text-slate-600">Departments</span>
               </div>
             </div>
 
@@ -472,8 +441,8 @@ export default function LandingPage() {
                 <Layers className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0A262C] block">5+</span>
-                <span className="text-xs sm:text-sm font-bold text-slate-500">Issue Categories</span>
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A262C] block">5+</span>
+                <span className="text-sm sm:text-base font-bold text-slate-600">Issue Categories</span>
               </div>
             </div>
 
@@ -483,8 +452,8 @@ export default function LandingPage() {
                 <TrendingUp className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0A262C] block">95%</span>
-                <span className="text-xs sm:text-sm font-bold text-slate-500">Faster Resolution</span>
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A262C] block">95%</span>
+                <span className="text-sm sm:text-base font-bold text-slate-600">Faster Resolution</span>
               </div>
             </div>
 
@@ -494,40 +463,40 @@ export default function LandingPage() {
         {/* Concrete Real-World Municipal Impact Breakdown */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">
           
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-start space-x-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#00A86B] flex items-center justify-center shrink-0">
-              <Timer className="w-5 h-5" />
+          <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-start space-x-4">
+            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-[#00A86B] flex items-center justify-center shrink-0">
+              <Timer className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-[#00A86B]">Turnaround Velocity</span>
-              <h4 className="text-base sm:text-lg font-black text-[#0A262C] mt-0.5">&lt; 36 Hours Average</h4>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+              <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#00A86B]">Turnaround Velocity</span>
+              <h4 className="text-lg sm:text-xl font-black text-[#0A262C] mt-0.5">&lt; 36 Hours Average</h4>
+              <p className="text-sm sm:text-base text-slate-600 mt-1 leading-relaxed">
                 Replaces slow 14-day manual paperwork cycles with instant automated ticket dispatch to field teams.
               </p>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-start space-x-4">
-            <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
-              <CheckCircle2 className="w-5 h-5" />
+          <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-start space-x-4">
+            <div className="w-11 h-11 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-sky-600">Dual Verification</span>
-              <h4 className="text-base sm:text-lg font-black text-[#0A262C] mt-0.5">98.4% Proof Verified</h4>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+              <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-sky-600">Dual Verification</span>
+              <h4 className="text-lg sm:text-xl font-black text-[#0A262C] mt-0.5">98.4% Proof Verified</h4>
+              <p className="text-sm sm:text-base text-slate-600 mt-1 leading-relaxed">
                 Every closed complaint requires geo-stamped photographic evidence verified by both AI and citizen feedback.
               </p>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-start space-x-4">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-              <Activity className="w-5 h-5" />
+          <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-start space-x-4">
+            <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+              <Activity className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-purple-600">Municipal Operations</span>
-              <h4 className="text-base sm:text-lg font-black text-[#0A262C] mt-0.5">34% Cost Savings</h4>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+              <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-purple-600">Municipal Operations</span>
+              <h4 className="text-lg sm:text-xl font-black text-[#0A262C] mt-0.5">34% Cost Savings</h4>
+              <p className="text-sm sm:text-base text-slate-600 mt-1 leading-relaxed">
                 Smart spatial clustering groups nearby hazards, optimizing heavy machinery routes and municipal labor.
               </p>
             </div>
@@ -549,7 +518,7 @@ export default function LandingPage() {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A262C] tracking-tight">
             From Hazard to Resolution in 4 Steps
           </h2>
-          <p className="mt-2 text-sm sm:text-base text-slate-600 font-medium">
+          <p className="mt-2 text-base sm:text-lg text-slate-600 font-medium">
             How Urban Eye bridges citizens, edge neural networks, and municipal field crews into an automated workflow.
           </p>
         </div>
@@ -563,21 +532,21 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-[#E8F8F0] text-[#00A86B] flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform">
                   <Camera className="w-6 h-6" />
                 </div>
-                <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-black tracking-wider">
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-black tracking-wider">
                   STEP 01
                 </span>
               </div>
-              <h3 className="text-base sm:text-lg font-black text-[#0A262C]">
+              <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">
                 Intelligent Hazard Capture
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2.5">
+              <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mt-2.5">
                 Citizens snap photos or dashcams stream road footage. YOLOv8 scans the media in &lt; 280ms, classifies the hazard, tags GPS coordinates, and automatically blurs faces and license plates.
               </p>
             </div>
             <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap gap-1.5">
-              <span className="px-2 py-0.5 rounded bg-emerald-50 text-[#00A86B] font-bold text-[10px]">YOLOv8 Vision</span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">Auto-PII Blur</span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">GPS EXIF</span>
+              <span className="px-2.5 py-1 rounded bg-emerald-50 text-[#00A86B] font-bold text-xs">YOLOv8 Vision</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-medium text-xs">Auto-PII Blur</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-medium text-xs">GPS EXIF</span>
             </div>
           </div>
 
@@ -588,21 +557,21 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform">
                   <Share2 className="w-6 h-6" />
                 </div>
-                <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-black tracking-wider">
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-black tracking-wider">
                   STEP 02
                 </span>
               </div>
-              <h3 className="text-base sm:text-lg font-black text-[#0A262C]">
+              <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">
                 Neural Ward Triage & Routing
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2.5">
+              <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mt-2.5">
                 Zero manual sorting. Our dynamic routing engine maps the issue to the exact municipal ward boundary and department (PWD, Sanitation, Electrical) while starting an automated SLA resolution clock.
               </p>
             </div>
             <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap gap-1.5">
-              <span className="px-2 py-0.5 rounded bg-sky-50 text-sky-600 font-bold text-[10px]">Ward Geofencing</span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">Auto-SLA Clock</span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">Zero Delay</span>
+              <span className="px-2.5 py-1 rounded bg-sky-50 text-sky-600 font-bold text-xs">Ward Geofencing</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-medium text-xs">Auto-SLA Clock</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-medium text-xs">Zero Delay</span>
             </div>
           </div>
 
@@ -613,21 +582,21 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform">
                   <Settings className="w-6 h-6" />
                 </div>
-                <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-black tracking-wider">
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-black tracking-wider">
                   STEP 03
                 </span>
               </div>
-              <h3 className="text-base sm:text-lg font-black text-[#0A262C]">
+              <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">
                 Field Action & Proof Upload
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2.5">
+              <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mt-2.5">
                 Field repair units receive prioritized dispatch tickets on their portal with turn-by-turn navigation. Upon completing repairs, officers capture live timestamped "Resolution Photo Proof" on-site.
               </p>
             </div>
             <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap gap-1.5">
-              <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-600 font-bold text-[10px]">Field Triage</span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">Photo Proof</span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">Live Dispatch</span>
+              <span className="px-2.5 py-1 rounded bg-amber-50 text-amber-600 font-bold text-xs">Field Triage</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-medium text-xs">Photo Proof</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-medium text-xs">Live Dispatch</span>
             </div>
           </div>
 
@@ -638,21 +607,21 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform">
                   <CheckCheck className="w-6 h-6 stroke-[2.5]" />
                 </div>
-                <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-black tracking-wider">
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-black tracking-wider">
                   STEP 04
                 </span>
               </div>
-              <h3 className="text-base sm:text-lg font-black text-[#0A262C]">
+              <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">
                 Dual Verification & Audit
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2.5">
+              <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mt-2.5">
                 The resolution proof is cryptographically logged into the Super Admin audit trail. Citizens receive SMS alerts with the proof photo and can verify or dispute closure before ticket archival.
               </p>
             </div>
             <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap gap-1.5">
-              <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-600 font-bold text-[10px]">Citizen Alert</span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">Audit Sealed</span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">100% Verified</span>
+              <span className="px-2.5 py-1 rounded bg-purple-50 text-purple-600 font-bold text-xs">Citizen Alert</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-medium text-xs">Audit Sealed</span>
+              <span className="px-2.5 py-1 rounded bg-slate-100 text-slate-600 font-medium text-xs">100% Verified</span>
             </div>
           </div>
 
@@ -668,7 +637,7 @@ export default function LandingPage() {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A262C] tracking-tight">
               A Platform for Every Stakeholder
             </h2>
-            <p className="mt-2 text-sm sm:text-base text-slate-600 font-medium">
+            <p className="mt-2 text-base sm:text-lg text-slate-600 font-medium">
               Role-based portals tailored for citizens, departments, and city administrators.
             </p>
           </div>
@@ -684,14 +653,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-[#E8F8F0] text-[#00A86B] flex items-center justify-center shadow-2xs mb-5">
                   <User className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-black text-[#0A262C] group-hover:text-[#00A86B] transition-colors">
+                <h3 className="text-xl sm:text-2xl font-black text-[#0A262C] group-hover:text-[#00A86B] transition-colors">
                   Citizen Portal
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mt-2.5">
                   Report civic hazards with GPS geotags, track resolution timelines, and receive SMS alerts.
                 </p>
               </div>
-              <div className="mt-6 flex items-center space-x-2 text-xs sm:text-sm font-bold text-[#00A86B]">
+              <div className="mt-6 flex items-center space-x-2 text-sm sm:text-base font-bold text-[#00A86B]">
                 <span>Launch Citizen Portal</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </div>
@@ -706,14 +675,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center shadow-2xs mb-5">
                   <Building2 className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-black text-[#0A262C] group-hover:text-sky-600 transition-colors">
+                <h3 className="text-xl sm:text-2xl font-black text-[#0A262C] group-hover:text-sky-600 transition-colors">
                   Department Portal
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mt-2.5">
                   Municipal officers receive auto-triaged tickets, coordinate field dispatch, and upload photo proof.
                 </p>
               </div>
-              <div className="mt-6 flex items-center space-x-2 text-xs sm:text-sm font-bold text-sky-600">
+              <div className="mt-6 flex items-center space-x-2 text-sm sm:text-base font-bold text-sky-600">
                 <span>Department Staff Login</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </div>
@@ -728,14 +697,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shadow-2xs mb-5">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-black text-[#0A262C] group-hover:text-purple-600 transition-colors">
+                <h3 className="text-xl sm:text-2xl font-black text-[#0A262C] group-hover:text-purple-600 transition-colors">
                   Super Admin Portal
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-2">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mt-2.5">
                   Executive oversight over all 5 departments, AI confidence thresholds, and tamper-proof audit trails.
                 </p>
               </div>
-              <div className="mt-6 flex items-center space-x-2 text-xs sm:text-sm font-bold text-purple-600">
+              <div className="mt-6 flex items-center space-x-2 text-sm sm:text-base font-bold text-purple-600">
                 <span>Command Center Login</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </div>
@@ -784,21 +753,21 @@ export default function LandingPage() {
               
               <div className="p-5 space-y-3">
                 <div>
-                  <h3 className="text-base sm:text-lg font-black text-[#0A262C]">
+                  <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">
                     Pothole & Surface Damage
                   </h3>
-                  <span className="text-xs sm:text-sm font-bold text-[#00A86B] block mt-0.5">
+                  <span className="text-sm sm:text-base font-bold text-[#00A86B] block mt-0.5">
                     Roads & Public Works Dept (PWD)
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
                   Detects asphalt craters, depth fractures, and vehicular hazard radius. Automatically queues bitumen repair teams and updates the city road quality index.
                 </p>
               </div>
             </div>
 
             <div className="p-5 pt-0">
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
                 <span>AI Confidence: &gt; 82%</span>
                 <span className="text-slate-700 font-bold">Auto-Triage Active</span>
               </div>
@@ -814,32 +783,32 @@ export default function LandingPage() {
                   alt="Garbage Monitoring"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-rose-500 text-white font-black text-[10px] tracking-wider shadow-sm">
+                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-rose-500 text-white font-black text-xs tracking-wider shadow-sm">
                   HYGIENE HAZARD
                 </span>
-                <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/95 text-slate-800 font-bold text-[10px] shadow-sm flex items-center space-x-1">
-                  <Clock className="w-3 h-3 text-rose-500" />
+                <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/95 text-slate-800 font-bold text-xs shadow-sm flex items-center space-x-1">
+                  <Clock className="w-3.5 h-3.5 text-rose-500" />
                   <span>24h SLA</span>
                 </span>
               </div>
               
               <div className="p-5 space-y-3">
                 <div>
-                  <h3 className="text-base sm:text-lg font-black text-[#0A262C]">
+                  <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">
                     Garbage & Waste Overflows
                   </h3>
-                  <span className="text-xs sm:text-sm font-bold text-[#00A86B] block mt-0.5">
+                  <span className="text-sm sm:text-base font-bold text-[#00A86B] block mt-0.5">
                     Sanitation & Solid Waste Dept
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
                   Identifies overflowing community dumpsters and illegal roadside trash piles. Dispatches compactor collection trucks with optimized pickup routes.
                 </p>
               </div>
             </div>
 
             <div className="p-5 pt-0">
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
                 <span>AI Confidence: &gt; 88%</span>
                 <span className="text-slate-700 font-bold">Sanitation Fleet GPS</span>
               </div>
@@ -855,32 +824,32 @@ export default function LandingPage() {
                   alt="Streetlight Management"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-amber-500 text-white font-black text-[10px] tracking-wider shadow-sm">
+                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-amber-500 text-white font-black text-xs tracking-wider shadow-sm">
                   SAFETY CRITICAL
                 </span>
-                <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/95 text-slate-800 font-bold text-[10px] shadow-sm flex items-center space-x-1">
-                  <Clock className="w-3 h-3 text-amber-500" />
+                <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/95 text-slate-800 font-bold text-xs shadow-sm flex items-center space-x-1">
+                  <Clock className="w-3.5 h-3.5 text-amber-500" />
                   <span>24h SLA</span>
                 </span>
               </div>
               
               <div className="p-5 space-y-3">
                 <div>
-                  <h3 className="text-base sm:text-lg font-black text-[#0A262C]">
+                  <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">
                     Streetlight & Grid Faults
                   </h3>
-                  <span className="text-xs sm:text-sm font-bold text-[#00A86B] block mt-0.5">
+                  <span className="text-sm sm:text-base font-bold text-[#00A86B] block mt-0.5">
                     Electrical & Street Lighting Dept
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
                   Detects unlit night corridors, damaged light fixtures, and exposed wiring. Prevents dark-zone crime and pedestrian road accidents.
                 </p>
               </div>
             </div>
 
             <div className="p-5 pt-0">
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
                 <span>AI Confidence: &gt; 85%</span>
                 <span className="text-slate-700 font-bold">Grid Pole Mapping</span>
               </div>
@@ -896,32 +865,32 @@ export default function LandingPage() {
                   alt="Encroachment Alerts"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-blue-600 text-white font-black text-[10px] tracking-wider shadow-sm">
+                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-blue-600 text-white font-black text-xs tracking-wider shadow-sm">
                   URBAN FLOW
                 </span>
-                <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/95 text-slate-800 font-bold text-[10px] shadow-sm flex items-center space-x-1">
-                  <Clock className="w-3 h-3 text-blue-600" />
+                <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/95 text-slate-800 font-bold text-xs shadow-sm flex items-center space-x-1">
+                  <Clock className="w-3.5 h-3.5 text-blue-600" />
                   <span>72h SLA</span>
                 </span>
               </div>
               
               <div className="p-5 space-y-3">
                 <div>
-                  <h3 className="text-base sm:text-lg font-black text-[#0A262C]">
+                  <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">
                     Encroachment & Walkway Blocks
                   </h3>
-                  <span className="text-xs sm:text-sm font-bold text-[#00A86B] block mt-0.5">
+                  <span className="text-sm sm:text-base font-bold text-[#00A86B] block mt-0.5">
                     Enforcement & Urban Planning
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
                   Flags unauthorized commercial stalls, illegal debris dumping, and pedestrian sidewalk blocks, triggering municipal inspection notices.
                 </p>
               </div>
             </div>
 
             <div className="p-5 pt-0">
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
                 <span>AI Confidence: &gt; 78%</span>
                 <span className="text-slate-700 font-bold">Enforcement Logged</span>
               </div>
@@ -946,10 +915,10 @@ export default function LandingPage() {
                   <Landmark className="w-3.5 h-3.5 text-[#00A86B]" />
                   <span>The Urban Eye Mission</span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-black text-[#0A262C] tracking-tight leading-tight">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A262C] tracking-tight leading-tight">
                   Why Modern Cities Need <span className="text-[#00A86B]">Urban Eye</span>
                 </h2>
-                <p className="mt-3 text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
+                <p className="mt-3 text-base sm:text-lg text-slate-600 font-medium leading-relaxed">
                   Traditional civic reporting suffers from bureaucratic disconnects, lost physical complaint slips, and zero visibility. Urban Eye replaces friction with an autonomous civic nervous system.
                 </p>
               </div>
@@ -961,8 +930,8 @@ export default function LandingPage() {
                     ✕
                   </div>
                   <div>
-                    <h5 className="font-bold text-xs sm:text-sm text-slate-800">The Traditional Grievance Bottleneck</h5>
-                    <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                    <h5 className="font-bold text-sm sm:text-base text-slate-800">The Traditional Grievance Bottleneck</h5>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
                       Complaints sit unrouted in paper logs for 2-3 weeks. No SLA countdowns, no photo evidence, and zero citizen feedback loops.
                     </p>
                   </div>
@@ -973,8 +942,8 @@ export default function LandingPage() {
                     ✓
                   </div>
                   <div>
-                    <h5 className="font-bold text-xs sm:text-sm text-[#00695C]">The Urban Eye Neural Grid</h5>
-                    <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                    <h5 className="font-bold text-sm sm:text-base text-[#00695C]">The Urban Eye Neural Grid</h5>
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
                       Computer vision validates the hazard in seconds, routes by GPS ward polygons, enforces a 24-48h SLA timer, and seals proof in an audit trail.
                     </p>
                   </div>
@@ -982,7 +951,7 @@ export default function LandingPage() {
               </div>
 
               {/* Municipal Commissioner Quote */}
-              <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-100/90 text-xs sm:text-sm italic text-[#0A3B32]">
+              <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-100/90 text-sm sm:text-base italic text-[#0A3B32]">
                 "Urban Eye transforms municipal administration from delayed reactive firefighting into an automated, transparent civic service."
               </div>
             </div>
@@ -995,8 +964,8 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-[#E8F8F0] text-[#00A86B] flex items-center justify-center">
                   <Cpu className="w-6 h-6" />
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-[#0A262C]">YOLOv8 Vision at the Edge</h3>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">YOLOv8 Vision at the Edge</h3>
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
                   Trained on 50,000+ urban hazard variations to recognize surface fractures, refuse heaps, and lighting outages with &gt; 82% precision while automatically blurring civilian faces and license plates.
                 </p>
               </div>
@@ -1006,8 +975,8 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center">
                   <Layers className="w-6 h-6" />
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-[#0A262C]">Multi-Department Interop</h3>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">Multi-Department Interop</h3>
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
                   Eliminates jurisdictional buck-passing. Tickets automatically flow to PWD, Sanitation, Electrical, or Water departments based on verified category rules and GIS ward polygons.
                 </p>
               </div>
@@ -1017,8 +986,8 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-[#0A262C]">Tamper-Proof Audit Trail</h3>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">Tamper-Proof Audit Trail</h3>
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
                   Every status change, department officer re-assignment, and resolution photo is cryptographically recorded in an immutable ledger for 100% public accountability and compliance.
                 </p>
               </div>
@@ -1028,8 +997,8 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
                   <TrendingUp className="w-6 h-6" />
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-[#0A262C]">Predictive Infrastructure Planning</h3>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-black text-[#0A262C]">Predictive Infrastructure Planning</h3>
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
                   Citywide spatial heatmaps identify recurring road degradation zones and waste overflow corridors, empowering municipal commissioners to budget resurfacing funds effectively.
                 </p>
               </div>
@@ -1101,7 +1070,7 @@ export default function LandingPage() {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0A262C] tracking-tight">
             Frequently Asked Questions
           </h2>
-          <p className="mt-2 text-sm sm:text-base text-slate-600 font-medium">
+          <p className="mt-2 text-base sm:text-lg text-slate-600 font-medium">
             Everything you need to know about Urban Eye's AI detection, dispatch SLAs, and public transparency.
           </p>
         </div>
@@ -1123,7 +1092,7 @@ export default function LandingPage() {
                   onClick={() => setActiveFaq(isOpen ? null : idx)}
                   className="w-full px-5 sm:px-6 py-4.5 flex items-center justify-between text-left space-x-4 cursor-pointer"
                 >
-                  <span className="text-sm sm:text-base font-bold text-[#0A262C]">
+                  <span className="text-base sm:text-lg font-bold text-[#0A262C]">
                     {faq.q}
                   </span>
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-transform ${
@@ -1133,7 +1102,7 @@ export default function LandingPage() {
                   </div>
                 </button>
                 {isOpen && (
-                  <div className="px-5 sm:px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal border-t border-emerald-100/60">
+                  <div className="px-5 sm:px-6 pb-5 pt-1 text-sm sm:text-base text-slate-600 leading-relaxed font-normal border-t border-emerald-100/60">
                     {faq.a}
                   </div>
                 )}
@@ -1154,7 +1123,7 @@ export default function LandingPage() {
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0A262C] tracking-tight">
                 Build a Cleaner, Safer, and Smarter City
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 font-medium mt-1">
+              <p className="text-base sm:text-lg text-slate-600 font-medium mt-1">
                 Join Urban Eye and be part of the change.
               </p>
             </div>
@@ -1162,7 +1131,7 @@ export default function LandingPage() {
             <div className="flex items-center space-x-3 shrink-0">
               <Link
                 to="/login"
-                className="px-6 py-3 rounded-xl bg-[#003840] hover:bg-[#002B31] text-white font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-md shadow-emerald-950/20 transition-all cursor-pointer"
+                className="px-6 py-3.5 rounded-xl bg-[#003840] hover:bg-[#002B31] text-white font-bold text-sm sm:text-base flex items-center space-x-2 shadow-md shadow-emerald-950/20 transition-all cursor-pointer"
               >
                 <span>Get Started</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1171,7 +1140,7 @@ export default function LandingPage() {
               <button
                 type="button"
                 onClick={() => setDemoModalOpen(true)}
-                className="px-5 py-3 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm flex items-center space-x-2 shadow-2xs transition-all cursor-pointer"
+                className="px-5 py-3.5 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm sm:text-base flex items-center space-x-2 shadow-2xs transition-all cursor-pointer"
               >
                 <Play className="w-3.5 h-3.5 fill-current text-[#00A86B]" />
                 <span>Watch Demo</span>
@@ -1212,7 +1181,7 @@ export default function LandingPage() {
               <Link to="/" className="flex items-center group cursor-pointer">
                 <Logo size="sm" theme="dark" subtitle="Active Watch" />
               </Link>
-              <p className="text-xs text-slate-300 leading-relaxed font-medium max-w-sm">
+              <p className="text-sm text-slate-300 leading-relaxed font-medium max-w-sm">
                 A unified, AI-powered platform for smarter city issue detection, routing, and resolution.
               </p>
               <div className="flex items-center space-x-3 pt-2">
@@ -1230,11 +1199,11 @@ export default function LandingPage() {
 
             {/* Column 2: Quick Links */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00D084]" />
                 <span>Quick Links</span>
               </h4>
-              <ul className="space-y-2 text-xs font-medium text-slate-300">
+              <ul className="space-y-2 text-sm font-medium text-slate-300">
                 <li><button onClick={() => scrollToSection('hero', 'Home')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">Home</button></li>
                 <li><button onClick={() => scrollToSection('features', 'Features')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">Features</button></li>
                 <li><button onClick={() => scrollToSection('use-cases', 'Use Cases')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">Use Cases</button></li>
@@ -1247,27 +1216,27 @@ export default function LandingPage() {
 
             {/* Column 3: Portals */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00D084]" />
                 <span>Portals</span>
               </h4>
-              <ul className="space-y-2 text-xs font-medium text-slate-300">
+              <ul className="space-y-2 text-sm font-medium text-slate-300">
                 <li>
                   <Link to="/login" className="text-slate-300 hover:text-white flex items-center space-x-1.5 transition-colors">
                     <span>Citizen Portal</span>
-                    <ExternalLink className="w-3 h-3 text-[#00D084]" />
+                    <ExternalLink className="w-3.5 h-3.5 text-[#00D084]" />
                   </Link>
                 </li>
                 <li>
                   <Link to="/admin-login" className="text-slate-300 hover:text-white flex items-center space-x-1.5 transition-colors">
                     <span>Department Portal</span>
-                    <ExternalLink className="w-3 h-3 text-[#00D084]" />
+                    <ExternalLink className="w-3.5 h-3.5 text-[#00D084]" />
                   </Link>
                 </li>
                 <li>
                   <Link to="/admin-login" className="text-slate-300 hover:text-white flex items-center space-x-1.5 transition-colors">
                     <span>Admin Portal</span>
-                    <ExternalLink className="w-3 h-3 text-[#00D084]" />
+                    <ExternalLink className="w-3.5 h-3.5 text-[#00D084]" />
                   </Link>
                 </li>
               </ul>
@@ -1275,11 +1244,11 @@ export default function LandingPage() {
 
             {/* Column 4: Resources */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00D084]" />
                 <span>Resources</span>
               </h4>
-              <ul className="space-y-2 text-xs font-medium text-slate-300">
+              <ul className="space-y-2 text-sm font-medium text-slate-300">
                 <li>
                   <button
                     onClick={() => setDocModalOpen(true)}
@@ -1317,23 +1286,23 @@ export default function LandingPage() {
 
             {/* Column 5: Get in Touch */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00D084]" />
                 <span>Get in Touch</span>
               </h4>
-              <ul className="space-y-2.5 text-xs font-medium text-slate-300">
+              <ul className="space-y-2.5 text-sm font-medium text-slate-300">
                 <li className="flex items-center space-x-2">
-                  <Mail className="w-3.5 h-3.5 text-[#00D084] shrink-0" />
+                  <Mail className="w-4 h-4 text-[#00D084] shrink-0" />
                   <a href="mailto:support@urbaneye.gov.in" className="truncate text-slate-300 hover:text-white transition-colors">
                     support@urbaneye.gov.in
                   </a>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <Phone className="w-3.5 h-3.5 text-[#00D084] shrink-0" />
+                  <Phone className="w-4 h-4 text-[#00D084] shrink-0" />
                   <span className="text-slate-300">1800-11-2026 (Toll Free)</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#00D084] shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-[#00D084] shrink-0 mt-0.5" />
                   <span className="text-slate-300 leading-snug">Municipal Centre, New Delhi, India</span>
                 </li>
               </ul>
@@ -1342,7 +1311,7 @@ export default function LandingPage() {
           </div>
 
           {/* Bottom Copyright & Legal Links */}
-          <div className="pt-8 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 font-medium gap-4">
+          <div className="pt-8 flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm text-slate-400 font-medium gap-4">
             <div className="text-slate-400">
               &copy; 2026 Urban Eye. All rights reserved.
             </div>
