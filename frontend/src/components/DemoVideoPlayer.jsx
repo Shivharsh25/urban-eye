@@ -350,7 +350,7 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
                     Citizen Snaps a Photo — Geotagged & Timestamped Instantly
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    No complicated municipal forms. Urban Eye automatically captures verified GPS coordinates ($\pm 1.2\text{m}$ accuracy) and queues the media for neural vision analysis.
+                    No complicated municipal forms. Urban Eye automatically captures verified GPS coordinates (±1.2m accuracy) and queues the media for neural vision analysis.
                   </p>
                   <div className="grid grid-cols-2 gap-2 pt-2 text-[11px] font-mono">
                     <div className="p-2 rounded-xl bg-slate-900/80 border border-teal-900/60 text-slate-300">
