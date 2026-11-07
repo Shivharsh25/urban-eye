@@ -285,27 +285,27 @@ export default function LandingPage() {
       <section id="hero" className="relative pt-10 sm:pt-14 lg:pt-16 pb-8 sm:pb-10 lg:pb-12 overflow-hidden bg-white">
         
         {/* City Skyline Background (Right Side, vibrant 100% clarity, matching reference image) */}
-        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[62%] xl:w-[60%] h-full pointer-events-none z-0 overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[52%] xl:w-[50%] h-full pointer-events-none z-0 overflow-hidden">
           <img
             src="/hero-city-full.jpg"
             alt="Urban Eye Smart City Skyline"
             className="w-full h-full object-cover object-right sm:object-center lg:object-right-bottom"
           />
           {/* Smooth horizontal gradient: solid white on left, gently fading into city on right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent lg:via-white/35" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent lg:via-white/20" />
         </div>
 
-        {/* Bottom Organic Curved White Swoop (covers feature bar on left, sweeping down into trees at feature 4) */}
-        <div className="absolute bottom-0 left-0 w-full sm:w-[75%] lg:w-[64%] xl:w-[60%] pointer-events-none z-0 overflow-hidden">
+        {/* Bottom Organic Curved White Swoop (covers feature bar on left, sweeping down into trees right after feature 4) */}
+        <div className="absolute bottom-0 left-0 w-full sm:w-[70%] lg:w-[58%] xl:w-[54%] pointer-events-none z-0 overflow-hidden">
           <svg
-            viewBox="0 0 900 140"
+            viewBox="0 0 800 120"
             fill="none"
             preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-20 sm:h-24 lg:h-28 text-white"
+            className="w-full h-16 sm:h-20 lg:h-24 text-white"
           >
             <path
-              d="M0,140 L0,15 Q500,5 720,40 C800,60 860,95 900,140 L0,140 Z"
+              d="M0,120 L0,10 Q420,5 620,35 C700,55 760,85 800,120 L0,120 Z"
               fill="#ffffff"
             />
           </svg>
@@ -357,50 +357,50 @@ export default function LandingPage() {
 
           </div>
 
-          {/* Bottom Features Bar (EXACT match to Reference Image 1 & 2) */}
-          <div className="pt-10 sm:pt-14 lg:pt-16 pb-1">
-            <div className="grid grid-cols-2 gap-y-4 gap-x-6 sm:flex sm:items-center sm:gap-6 lg:gap-10 xl:gap-12">
+          {/* Bottom Features Bar (Constrained to left white area so it never moves into the city image) */}
+          <div className="pt-8 sm:pt-12 lg:pt-14 pb-1">
+            <div className="max-w-[620px] grid grid-cols-2 gap-y-3 gap-x-4 sm:flex sm:items-center sm:gap-4 lg:gap-6">
               
               {/* Feature 1 */}
-              <div className="flex items-center space-x-3">
-                <Zap className="w-6 h-6 text-[#00897B] shrink-0 stroke-[2.2]" />
-                <div className="text-left text-xs sm:text-sm lg:text-[15px] font-bold text-[#0A262C] leading-snug">
+              <div className="flex items-center space-x-2.5 shrink-0">
+                <Zap className="w-5 h-5 text-[#00897B] shrink-0 stroke-[2.2]" />
+                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
                   <div>Real-time</div>
                   <div>Detection</div>
                 </div>
               </div>
 
               {/* Vertical divider */}
-              <div className="hidden sm:block h-9 w-[1px] bg-slate-200/90 shrink-0" />
+              <div className="hidden sm:block h-7 w-[1px] bg-slate-200/90 shrink-0" />
 
               {/* Feature 2 */}
-              <div className="flex items-center space-x-3">
-                <Layers className="w-6 h-6 text-[#00897B] shrink-0 stroke-[2.2]" />
-                <div className="text-left text-xs sm:text-sm lg:text-[15px] font-bold text-[#0A262C] leading-snug">
+              <div className="flex items-center space-x-2.5 shrink-0">
+                <Layers className="w-5 h-5 text-[#00897B] shrink-0 stroke-[2.2]" />
+                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
                   <div>Auto</div>
                   <div>Routing</div>
                 </div>
               </div>
 
               {/* Vertical divider */}
-              <div className="hidden sm:block h-9 w-[1px] bg-slate-200/90 shrink-0" />
+              <div className="hidden sm:block h-7 w-[1px] bg-slate-200/90 shrink-0" />
 
               {/* Feature 3 */}
-              <div className="flex items-center space-x-3">
-                <BarChart3 className="w-6 h-6 text-[#00897B] shrink-0 stroke-[2.2]" />
-                <div className="text-left text-xs sm:text-sm lg:text-[15px] font-bold text-[#0A262C] leading-snug">
+              <div className="flex items-center space-x-2.5 shrink-0">
+                <BarChart3 className="w-5 h-5 text-[#00897B] shrink-0 stroke-[2.2]" />
+                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
                   <div>Department</div>
                   <div>Coordination</div>
                 </div>
               </div>
 
               {/* Vertical divider */}
-              <div className="hidden sm:block h-9 w-[1px] bg-slate-200/90 shrink-0" />
+              <div className="hidden sm:block h-7 w-[1px] bg-slate-200/90 shrink-0" />
 
               {/* Feature 4 */}
-              <div className="flex items-center space-x-3">
-                <ShieldCheck className="w-6 h-6 text-[#00897B] shrink-0 stroke-[2.2]" />
-                <div className="text-left text-xs sm:text-sm lg:text-[15px] font-bold text-[#0A262C] leading-snug">
+              <div className="flex items-center space-x-2.5 shrink-0">
+                <ShieldCheck className="w-5 h-5 text-[#00897B] shrink-0 stroke-[2.2]" />
+                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
                   <div>Transparent</div>
                   <div>Tracking</div>
                 </div>
