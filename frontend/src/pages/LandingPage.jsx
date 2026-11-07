@@ -1130,64 +1130,70 @@ export default function LandingPage() {
       {/* ======================================================== */}
       {/* 11. DARK EMERALD FOOTER WITH ACTIVE FUNCTIONAL LINKS     */}
       {/* ======================================================== */}
-      <footer className="bg-[#00272B] text-slate-300 pt-14 pb-10 border-t border-[#00383E]">
+      <footer className="bg-[#00272B] text-slate-200 pt-12 sm:pt-14 pb-10 border-t border-[#00383E] landing-footer footer-dark select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-10 border-b border-[#00383E]/80">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 pb-10 border-b border-[#00383E]/80">
             
             {/* Column 1: Brand Info */}
-            <div className="space-y-4 md:col-span-1">
+            <div className="space-y-4 sm:col-span-2 lg:col-span-1">
               <Link to="/" className="flex items-center group cursor-pointer">
                 <Logo size="sm" theme="dark" subtitle="Active Watch" />
               </Link>
-              <p className="text-xs text-slate-400 leading-relaxed font-medium">
+              <p className="text-xs text-slate-300 leading-relaxed font-medium max-w-sm">
                 A unified, AI-powered platform for smarter city issue detection, routing, and resolution.
               </p>
               <div className="flex items-center space-x-3 pt-2">
-                <a href="https://github.com/Shivharsh25/urban-eye" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-lg bg-[#003B42] hover:bg-[#004D56] text-white flex items-center justify-center transition-colors">
-                  <Github className="w-4 h-4" />
+                <a href="https://github.com/Shivharsh25/urban-eye" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-lg bg-[#003B42] hover:bg-[#004D56] text-white flex items-center justify-center transition-colors shadow-2xs" title="GitHub Repository">
+                  <Github className="w-4 h-4 text-white" />
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-lg bg-[#003B42] hover:bg-[#004D56] text-white flex items-center justify-center transition-colors">
-                  <Linkedin className="w-4 h-4" />
+                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-lg bg-[#003B42] hover:bg-[#004D56] text-white flex items-center justify-center transition-colors shadow-2xs" title="LinkedIn">
+                  <Linkedin className="w-4 h-4 text-white" />
                 </a>
-                <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-lg bg-[#003B42] hover:bg-[#004D56] text-white flex items-center justify-center transition-colors">
-                  <Youtube className="w-4 h-4" />
+                <a href="https://youtube.com" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-lg bg-[#003B42] hover:bg-[#004D56] text-white flex items-center justify-center transition-colors shadow-2xs" title="YouTube Demo">
+                  <Youtube className="w-4 h-4 text-white" />
                 </a>
               </div>
             </div>
 
             {/* Column 2: Quick Links */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-white uppercase tracking-wider">Quick Links</h4>
-              <ul className="space-y-2 text-xs font-medium text-slate-400">
-                <li><button onClick={() => scrollToSection('hero', 'Home')} className="hover:text-white transition-colors cursor-pointer">Home</button></li>
-                <li><button onClick={() => scrollToSection('features', 'Features')} className="hover:text-white transition-colors cursor-pointer">Features</button></li>
-                <li><button onClick={() => scrollToSection('use-cases', 'Use Cases')} className="hover:text-white transition-colors cursor-pointer">Use Cases</button></li>
-                <li><button onClick={() => scrollToSection('how-it-works', 'How It Works')} className="hover:text-white transition-colors cursor-pointer">How It Works</button></li>
-                <li><button onClick={() => scrollToSection('impact', 'Impact')} className="hover:text-white transition-colors cursor-pointer">Impact</button></li>
-                <li><button onClick={() => scrollToSection('about', 'About')} className="hover:text-white transition-colors cursor-pointer">About</button></li>
-                <li><button onClick={() => scrollToSection('faqs', 'FAQs')} className="hover:text-white transition-colors cursor-pointer">FAQs</button></li>
+              <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00D084]" />
+                <span>Quick Links</span>
+              </h4>
+              <ul className="space-y-2 text-xs font-medium text-slate-300">
+                <li><button onClick={() => scrollToSection('hero', 'Home')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">Home</button></li>
+                <li><button onClick={() => scrollToSection('features', 'Features')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">Features</button></li>
+                <li><button onClick={() => scrollToSection('use-cases', 'Use Cases')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">Use Cases</button></li>
+                <li><button onClick={() => scrollToSection('how-it-works', 'How It Works')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">How It Works</button></li>
+                <li><button onClick={() => scrollToSection('impact', 'Impact')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">Impact</button></li>
+                <li><button onClick={() => scrollToSection('about', 'About')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">About</button></li>
+                <li><button onClick={() => scrollToSection('faqs', 'FAQs')} className="text-slate-300 hover:text-white transition-colors cursor-pointer text-left">FAQs</button></li>
               </ul>
             </div>
 
             {/* Column 3: Portals */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-white uppercase tracking-wider">Portals</h4>
-              <ul className="space-y-2 text-xs font-medium text-slate-400">
+              <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00D084]" />
+                <span>Portals</span>
+              </h4>
+              <ul className="space-y-2 text-xs font-medium text-slate-300">
                 <li>
-                  <Link to="/login" className="hover:text-white flex items-center space-x-1 transition-colors">
+                  <Link to="/login" className="text-slate-300 hover:text-white flex items-center space-x-1.5 transition-colors">
                     <span>Citizen Portal</span>
                     <ExternalLink className="w-3 h-3 text-[#00D084]" />
                   </Link>
                 </li>
                 <li>
-                  <Link to="/admin-login" className="hover:text-white flex items-center space-x-1 transition-colors">
+                  <Link to="/admin-login" className="text-slate-300 hover:text-white flex items-center space-x-1.5 transition-colors">
                     <span>Department Portal</span>
                     <ExternalLink className="w-3 h-3 text-[#00D084]" />
                   </Link>
                 </li>
                 <li>
-                  <Link to="/admin-login" className="hover:text-white flex items-center space-x-1 transition-colors">
+                  <Link to="/admin-login" className="text-slate-300 hover:text-white flex items-center space-x-1.5 transition-colors">
                     <span>Admin Portal</span>
                     <ExternalLink className="w-3 h-3 text-[#00D084]" />
                   </Link>
@@ -1197,12 +1203,15 @@ export default function LandingPage() {
 
             {/* Column 4: Resources */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-white uppercase tracking-wider">Resources</h4>
-              <ul className="space-y-2 text-xs font-medium text-slate-400">
+              <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00D084]" />
+                <span>Resources</span>
+              </h4>
+              <ul className="space-y-2 text-xs font-medium text-slate-300">
                 <li>
                   <button
                     onClick={() => setDocModalOpen(true)}
-                    className="hover:text-white transition-colors cursor-pointer flex items-center space-x-1.5"
+                    className="text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center space-x-1.5"
                   >
                     <span>Documentation</span>
                   </button>
@@ -1210,7 +1219,7 @@ export default function LandingPage() {
                 <li>
                   <button
                     onClick={() => setApiModalOpen(true)}
-                    className="hover:text-white transition-colors cursor-pointer flex items-center space-x-1.5"
+                    className="text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center space-x-1.5"
                   >
                     <span>API Reference</span>
                   </button>
@@ -1218,7 +1227,7 @@ export default function LandingPage() {
                 <li>
                   <button
                     onClick={() => scrollToSection('faqs', 'FAQs')}
-                    className="hover:text-white transition-colors cursor-pointer flex items-center space-x-1.5"
+                    className="text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center space-x-1.5"
                   >
                     <span>FAQs</span>
                   </button>
@@ -1226,7 +1235,7 @@ export default function LandingPage() {
                 <li>
                   <button
                     onClick={() => setSupportModalOpen(true)}
-                    className="hover:text-white transition-colors cursor-pointer flex items-center space-x-1.5"
+                    className="text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center space-x-1.5"
                   >
                     <span>Support</span>
                   </button>
@@ -1236,21 +1245,24 @@ export default function LandingPage() {
 
             {/* Column 5: Get in Touch */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-white uppercase tracking-wider">Get in Touch</h4>
-              <ul className="space-y-2.5 text-xs font-medium text-slate-400">
+              <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00D084]" />
+                <span>Get in Touch</span>
+              </h4>
+              <ul className="space-y-2.5 text-xs font-medium text-slate-300">
                 <li className="flex items-center space-x-2">
                   <Mail className="w-3.5 h-3.5 text-[#00D084] shrink-0" />
-                  <a href="mailto:support@urbaneye.gov.in" className="truncate hover:text-white transition-colors">
+                  <a href="mailto:support@urbaneye.gov.in" className="truncate text-slate-300 hover:text-white transition-colors">
                     support@urbaneye.gov.in
                   </a>
                 </li>
                 <li className="flex items-center space-x-2">
                   <Phone className="w-3.5 h-3.5 text-[#00D084] shrink-0" />
-                  <span>1800-11-2026 (Toll Free)</span>
+                  <span className="text-slate-300">1800-11-2026 (Toll Free)</span>
                 </li>
-                <li className="flex items-center space-x-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#00D084] shrink-0" />
-                  <span>Municipal Centre, New Delhi, India</span>
+                <li className="flex items-start space-x-2">
+                  <MapPin className="w-3.5 h-3.5 text-[#00D084] shrink-0 mt-0.5" />
+                  <span className="text-slate-300 leading-snug">Municipal Centre, New Delhi, India</span>
                 </li>
               </ul>
             </div>
@@ -1259,27 +1271,27 @@ export default function LandingPage() {
 
           {/* Bottom Copyright & Legal Links */}
           <div className="pt-8 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-400 font-medium gap-4">
-            <div>
+            <div className="text-slate-400">
               &copy; 2026 Urban Eye. All rights reserved.
             </div>
             <div className="flex flex-wrap items-center gap-3 sm:space-x-6">
               <button
                 onClick={() => setLegalModal('privacy')}
-                className="hover:text-white transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
                 Privacy Policy
               </button>
-              <span>|</span>
+              <span className="text-slate-600">|</span>
               <button
                 onClick={() => setLegalModal('terms')}
-                className="hover:text-white transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
                 Terms of Use
               </button>
-              <span>|</span>
+              <span className="text-slate-600">|</span>
               <button
                 onClick={() => setLegalModal('accessibility')}
-                className="hover:text-white transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
                 Accessibility
               </button>

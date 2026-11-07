@@ -166,12 +166,12 @@ html.light [class*="bg-stone-800"] {
 }
 
 /* Comprehensive Typography Contrast Guarantees */
-html.light h1,
-html.light h2,
-html.light h3,
-html.light h4,
-html.light h5,
-html.light h6 {
+html.light h1:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *),
+html.light h2:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *),
+html.light h3:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *),
+html.light h4:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *),
+html.light h5:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *),
+html.light h6:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *) {
   color: #0f172a !important;
 }
 
@@ -247,32 +247,32 @@ button[class*="bg-slate-900"] *,
 }
 
 /* Invert all light text classes to dark readable slate */
-html.light [class*="text-white"]:not(button *):not([class*="bg-"]):not(.badge *),
-html.light [class*="text-slate-100"]:not(button *):not([class*="bg-"]):not(.badge *),
-html.light [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not(.badge *),
-html.light [class*="text-stone-100"]:not(button *):not([class*="bg-"]):not(.badge *),
-html.light [class*="text-stone-200"]:not(button *):not([class*="bg-"]):not(.badge *),
-html.light [class*="text-gray-100"]:not(button *):not([class*="bg-"]):not(.badge *),
-html.light [class*="text-gray-200"]:not(button *):not([class*="bg-"]):not(.badge *) {
+html.light [class*="text-white"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-slate-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-stone-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-stone-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-gray-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-gray-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *) {
   color: #0f172a !important;
 }
 
 /* Secondary & Body Text: High-contrast slate */
-html.light [class*="text-slate-300"],
-html.light [class*="text-stone-300"],
-html.light [class*="text-gray-300"] {
+html.light [class*="text-slate-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-stone-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-gray-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *) {
   color: #1e293b !important;
 }
 
-html.light [class*="text-slate-400"],
-html.light [class*="text-stone-400"],
-html.light [class*="text-gray-400"] {
+html.light [class*="text-slate-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-stone-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-gray-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *) {
   color: #334155 !important;
 }
 
-html.light [class*="text-slate-500"],
-html.light [class*="text-stone-500"],
-html.light [class*="text-gray-500"] {
+html.light [class*="text-slate-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-stone-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
+html.light [class*="text-gray-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *) {
   color: #475569 !important;
 }
 
@@ -439,3 +439,85 @@ html.light textarea::placeholder {
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
 
+
+/* ======================================================== */
+/* Protected Dark Footer Styles (Landing Page & Portals)    */
+/* Ensures 100% crystal-clear visibility on mobile & desktop*/
+/* ======================================================== */
+footer,
+.landing-footer,
+.footer-dark,
+html.light footer,
+html.light .landing-footer,
+html.light .footer-dark {
+  background-color: #00272B !important;
+  color: #E2E8F0 !important;
+}
+
+html.light footer h1, html.light footer h2, html.light footer h3, html.light footer h4, html.light footer h5, html.light footer h6,
+html.light .landing-footer h1, html.light .landing-footer h2, html.light .landing-footer h3, html.light .landing-footer h4, html.light .landing-footer h5, html.light .landing-footer h6,
+footer h1, footer h2, footer h3, footer h4, footer h5, footer h6,
+.landing-footer h4,
+.footer-dark h4 {
+  color: #FFFFFF !important;
+}
+
+html.light footer [class*="text-white"],
+html.light .landing-footer [class*="text-white"],
+html.light .footer-dark [class*="text-white"],
+footer .text-white,
+.landing-footer .text-white,
+.footer-dark .text-white {
+  color: #FFFFFF !important;
+}
+
+html.light footer [class*="text-slate-200"],
+html.light .landing-footer [class*="text-slate-200"],
+html.light .footer-dark [class*="text-slate-200"],
+footer .text-slate-200,
+.landing-footer .text-slate-200,
+.footer-dark .text-slate-200 {
+  color: #E2E8F0 !important;
+}
+
+html.light footer [class*="text-slate-300"],
+html.light .landing-footer [class*="text-slate-300"],
+html.light .footer-dark [class*="text-slate-300"],
+footer .text-slate-300,
+.landing-footer .text-slate-300,
+.footer-dark .text-slate-300 {
+  color: #CBD5E1 !important;
+}
+
+html.light footer [class*="text-slate-400"],
+html.light .landing-footer [class*="text-slate-400"],
+html.light .footer-dark [class*="text-slate-400"],
+footer .text-slate-400,
+.landing-footer .text-slate-400,
+.footer-dark .text-slate-400 {
+  color: #94A3B8 !important;
+}
+
+html.light footer p,
+html.light .landing-footer p,
+html.light .footer-dark p {
+  color: #CBD5E1 !important;
+}
+
+html.light footer a,
+html.light .landing-footer a,
+html.light .footer-dark a,
+html.light footer button,
+html.light .landing-footer button,
+html.light .footer-dark button {
+  color: #CBD5E1 !important;
+}
+
+html.light footer a:hover,
+html.light .landing-footer a:hover,
+html.light .footer-dark a:hover,
+html.light footer button:hover,
+html.light .landing-footer button:hover,
+html.light .footer-dark button:hover {
+  color: #FFFFFF !important;
+}
