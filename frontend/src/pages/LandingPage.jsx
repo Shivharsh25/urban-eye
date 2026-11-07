@@ -282,7 +282,7 @@ export default function LandingPage() {
       {/* ======================================================== */}
       {/* 2. HERO SECTION (EXACT MATCH TO REFERENCE DESIGN)       */}
       {/* ======================================================== */}
-      <section id="hero" className="relative pt-10 pb-12 sm:pt-14 sm:pb-16 lg:pt-20 lg:pb-24 overflow-hidden bg-white">
+      <section id="hero" className="relative pt-10 sm:pt-14 lg:pt-16 pb-8 sm:pb-10 lg:pb-12 overflow-hidden bg-white">
         
         {/* City Skyline Background (Right Side, vibrant 100% clarity, matching reference image) */}
         <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[62%] xl:w-[60%] h-full pointer-events-none z-0 overflow-hidden">
@@ -295,23 +295,25 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent lg:via-white/35" />
         </div>
 
-        {/* Bottom Organic Curved White Swoop (covers only the feature chips on left, leaving right trees completely intact) */}
-        <div className="absolute bottom-0 left-0 w-full sm:w-[72%] lg:w-[62%] pointer-events-none z-0 overflow-hidden">
+        {/* Bottom Organic Curved White Swoop (covers feature bar on left, sweeping down into trees at feature 4) */}
+        <div className="absolute bottom-0 left-0 w-full sm:w-[75%] lg:w-[64%] xl:w-[60%] pointer-events-none z-0 overflow-hidden">
           <svg
-            viewBox="0 0 800 120"
+            viewBox="0 0 900 140"
             fill="none"
             preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-16 sm:h-20 lg:h-24 text-white"
+            className="w-full h-20 sm:h-24 lg:h-28 text-white"
           >
             <path
-              d="M0,120 L0,10 Q420,5 620,35 C700,55 760,85 800,120 L0,120 Z"
+              d="M0,140 L0,15 Q500,5 720,40 C800,60 860,95 900,140 L0,140 Z"
               fill="#ffffff"
             />
           </svg>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-between min-h-[380px] sm:min-h-[420px] lg:min-h-[460px]">
+          
+          {/* Upper Section: Pill, Heading, Subtitle & CTA Buttons */}
           <div className="max-w-2xl lg:max-w-2xl xl:max-w-3xl space-y-6 sm:space-y-7">
             
             {/* Top Pill Badge */}
@@ -332,7 +334,7 @@ export default function LandingPage() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 pt-1">
               <Link
                 to="/login"
                 className="px-7 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-[#054E45] hover:bg-[#033B34] text-white font-bold text-base sm:text-lg flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition-all cursor-pointer group"
@@ -353,55 +355,60 @@ export default function LandingPage() {
               </button>
             </div>
 
-            {/* 4 Feature Highlights Beneath CTA (with vertical dividers matching reference image) */}
-            <div className="pt-6 sm:pt-8 grid grid-cols-2 gap-4 sm:flex sm:items-center sm:gap-6 lg:gap-8">
+          </div>
+
+          {/* Bottom Features Bar (EXACT match to Reference Image 1 & 2) */}
+          <div className="pt-10 sm:pt-14 lg:pt-16 pb-1">
+            <div className="grid grid-cols-2 gap-y-4 gap-x-6 sm:flex sm:items-center sm:gap-6 lg:gap-10 xl:gap-12">
+              
               {/* Feature 1 */}
-              <div className="flex items-center space-x-2.5">
-                <Zap className="w-5 h-5 text-[#00897B] shrink-0" />
-                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
+              <div className="flex items-center space-x-3">
+                <Zap className="w-6 h-6 text-[#00897B] shrink-0 stroke-[2.2]" />
+                <div className="text-left text-xs sm:text-sm lg:text-[15px] font-bold text-[#0A262C] leading-snug">
                   <div>Real-time</div>
                   <div>Detection</div>
                 </div>
               </div>
 
               {/* Vertical divider */}
-              <div className="hidden sm:block h-8 w-[1px] bg-slate-200 shrink-0" />
+              <div className="hidden sm:block h-9 w-[1px] bg-slate-200/90 shrink-0" />
 
               {/* Feature 2 */}
-              <div className="flex items-center space-x-2.5">
-                <Layers className="w-5 h-5 text-[#00897B] shrink-0" />
-                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
+              <div className="flex items-center space-x-3">
+                <Layers className="w-6 h-6 text-[#00897B] shrink-0 stroke-[2.2]" />
+                <div className="text-left text-xs sm:text-sm lg:text-[15px] font-bold text-[#0A262C] leading-snug">
                   <div>Auto</div>
                   <div>Routing</div>
                 </div>
               </div>
 
               {/* Vertical divider */}
-              <div className="hidden sm:block h-8 w-[1px] bg-slate-200 shrink-0" />
+              <div className="hidden sm:block h-9 w-[1px] bg-slate-200/90 shrink-0" />
 
               {/* Feature 3 */}
-              <div className="flex items-center space-x-2.5">
-                <BarChart3 className="w-5 h-5 text-[#00897B] shrink-0" />
-                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
+              <div className="flex items-center space-x-3">
+                <BarChart3 className="w-6 h-6 text-[#00897B] shrink-0 stroke-[2.2]" />
+                <div className="text-left text-xs sm:text-sm lg:text-[15px] font-bold text-[#0A262C] leading-snug">
                   <div>Department</div>
                   <div>Coordination</div>
                 </div>
               </div>
 
               {/* Vertical divider */}
-              <div className="hidden sm:block h-8 w-[1px] bg-slate-200 shrink-0" />
+              <div className="hidden sm:block h-9 w-[1px] bg-slate-200/90 shrink-0" />
 
               {/* Feature 4 */}
-              <div className="flex items-center space-x-2.5">
-                <ShieldCheck className="w-5 h-5 text-[#00897B] shrink-0" />
-                <div className="text-left text-xs sm:text-sm font-bold text-[#0A262C] leading-tight">
+              <div className="flex items-center space-x-3">
+                <ShieldCheck className="w-6 h-6 text-[#00897B] shrink-0 stroke-[2.2]" />
+                <div className="text-left text-xs sm:text-sm lg:text-[15px] font-bold text-[#0A262C] leading-snug">
                   <div>Transparent</div>
                   <div>Tracking</div>
                 </div>
               </div>
-            </div>
 
+            </div>
           </div>
+
         </div>
       </section>
 
