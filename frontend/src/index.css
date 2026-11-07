@@ -140,26 +140,26 @@ html.light #root {
 }
 
 /* Invert all dark background utilities seamlessly */
-html.light [class*="bg-[#090d16]"],
-html.light [class*="bg-[#070b14]"],
-html.light [class*="bg-[#05080f]"],
-html.light [class*="bg-[#0a0f1d]"],
-html.light [class*="bg-stone-950"],
-html.light [class*="bg-slate-950"] {
+html.light [class*="bg-[#090d16]"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="bg-[#070b14]"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="bg-[#05080f]"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="bg-[#0a0f1d]"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="bg-stone-950"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="bg-slate-950"]:not(.login-dark-page *):not(.login-dark-page) {
   background-color: transparent !important;
   color: #0f172a !important;
 }
 
-html.light [class*="bg-slate-900"],
-html.light [class*="bg-stone-900"] {
+html.light [class*="bg-slate-900"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="bg-stone-900"]:not(.login-dark-page *):not(.login-dark-page) {
   background-color: rgba(255, 255, 255, 0.96) !important;
   color: #1e293b !important;
   border-color: #EAE7DD !important;
   box-shadow: 0 1px 3px 0 rgba(153, 119, 92, 0.04);
 }
 
-html.light [class*="bg-slate-800"],
-html.light [class*="bg-stone-800"] {
+html.light [class*="bg-slate-800"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="bg-stone-800"]:not(.login-dark-page *):not(.login-dark-page) {
   background-color: #FAF9F5 !important;
   color: #0f172a !important;
   border-color: #EAE7DD !important;
@@ -176,8 +176,8 @@ html.light h6:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.side
 }
 
 /* Fix any gradient-clipped headers that use from-white or from-stone */
-html.light .bg-clip-text,
-html.light [class*="bg-clip-text"] {
+html.light .bg-clip-text:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="bg-clip-text"]:not(.login-dark-page *):not(.login-dark-page) {
   background-image: none !important;
   -webkit-background-clip: unset !important;
   background-clip: unset !important;
@@ -247,39 +247,39 @@ button[class*="bg-slate-900"] *,
 }
 
 /* Invert all light text classes to dark readable slate */
-html.light [class*="text-white"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-slate-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-stone-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-stone-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-gray-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-gray-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *) {
+html.light [class*="text-white"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-slate-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-stone-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-stone-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-gray-100"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-gray-200"]:not(button *):not([class*="bg-"]):not(.badge *):not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page) {
   color: #0f172a !important;
 }
 
 /* Secondary & Body Text: High-contrast slate */
-html.light [class*="text-slate-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-stone-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-gray-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *) {
+html.light [class*="text-slate-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-stone-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-gray-300"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page) {
   color: #1e293b !important;
 }
 
-html.light [class*="text-slate-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-stone-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-gray-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *) {
+html.light [class*="text-slate-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-stone-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-gray-400"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page) {
   color: #334155 !important;
 }
 
-html.light [class*="text-slate-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-stone-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *),
-html.light [class*="text-gray-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *) {
+html.light [class*="text-slate-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-stone-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="text-gray-500"]:not(footer *):not(.footer-dark *):not(.landing-footer *):not(.sidebar-dark *):not(.login-dark-page *):not(.login-dark-page) {
   color: #475569 !important;
 }
 
-html.light [class*="border-slate-800"],
-html.light [class*="border-slate-700"],
-html.light [class*="border-stone-800"],
-html.light [class*="border-stone-700"] {
+html.light [class*="border-slate-800"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="border-slate-700"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="border-stone-800"]:not(.login-dark-page *):not(.login-dark-page),
+html.light [class*="border-stone-700"]:not(.login-dark-page *):not(.login-dark-page) {
   border-color: #EAE7DD !important;
 }
 
@@ -322,16 +322,16 @@ html.light .glass-card {
   box-shadow: 0 4px 16px rgba(153, 119, 92, 0.04) !important;
 }
 
-html.light input,
-html.light select,
-html.light textarea {
+html.light input:not(.login-dark-page *):not(.login-dark-page),
+html.light select:not(.login-dark-page *):not(.login-dark-page),
+html.light textarea:not(.login-dark-page *):not(.login-dark-page) {
   background-color: #ffffff !important;
   color: #0f172a !important;
   border-color: #EAE7DD !important;
 }
 
-html.light input::placeholder,
-html.light textarea::placeholder {
+html.light input:not(.login-dark-page *):not(.login-dark-page)::placeholder,
+html.light textarea:not(.login-dark-page *):not(.login-dark-page)::placeholder {
   color: #64748b !important;
 }
 
@@ -520,4 +520,128 @@ html.light footer button:hover,
 html.light .landing-footer button:hover,
 html.light .footer-dark button:hover {
   color: #FFFFFF !important;
+}
+
+/* =========================================================================
+   Standalone Dark Pages (Login, Admin Login) Bulletproof Overrides
+   Guarantees identical appearance on mobile and desktop regardless of light theme
+   ========================================================================= */
+html.light .login-dark-page,
+html .login-dark-page,
+.login-dark-page {
+  background-color: #050811 !important;
+  color: #f8fafc !important;
+}
+
+html.light .login-dark-page h1,
+html.light .login-dark-page h2,
+html.light .login-dark-page h3,
+html.light .login-dark-page h4,
+html .login-dark-page h1,
+html .login-dark-page h2,
+html .login-dark-page h3,
+.login-dark-page h1,
+.login-dark-page h2,
+.login-dark-page h3 {
+  color: #ffffff !important;
+}
+
+/* Gradient logo & headings */
+html.light .login-dark-page .bg-clip-text,
+html.light .login-dark-page [class*="bg-clip-text"],
+html .login-dark-page .bg-clip-text,
+.login-dark-page .bg-clip-text,
+.login-dark-page [class*="bg-clip-text"] {
+  background-image: linear-gradient(to right, #38bdf8, #22d3ee, #3b82f6) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+/* White text inside dark login */
+html.light .login-dark-page [class*="text-white"],
+html .login-dark-page [class*="text-white"],
+.login-dark-page [class*="text-white"] {
+  color: #ffffff !important;
+}
+
+/* High-contrast subtitle and labels */
+html.light .login-dark-page [class*="text-slate-100"],
+.login-dark-page [class*="text-slate-100"],
+html.light .login-dark-page [class*="text-slate-200"],
+.login-dark-page [class*="text-slate-200"] {
+  color: #e2e8f0 !important;
+}
+
+html.light .login-dark-page [class*="text-slate-300"],
+.login-dark-page [class*="text-slate-300"] {
+  color: #cbd5e1 !important;
+}
+
+html.light .login-dark-page [class*="text-slate-400"],
+.login-dark-page [class*="text-slate-400"] {
+  color: #94a3b8 !important;
+}
+
+html.light .login-dark-page [class*="text-slate-500"],
+.login-dark-page [class*="text-slate-500"] {
+  color: #64748b !important;
+}
+
+/* Dark input fields */
+html.light .login-dark-page input,
+html .login-dark-page input,
+.login-dark-page input,
+html.light .login-dark-page select,
+html.light .login-dark-page textarea {
+  background-color: #0b1528 !important;
+  color: #ffffff !important;
+  border-color: #1e293b !important;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+html.light .login-dark-page input::placeholder,
+.login-dark-page input::placeholder {
+  color: #64748b !important;
+}
+
+/* Dark Google auth & slate-900 / 800 buttons & containers */
+html.light .login-dark-page [class*="bg-slate-900"],
+html .login-dark-page [class*="bg-slate-900"],
+.login-dark-page [class*="bg-slate-900"],
+html.light .login-dark-page [class*="bg-[#0c1427]"],
+.login-dark-page [class*="bg-[#0c1427]"],
+html.light .login-dark-page [class*="bg-[#0b1528]"],
+.login-dark-page [class*="bg-[#0b1528]"],
+html.light .login-dark-page button[class*="bg-slate-900"],
+.login-dark-page button[class*="bg-slate-900"] {
+  background-color: #0c1427 !important;
+  color: #ffffff !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.light .login-dark-page [class*="bg-slate-900"] *,
+.login-dark-page [class*="bg-slate-900"] *,
+html.light .login-dark-page [class*="bg-[#0c1427]"] *,
+.login-dark-page [class*="bg-[#0c1427]"] *,
+.login-dark-page button[class*="bg-slate-900"] span,
+html.light .login-dark-page button[class*="bg-slate-900"] span {
+  color: #ffffff !important;
+}
+
+/* Dark borders */
+html.light .login-dark-page [class*="border-slate-800"],
+.login-dark-page [class*="border-slate-800"],
+html.light .login-dark-page [class*="border-slate-700"],
+.login-dark-page [class*="border-slate-700"] {
+  border-color: #1e293b !important;
+}
+
+/* Active and inactive tabs in login */
+.login-dark-page [class*="bg-cyan-500/20"],
+html.light .login-dark-page [class*="bg-cyan-500/20"] {
+  background-color: rgba(6, 182, 212, 0.15) !important;
+  color: #67e8f9 !important;
+  border-color: rgba(6, 182, 212, 0.3) !important;
 }

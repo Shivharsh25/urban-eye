@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 lg:p-8 relative overflow-hidden bg-[#05080f] font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="login-dark-page min-h-screen flex items-center justify-center p-4 lg:p-8 relative overflow-hidden bg-[#05080f] font-sans selection:bg-indigo-500 selection:text-white">
       
       {/* Immersive Futuristic Ambient Background */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">

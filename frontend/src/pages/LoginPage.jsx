@@ -263,7 +263,7 @@ export default function LoginPage() {
 
           {/* Mobile Header (Hidden on Desktop) */}
           <div className="flex lg:hidden items-center justify-center space-x-4 mb-6">
-            <Logo size="md" subtitle="" />
+            <Logo size="md" theme="dark" subtitle="" />
           </div>
 
           {/* Headings */}
