@@ -295,16 +295,17 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent lg:via-white/35" />
         </div>
 
-        {/* Bottom Organic Curved White Swoop (matching the reference image curve under trees) */}
-        <div className="absolute bottom-0 left-0 right-0 pointer-events-none z-0 overflow-hidden">
+        {/* Bottom Organic Curved White Swoop (covers only the feature chips on left, leaving right trees completely intact) */}
+        <div className="absolute bottom-0 left-0 w-full sm:w-[72%] lg:w-[62%] pointer-events-none z-0 overflow-hidden">
           <svg
-            viewBox="0 0 1440 120"
+            viewBox="0 0 800 120"
             fill="none"
+            preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-14 sm:h-20 lg:h-28 text-white preserve-3d"
+            className="w-full h-16 sm:h-20 lg:h-24 text-white"
           >
             <path
-              d="M0,120 L0,35 Q480,10 760,55 T1440,25 L1440,120 Z"
+              d="M0,120 L0,10 Q420,5 620,35 C700,55 760,85 800,120 L0,120 Z"
               fill="#ffffff"
             />
           </svg>
