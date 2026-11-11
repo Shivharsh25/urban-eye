@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -18,11 +18,16 @@ import {
   Radio,
   PanelLeftClose,
   PanelLeftOpen,
+  ChevronLeft,
+  ChevronRight,
   PlusCircle,
   X
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import Logo from './Logo';
+
+const DEFAULT_WIDTH = 256;
+const MIN_WIDTH = 80;
 
 export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { user, isAdmin, logout } = useAuth();
@@ -39,12 +44,40 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     }
   });
 
+  // Sidebar width state: clamped between MIN_WIDTH and DEFAULT_WIDTH (strictly cannot be maximized)
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    try {
+      const stored = localStorage.getItem('citizen_sidebar_width');
+      if (stored) {
+        const parsed = parseInt(stored, 10);
+        if (parsed >= MIN_WIDTH && parsed <= DEFAULT_WIDTH) return parsed;
+      }
+    } catch {}
+    return DEFAULT_WIDTH;
+  });
+
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartXRef = useRef(0);
+  const dragStartWidthRef = useRef(DEFAULT_WIDTH);
+  const currentWidthRef = useRef(sidebarWidth);
+  const currentCollapsedRef = useRef(isCollapsed);
+
+  currentWidthRef.current = sidebarWidth;
+  currentCollapsedRef.current = isCollapsed;
+
   const toggleCollapse = () => {
     setIsCollapsed((prev) => {
       const next = !prev;
       try {
         localStorage.setItem('citizen_sidebar_collapsed', String(next));
       } catch {}
+      // When restoring, guarantee it returns to DEFAULT_WIDTH, never more
+      if (!next && sidebarWidth < 200) {
+        setSidebarWidth(DEFAULT_WIDTH);
+        try {
+          localStorage.setItem('citizen_sidebar_width', String(DEFAULT_WIDTH));
+        } catch {}
+      }
       return next;
     });
   };
@@ -59,70 +92,142 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [sidebarWidth]);
+
+  // Drag-to-minimize logic on the right edge handle (<->)
+  const startDragging = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+    dragStartXRef.current = e.clientX;
+    dragStartWidthRef.current = isCollapsed ? MIN_WIDTH : sidebarWidth;
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e) => {
+      const delta = e.clientX - dragStartXRef.current;
+      const rawWidth = dragStartWidthRef.current + delta;
+
+      // STRICT CONSTRAINT: "only minimize not for maximizing it"
+      // Ceiling is strictly DEFAULT_WIDTH (256px). Can only be minimized narrower, NEVER maximized wider!
+      const clampedWidth = Math.min(DEFAULT_WIDTH, Math.max(MIN_WIDTH, rawWidth));
+
+      if (clampedWidth <= 120) {
+        setIsCollapsed(true);
+        currentCollapsedRef.current = true;
+      } else {
+        setIsCollapsed(false);
+        setSidebarWidth(clampedWidth);
+        currentCollapsedRef.current = false;
+        currentWidthRef.current = clampedWidth;
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      try {
+        localStorage.setItem('citizen_sidebar_collapsed', String(currentCollapsedRef.current));
+        localStorage.setItem('citizen_sidebar_width', String(currentWidthRef.current));
+      } catch {}
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
+  // Cursor and text-selection styles while dragging
+  useEffect(() => {
+    if (isDragging) {
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'col-resize';
+    } else {
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    }
+    return () => {
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    };
+  }, [isDragging]);
 
   const isActive = (path) => location.pathname === path;
+  const activeDesktopWidth = isCollapsed ? MIN_WIDTH : sidebarWidth;
 
   return (
     <aside 
       className={`
-        sidebar-dark fixed inset-y-0 left-0 z-50 h-full flex flex-col transition-all duration-300
+        sidebar-dark sidebar-resizable fixed inset-y-0 left-0 z-50 h-full flex flex-col
+        ${isDragging ? '' : 'transition-[width,transform] duration-300 ease-in-out'}
         lg:static lg:relative lg:translate-x-0 lg:shrink-0
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${isCollapsed ? 'lg:w-20 w-72 max-w-[85vw]' : 'w-64 max-w-[85vw]'}
-        overflow-hidden select-none border-r border-[#0E3841]
+        w-64 max-w-[85vw] lg:max-w-none
+        overflow-hidden select-none border-r border-[#0E3841] relative
       `}
-      style={{ backgroundColor: '#06252B', color: '#FFFFFF' }}
+      style={{ 
+        '--sidebar-w': `${activeDesktopWidth}px`,
+        backgroundColor: '#06252B', 
+        color: '#FFFFFF' 
+      }}
     >
-      {/* Brand Header & Integrated Collapse Toggle / Mobile Close Button */}
-      <div className={`h-16 px-4 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} border-b border-[#0E3841] relative z-10 shrink-0`}>
+      {/* Brand Header & Minimize / Mobile Close Controls */}
+      <div className="h-16 px-4 flex items-center justify-between border-b border-[#0E3841] relative z-10 shrink-0">
         {isCollapsed ? (
-          <div className="flex flex-col items-center justify-center">
-            <Link to="/dashboard" className="group flex items-center justify-center" title="Urban EYE • Active Watch">
+          <div className="flex items-center justify-between w-full">
+            <Link to="/dashboard" className="group flex items-center justify-center shrink-0" title="Urban EYE • Active Watch">
               <Logo size="sm" subtitle="" showText={false} />
             </Link>
-            <button 
-              type="button"
-              onClick={toggleCollapse}
-              className="hidden lg:flex items-center justify-center mt-2 p-1 rounded-md text-teal-400/60 hover:text-teal-200 hover:bg-white/5 transition-all"
-              title="Expand Sidebar (Ctrl + B)"
-            >
-              <PanelLeftOpen className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
-              className="lg:hidden mt-2 p-1 rounded-md text-rose-400 hover:text-rose-300 hover:bg-white/5 transition-all"
-              title="Close Navigation Drawer"
-            >
-              <X className="w-4 h-4" />
-            </button>
+
+            <div className="flex items-center space-x-1">
+              <button 
+                type="button"
+                onClick={toggleCollapse}
+                className="hidden lg:flex items-center justify-center p-1.5 rounded-lg text-teal-400/90 hover:text-white hover:bg-white/10 transition-all border border-teal-500/20 cursor-pointer shadow-xs"
+                title="Restore Sidebar (<->)"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+                className="lg:hidden p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-white/5 transition-all cursor-pointer"
+                title="Close Navigation Drawer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         ) : (
           <>
-            <Link to="/dashboard" className="flex items-center space-x-2.5 group min-w-0 flex-1" title="Urban EYE • Active Watch">
-              <Logo size="sm" subtitle="Active Watch" showText={true} />
+            <Link to="/dashboard" className="flex items-center space-x-2.5 group min-w-0 flex-1 overflow-hidden" title="Urban EYE • Active Watch">
+              <Logo size="sm" subtitle="Active Watch" showText={sidebarWidth >= 170} />
             </Link>
 
-            {/* Desktop Collapse Toggle */}
-            <button 
-              type="button"
-              onClick={toggleCollapse}
-              className="hidden lg:flex items-center justify-center p-1.5 rounded-lg text-teal-400/60 hover:text-teal-200 hover:bg-white/5 transition-all shrink-0 ml-1"
-              title="Minimize Sidebar (Ctrl + B)"
-            >
-              <PanelLeftClose className="w-4 h-4" />
-            </button>
+            {/* Desktop Minimize Toggle */}
+            <div className="flex items-center space-x-1 shrink-0">
+              <button 
+                type="button"
+                onClick={toggleCollapse}
+                className="hidden lg:flex items-center justify-center p-1.5 rounded-lg text-teal-400/80 hover:text-white hover:bg-white/10 transition-all border border-teal-500/20 cursor-pointer shadow-xs"
+                title="Minimize Sidebar (<->)"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
 
-            {/* Mobile Close Button */}
-            <button 
-              type="button"
-              onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
-              className="lg:hidden flex items-center justify-center p-1.5 rounded-lg text-teal-400/60 hover:text-rose-400 hover:bg-white/5 transition-all shrink-0 ml-1"
-              title="Close Navigation Drawer"
-            >
-              <X className="w-4 h-4" />
-            </button>
+              {/* Mobile Close Button */}
+              <button 
+                type="button"
+                onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+                className="lg:hidden flex items-center justify-center p-1.5 rounded-lg text-teal-400/60 hover:text-rose-400 hover:bg-white/5 transition-all shrink-0 cursor-pointer"
+                title="Close Navigation Drawer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -138,6 +243,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               label={t('dashboard', 'Dashboard')} 
               isActive={isActive('/dashboard')} 
               isCollapsed={isCollapsed} 
+              sidebarWidth={activeDesktopWidth}
               onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
             />
             <SidebarItem 
@@ -146,6 +252,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               label={t('reports', 'Reports')} 
               isActive={isActive('/my-reports') || isActive('/reports')} 
               isCollapsed={isCollapsed} 
+              sidebarWidth={activeDesktopWidth}
               onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
             />
             <SidebarItem 
@@ -154,6 +261,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               label={t('reportIssue', 'Report Issue')} 
               isActive={isActive('/report')} 
               isCollapsed={isCollapsed} 
+              sidebarWidth={activeDesktopWidth}
               onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
             />
             <SidebarItem 
@@ -162,13 +270,14 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               label={t('myTracking', 'My Tracking')} 
               isActive={isActive('/tracking')} 
               isCollapsed={isCollapsed} 
+              sidebarWidth={activeDesktopWidth}
               onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
             />
 
             {/* Section 1: CITY NETWORK */}
-            {!isCollapsed && (
+            {!isCollapsed && activeDesktopWidth >= 170 && (
               <div className="flex items-center space-x-2 px-3 pt-5 pb-1.5 text-[10px] font-bold tracking-wider text-teal-400/70 uppercase">
-                <span>{t('cityNetwork', 'CITY NETWORK')}</span>
+                <span className="truncate">{t('cityNetwork', 'CITY NETWORK')}</span>
                 <div className="h-px flex-1 bg-[#0E3841]"></div>
               </div>
             )}
@@ -179,6 +288,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               label={t('liveMap', 'Live Map')} 
               isActive={isActive('/map')} 
               isCollapsed={isCollapsed} 
+              sidebarWidth={activeDesktopWidth}
               onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
               badge="Live" 
               isLiveDot={true} 
@@ -189,6 +299,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               label={t('communityAlerts', 'Community Alerts')} 
               isActive={isActive('/alerts')} 
               isCollapsed={isCollapsed} 
+              sidebarWidth={activeDesktopWidth}
               onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
             />
             <SidebarItem 
@@ -197,14 +308,15 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               label={t('cityActivity', 'City Activity')} 
               isActive={isActive('/activity')} 
               isCollapsed={isCollapsed} 
+              sidebarWidth={activeDesktopWidth}
               onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
             />
 
             {/* Section 2: ACCOUNT */}
             <div className="pt-2">
-              {!isCollapsed && (
+              {!isCollapsed && activeDesktopWidth >= 170 && (
                 <div className="flex items-center space-x-2 px-3 pt-3 pb-1.5 text-[10px] font-bold tracking-wider text-teal-400/70 uppercase">
-                  <span>{t('account', 'ACCOUNT')}</span>
+                  <span className="truncate">{t('account', 'ACCOUNT')}</span>
                   <div className="h-px flex-1 bg-[#0E3841]"></div>
                 </div>
               )}
@@ -215,6 +327,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 label={t('citizenProfile', 'Citizen Profile')} 
                 isActive={isActive('/profile')} 
                 isCollapsed={isCollapsed} 
+                sidebarWidth={activeDesktopWidth}
                 onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
               />
               <SidebarItem 
@@ -223,6 +336,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 label={t('settings', 'Settings')} 
                 isActive={isActive('/settings')} 
                 isCollapsed={isCollapsed} 
+                sidebarWidth={activeDesktopWidth}
                 onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
               />
               <SidebarItem 
@@ -231,6 +345,7 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 label={t('helpSupport', 'Help & Support')} 
                 isActive={isActive('/support')} 
                 isCollapsed={isCollapsed} 
+                sidebarWidth={activeDesktopWidth}
                 onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)} 
               />
             </div>
@@ -238,8 +353,8 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         )}
       </nav>
 
-      {/* Futuristic Skyline Vector Illustration at Bottom matching the UI screenshot */}
-      {!isCollapsed && (
+      {/* Futuristic Skyline Vector Illustration at Bottom (Visible when expanded) */}
+      {!isCollapsed && activeDesktopWidth >= 200 && (
         <div className="relative shrink-0 w-full px-2 pt-2 pointer-events-none select-none opacity-90 overflow-hidden">
           <svg viewBox="0 0 240 85" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
             {/* City Silhouette Outlines */}
@@ -288,17 +403,44 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           </svg>
         </div>
       )}
+
+      {/* Horizontal Resize & Quick-Minimize Handle (<->) */}
+      <div
+        onMouseDown={startDragging}
+        className="hidden lg:flex absolute top-0 right-0 w-3 h-full cursor-col-resize group/resizer items-center justify-center z-30 select-none hover:bg-teal-500/10 transition-colors"
+        title={isCollapsed ? "Click to restore sidebar (<->)" : "Drag left to minimize (<->) or click to collapse"}
+      >
+        {/* Subtle border accent line */}
+        <div className={`w-[2px] h-full transition-colors ${isDragging ? 'bg-teal-400' : 'bg-transparent group-hover/resizer:bg-teal-400/60'}`} />
+
+        {/* Quick-Minimize Pill Button on Border */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleCollapse();
+          }}
+          className={`absolute top-1/2 -translate-y-1/2 -right-3 w-6 h-6 rounded-full bg-[#06252B] border border-[#0E3841] hover:border-teal-400 text-teal-300 hover:text-white flex items-center justify-center shadow-lg transition-all z-40 cursor-pointer ${
+            isDragging ? 'opacity-100 scale-110' : 'opacity-0 group-hover/resizer:opacity-100 hover:scale-110'
+          }`}
+          title={isCollapsed ? "Restore sidebar (<->)" : "Minimize sidebar (<->)"}
+        >
+          {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+        </button>
+      </div>
     </aside>
   );
 }
 
-function SidebarItem({ to, icon: Icon, label, isActive, isCollapsed, onClick, badge, isLiveDot }) {
+function SidebarItem({ to, icon: Icon, label, isActive, isCollapsed, sidebarWidth = 256, onClick, badge, isLiveDot }) {
+  const showLabel = !isCollapsed && sidebarWidth >= 140;
+
   return (
     <Link
       to={to}
       onClick={onClick}
-      title={isCollapsed ? label : undefined}
-      className={`flex items-center ${isCollapsed ? 'justify-center p-2.5' : 'space-x-3 px-3 py-2.5'} rounded-xl transition-all duration-200 group relative ${
+      title={!showLabel ? label : undefined}
+      className={`flex items-center ${!showLabel ? 'justify-center p-2.5' : 'space-x-3 px-3 py-2.5'} rounded-xl transition-all duration-200 group relative ${
         isActive
           ? 'bg-[#005C66] text-white font-semibold shadow-xs'
           : 'text-slate-300 hover:text-white hover:bg-white/5'
@@ -306,21 +448,21 @@ function SidebarItem({ to, icon: Icon, label, isActive, isCollapsed, onClick, ba
     >
       <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-300 group-hover:text-teal-300'}`} />
 
-      {!isCollapsed && (
+      {showLabel && (
         <span className="text-xs font-medium tracking-wide truncate flex-1">
           {label}
         </span>
       )}
 
-      {!isCollapsed && badge && (
-        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 uppercase tracking-wider">
+      {showLabel && badge && (
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 uppercase tracking-wider shrink-0">
           {isLiveDot && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>}
           {badge}
         </span>
       )}
 
-      {/* Collapsed Tooltip */}
-      {isCollapsed && (
+      {/* Tooltip when label is hidden */}
+      {!showLabel && (
         <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 text-white text-xs font-medium rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg z-50 border border-teal-500/30">
           {label}
         </div>

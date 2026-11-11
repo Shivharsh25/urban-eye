@@ -295,6 +295,12 @@ aside.sidebar-dark {
   border-color: rgba(0, 168, 150, 0.15) !important;
 }
 
+@media (min-width: 1024px) {
+  .sidebar-resizable {
+    width: var(--sidebar-w, 256px) !important;
+  }
+}
+
 html.light aside.sidebar-dark .text-white,
 aside.sidebar-dark .text-white {
   color: #ffffff !important;

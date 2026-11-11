@@ -111,7 +111,7 @@ export default function SuperAdminLayout({ children }) {
       {/* DESKTOP SIDEBAR (EXPANDABLE / COLLAPSIBLE & FULL HEIGHT) */}
       {/* ======================================================== */}
       <aside
-        className={`hidden lg:flex lg:flex-col h-full bg-[#02181D] border-r border-[#00383E]/70 z-30 shrink-0 select-none overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`hidden lg:flex lg:flex-col h-full bg-[#02181D] border-r border-[#00383E]/70 z-30 shrink-0 select-none overflow-hidden transition-all duration-300 ease-in-out relative ${
           isCollapsed ? 'w-20' : 'w-[280px]'
         }`}
       >
@@ -154,7 +154,7 @@ export default function SuperAdminLayout({ children }) {
             type="button"
             onClick={toggleSidebar}
             className="w-7 h-7 rounded-lg border border-[#004750] bg-[#022329]/80 flex items-center justify-center text-teal-300 hover:text-white hover:border-[#00E5FF]/60 hover:bg-[#004750]/50 transition-all shadow-2xs cursor-pointer shrink-0"
-            title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+            title={isCollapsed ? 'Restore Sidebar (<->)' : 'Minimize Sidebar (<->)'}
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
@@ -327,6 +327,29 @@ export default function SuperAdminLayout({ children }) {
               </button>
             </>
           )}
+        </div>
+
+        {/* Horizontal Resize & Quick-Minimize Handle (<->) */}
+        <div
+          onClick={toggleSidebar}
+          className="hidden lg:flex absolute top-0 right-0 w-3 h-full cursor-col-resize group/resizer items-center justify-center z-30 select-none hover:bg-cyan-500/10 transition-colors"
+          title={isCollapsed ? "Click to restore sidebar (<->)" : "Click to minimize sidebar (<->)"}
+        >
+          {/* Subtle border accent line */}
+          <div className="w-[2px] h-full bg-transparent group-hover/resizer:bg-[#00E5FF]/60 transition-colors" />
+
+          {/* Quick-Minimize Pill Button on Border */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSidebar();
+            }}
+            className="absolute top-1/2 -translate-y-1/2 -right-3 w-6 h-6 rounded-full bg-[#02181D] border border-[#004750] hover:border-[#00E5FF] text-teal-300 hover:text-white flex items-center justify-center shadow-lg transition-all opacity-0 group-hover/resizer:opacity-100 hover:scale-110 z-40 cursor-pointer"
+            title={isCollapsed ? "Restore sidebar (<->)" : "Minimize sidebar (<->)"}
+          >
+            {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+          </button>
         </div>
       </aside>
 
