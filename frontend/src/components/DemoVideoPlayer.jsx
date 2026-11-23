@@ -123,7 +123,9 @@ const CHAPTERS = [
   }
 ];
 
-export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
+export default function DemoVideoPlayer({ isOpen = true, onClose, onLaunchPortal }) {
+  if (isOpen === false) return null;
+
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
@@ -172,7 +174,8 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
 
   const handleSeek = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     setTime(ratio * TOTAL_DURATION);
   };
 
@@ -223,13 +226,13 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
       <div
         ref={containerRef}
-        className="bg-[#03151A] rounded-3xl overflow-hidden max-w-6xl w-full border border-teal-500/40 shadow-2xl flex flex-col relative text-white"
-        style={{ height: '92vh', maxHeight: '900px' }}
+        className="bg-[#03151A] rounded-2xl sm:rounded-3xl overflow-hidden max-w-6xl w-full border border-teal-500/40 shadow-2xl flex flex-col relative text-white"
+        style={{ height: '94vh', maxHeight: '900px' }}
       >
         {/* Floating Close Button in Top-Right Corner */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-50 w-9 h-9 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-teal-500/40 text-slate-200 hover:text-white flex items-center justify-center shadow-xl transition-all hover:scale-105 cursor-pointer backdrop-blur-md"
+          className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-50 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-900/95 hover:bg-slate-800 border border-teal-500/40 text-slate-200 hover:text-white flex items-center justify-center shadow-xl transition-all hover:scale-105 cursor-pointer backdrop-blur-md"
           title="Close Walkthrough"
         >
           <X className="w-4 h-4" />
@@ -244,7 +247,7 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
           {/* 1. ACTUAL LEFT SIDEBAR (Matching real Sidebar.jsx styling)              */}
           {/* ======================================================================= */}
           <aside
-            className={`w-44 sm:w-56 shrink-0 flex flex-col justify-between border-r transition-colors duration-300 ${
+            className={`hidden sm:flex sm:w-48 md:w-56 shrink-0 flex-col justify-between border-r transition-colors duration-300 ${
               isSuperAdminScene ? 'bg-[#02181D] border-[#00383E]' : 'bg-[#06252B] border-[#0E3841]'
             }`}
           >
@@ -366,7 +369,7 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
             
             {/* Real Top Header Bar (Matching TopHeader.jsx) */}
             <header
-              className={`h-14 px-4 sm:px-6 flex items-center justify-between border-b shrink-0 transition-colors duration-300 ${
+              className={`h-12 sm:h-14 px-3 sm:px-6 pr-14 sm:pr-6 flex items-center justify-between border-b shrink-0 transition-colors duration-300 ${
                 isSuperAdminScene
                   ? 'bg-[#02181D] border-[#00383E] text-white'
                   : 'bg-white/95 border-[#E2F1EE] text-slate-800 backdrop-blur-md'
@@ -1091,7 +1094,9 @@ export default function DemoVideoPlayer({ onClose, onLaunchPortal }) {
           {/* Progress Scrubber */}
           <div
             onClick={handleSeek}
-            className="h-2 w-full bg-slate-800 rounded-full cursor-pointer relative overflow-hidden group"
+            onTouchStart={handleSeek}
+            onTouchMove={handleSeek}
+            className="h-2.5 w-full bg-slate-800 rounded-full cursor-pointer relative overflow-hidden group touch-none"
           >
             <div
               className="h-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 rounded-full transition-all duration-75 relative"

@@ -163,10 +163,10 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       className={`
         sidebar-dark sidebar-resizable fixed inset-y-0 left-0 z-50 h-full flex flex-col
         ${isDragging ? '' : 'transition-[width,transform] duration-300 ease-in-out'}
-        lg:static lg:relative lg:translate-x-0 lg:shrink-0
+        lg:relative lg:translate-x-0 lg:shrink-0
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         w-64 max-w-[85vw] lg:max-w-none
-        overflow-hidden select-none border-r border-[#0E3841] relative
+        overflow-hidden select-none border-r border-[#0E3841]
       `}
       style={{ 
         '--sidebar-w': `${activeDesktopWidth}px`,
