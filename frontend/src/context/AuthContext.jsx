@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import client from '../api/client';
 import { getSocket } from '../api/socket';
+import { authClient, signIn, signUp, signOut as betterAuthSignOut } from '../api/authClient';
 
 const DEFAULT_LOCAL_USER = {
   id: '65e90d235f3b72c4e2010001',
@@ -27,9 +28,32 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('urban_eye_token') || null);
   const [loading, setLoading] = useState(true);
 
-  // Validate session on load
+  // Validate session on load: checks Better Auth session first, then falls back to legacy token
   useEffect(() => {
     async function verifyAuth() {
+      try {
+        // 1. Try Better Auth Session
+        const sessionRes = await authClient.getSession().catch(() => null);
+        if (sessionRes?.data?.user) {
+          const authUser = sessionRes.data.user;
+          const sessionToken = sessionRes.data.session?.token || localStorage.getItem('urban_eye_token') || 'better-auth-session';
+          setUser(authUser);
+          setToken(sessionToken);
+          localStorage.setItem('urban_eye_user', JSON.stringify(authUser));
+          localStorage.setItem('urban_eye_token', sessionToken);
+
+          const socket = getSocket();
+          if (socket?.connected && authUser.id) {
+            socket.emit('join:user', authUser.id);
+          }
+          setLoading(false);
+          return;
+        }
+      } catch (e) {
+        // Fallback to legacy verify
+      }
+
+      // 2. Legacy Token Verification Fallback
       const savedToken = localStorage.getItem('urban_eye_token');
       if (savedToken && savedToken !== 'local-demo-token') {
         try {
@@ -67,9 +91,15 @@ export function AuthProvider({ children }) {
     verifyAuth();
   }, []);
 
-  const login = async (email, password) => {
-    const res = await client.post('/api/auth/login', { email, password });
-    const { token: receivedToken, user: receivedUser } = res.data;
+  // Better Auth Native Sign In
+  const loginBetterAuth = async (email, password) => {
+    const { data, error } = await signIn.email({ email, password });
+    if (error) {
+      throw new Error(error.message || 'Better Auth login failed');
+    }
+
+    const receivedUser = data.user;
+    const receivedToken = data.token || data.session?.token || 'better-auth-session';
 
     setToken(receivedToken);
     setUser(receivedUser);
@@ -78,9 +108,61 @@ export function AuthProvider({ children }) {
     localStorage.setItem('urban_eye_user', JSON.stringify(receivedUser));
 
     const socket = getSocket();
-    socket.emit('join:user', receivedUser.id);
+    if (socket?.connected && receivedUser?.id) {
+      socket.emit('join:user', receivedUser.id);
+    }
 
     return receivedUser;
+  };
+
+  // Better Auth Native Sign Up
+  const registerBetterAuth = async (name, email, password) => {
+    const { data, error } = await signUp.email({ name, email, password });
+    if (error) {
+      throw new Error(error.message || 'Better Auth registration failed');
+    }
+
+    const receivedUser = data.user;
+    const receivedToken = data.token || data.session?.token || 'better-auth-session';
+
+    setToken(receivedToken);
+    setUser(receivedUser);
+
+    localStorage.setItem('urban_eye_token', receivedToken);
+    localStorage.setItem('urban_eye_user', JSON.stringify(receivedUser));
+
+    const socket = getSocket();
+    if (socket?.connected && receivedUser?.id) {
+      socket.emit('join:user', receivedUser.id);
+    }
+
+    return receivedUser;
+  };
+
+  // Dual-Compatible Login: Tries Better Auth first, seamlessly falls back to legacy route
+  const login = async (email, password) => {
+    try {
+      const res = await client.post('/api/auth/login', { email, password });
+      const { token: receivedToken, user: receivedUser } = res.data;
+
+      setToken(receivedToken);
+      setUser(receivedUser);
+
+      localStorage.setItem('urban_eye_token', receivedToken);
+      localStorage.setItem('urban_eye_user', JSON.stringify(receivedUser));
+
+      const socket = getSocket();
+      socket.emit('join:user', receivedUser.id);
+
+      return receivedUser;
+    } catch (legacyErr) {
+      // If legacy fails, attempt Better Auth credentials
+      try {
+        return await loginBetterAuth(email, password);
+      } catch (betterAuthErr) {
+        throw legacyErr;
+      }
+    }
   };
 
   const loginWithPhone = async (phone, idToken) => {
@@ -175,6 +257,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    betterAuthSignOut().catch(() => {});
     setUser(null);
     setToken(null);
     localStorage.removeItem('urban_eye_token');
@@ -225,6 +308,9 @@ export function AuthProvider({ children }) {
     isDeptAdmin: user?.role === 'department_admin',
     departmentId: user?.departmentId || null,
     departmentName: user?.departmentName || null,
+    authClient,
+    loginBetterAuth,
+    registerBetterAuth,
     login,
     loginWithCredentials: login,
     loginWithPhone,

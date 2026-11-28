@@ -1,16 +1,45 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { auth } = require('../config/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'urban_eye_jwt_secret_key_2026_secure';
 
 /**
- * Middleware: Verify JWT Bearer token and attach authenticated user with role and department
+ * Middleware: Verify Better Auth Session or JWT Bearer token and attach authenticated user
  */
 async function requireAuth(req, res, next) {
   try {
+    // 1. Try Better Auth Session verification (cookies or Bearer token)
+    try {
+      const session = await auth.api.getSession({
+        headers: req.headers
+      });
+
+      if (session && session.user) {
+        if (session.user.status === 'suspended') {
+          return res.status(403).json({ error: 'Account suspended by municipal administrator.' });
+        }
+
+        req.user = {
+          id: session.user.id,
+          name: session.user.name,
+          email: session.user.email,
+          role: session.user.role || 'user',
+          departmentId: session.user.departmentId || null,
+          departmentName: session.user.departmentName || null,
+          status: session.user.status || 'active'
+        };
+
+        return next();
+      }
+    } catch (betterAuthErr) {
+      // Fallback to JWT
+    }
+
+    // 2. Fallback to existing JWT Bearer verification
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authentication required. No token provided.' });
+      return res.status(401).json({ error: 'Authentication required. No session or token provided.' });
     }
 
     const token = authHeader.split(' ')[1];

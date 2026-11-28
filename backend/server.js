@@ -10,6 +10,11 @@ const express = require('express');
 const cors = require('cors');
 const { Server } = require('socket.io');
 
+// Ensure database connection is initialized
+require('./config/database');
+const { toNodeHandler } = require('better-auth/node');
+const { auth } = require('./config/auth');
+
 const { initSocket } = require('./services/socketService');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const authRoutes = require('./routes/authRoutes');
@@ -98,6 +103,35 @@ const adminRequestPublicRoutes = require('./routes/adminRequestPublicRoutes');
 // ----------------------------------------------------
 // API Route Registration
 // ----------------------------------------------------
+
+// Better Auth Selective Handler:
+// Handles Better Auth native endpoints (/sign-in, /sign-up, /get-session, /sign-out, etc.)
+// and falls through to legacy authRoutes for custom endpoints (/login, /register, /me, /admin-login)
+const isBetterAuthEndpoint = (path) => {
+  return /^\/api\/auth\/(sign-in|sign-up|sign-out|get-session|session|callback|verify-|reset-password|forget-password|change-|update-user|delete-user|token|ok|error|reference)/.test(path);
+};
+
+let nodeAuthHandler = null;
+const getNodeAuthHandler = () => {
+  if (!nodeAuthHandler) {
+    nodeAuthHandler = toNodeHandler((webReq) => auth.handler(webReq));
+  }
+  return nodeAuthHandler;
+};
+
+app.use(async (req, res, next) => {
+  if (isBetterAuthEndpoint(req.path)) {
+    try {
+      const handler = getNodeAuthHandler();
+      return await handler(req, res);
+    } catch (err) {
+      console.error('[Better Auth Handler Error]:', err);
+      return next(err);
+    }
+  }
+  next();
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', detectionRoutes);
