@@ -4,6 +4,7 @@ import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { signIn as betterAuthSignIn } from '../api/authClient';
 import { 
   AlertCircle, 
   CheckCircle2, 
@@ -61,6 +62,21 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
     setLoading(true);
     if (onError) onError(null);
 
+    // 1. Try Better Auth Google Social Login first if configured
+    try {
+      const betterAuthRes = await betterAuthSignIn.social({
+        provider: 'google',
+        callbackURL: '/dashboard'
+      });
+      if (betterAuthRes?.data?.url) {
+        window.location.href = betterAuthRes.data.url;
+        return;
+      }
+    } catch (betterAuthErr) {
+      // Better Auth Google not configured yet, fallback to Firebase flow
+    }
+
+    // 2. Firebase Popup Authentication Flow
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const firebaseUser = result.user;
@@ -98,11 +114,14 @@ export default function GoogleAuthButton({ mode = 'signin', onSuccess, onError, 
         return;
       }
 
-      // If domain not authorized or Google provider not active in Firebase console
+      // If domain not authorized, popup blocked by browser, or Google provider not active
       if (
         err.code === 'auth/operation-not-allowed' || 
         err.code === 'auth/unauthorized-domain' ||
-        err.code === 'auth/configuration-not-found'
+        err.code === 'auth/configuration-not-found' ||
+        err.code === 'auth/popup-blocked' ||
+        err.code === 'auth/internal-error' ||
+        (err.message && (err.message.toLowerCase().includes('popup') || err.message.toLowerCase().includes('block')))
       ) {
         setShowFallbackModal(true);
         setLoading(false);
